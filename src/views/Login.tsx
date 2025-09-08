@@ -102,10 +102,30 @@ const Login = () => {
     })
 
     if (res && res.ok && res.error === null) {
-      // Vars
-      const redirectURL = searchParams.get('redirectTo') ?? '/'
+      // Get user data to determine role-based redirect
+      try {
+        const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: data.email, password: data.password })
+        })
 
-      router.replace(getLocalizedUrl(redirectURL, locale as Locale))
+        if (userRes.ok) {
+          const userData = await userRes.json()
+          const redirectURL = userData.role === 'admin' ? '/employees' : '/employee-page'
+          router.replace(getLocalizedUrl(redirectURL, locale as Locale))
+        } else {
+          // Fallback to default redirect
+          const redirectURL = searchParams.get('redirectTo') ?? '/'
+          router.replace(getLocalizedUrl(redirectURL, locale as Locale))
+        }
+      } catch (error) {
+        // Fallback to default redirect
+        const redirectURL = searchParams.get('redirectTo') ?? '/'
+        router.replace(getLocalizedUrl(redirectURL, locale as Locale))
+      }
     } else {
       if (res?.error) {
         const error = JSON.parse(res.error)
@@ -216,6 +236,17 @@ const Login = () => {
               <Typography>New on our platform?</Typography>
               <Typography component={Link} href={getLocalizedUrl('/register', locale as Locale)} color='primary.main'>
                 Create an account
+              </Typography>
+            </div>
+            <div className='bg-info-lighter p-4 rounded-lg'>
+              <Typography variant='body2' className='text-center mb-2 font-medium'>
+                Test Credentials:
+              </Typography>
+              <Typography variant='body2' className='text-center'>
+                Admin: admin@sneat.com / admin
+              </Typography>
+              <Typography variant='body2' className='text-center'>
+                User: jane.smith@company.com / user123
               </Typography>
             </div>
             <Divider className='gap-2 text-textPrimary'>or</Divider>

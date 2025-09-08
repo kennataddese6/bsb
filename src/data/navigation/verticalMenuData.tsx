@@ -10,6 +10,11 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     href: '/employees'
   },
   {
+    label: 'Employee Page',
+    icon: 'bx-user',
+    href: '/employee-page'
+  },
+  {
     label: dictionary['navigation'].dashboards,
     suffix: {
       label: '5',

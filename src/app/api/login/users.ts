@@ -7,6 +7,7 @@ export type UserTable = {
   email: string
   image: string
   password: string
+  role?: 'admin' | 'user'
 }
 
 // =============== Fake Data ============================
@@ -17,6 +18,23 @@ export const users: UserTable[] = [
     name: 'John Doe',
     password: 'admin',
     email: 'admin@sneat.com',
-    image: '/images/avatars/1.png'
+    image: '/images/avatars/1.png',
+    role: 'admin'
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    password: 'user123',
+    email: 'jane.smith@company.com',
+    image: '/images/avatars/2.png',
+    role: 'user'
+  },
+  {
+    id: 3,
+    name: 'Mike Johnson',
+    password: 'user456',
+    email: 'mike.johnson@company.com',
+    image: '/images/avatars/3.png',
+    role: 'user'
   }
 ]

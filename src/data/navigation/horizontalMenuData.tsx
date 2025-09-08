@@ -10,6 +10,11 @@ const horizontalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>
     href: '/employees'
   },
   {
+    label: 'Employee Page',
+    icon: 'bx-user',
+    href: '/employee-page'
+  },
+  {
     label: dictionary['navigation'].dashboards,
     icon: 'bx-home-smile',
     children: [

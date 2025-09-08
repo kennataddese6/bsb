@@ -15,3 +15,15 @@ export type EmployeeFormData = {
   password: string
   role: 'admin' | 'user'
 }
+
+export type EditEmployeeFormData = {
+  firstName: string
+  lastName: string
+  email: string
+  role: 'admin' | 'user'
+}
+
+export type ChangePasswordFormData = {
+  newPassword: string
+  confirmPassword: string
+}

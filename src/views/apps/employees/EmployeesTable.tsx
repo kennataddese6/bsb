@@ -37,6 +37,8 @@ import type { Employee } from '@/types/apps/employeeTypes'
 
 // Component Imports
 import AddEmployeeDialog from './AddEmployeeDialog'
+import EditEmployeeDialog from './EditEmployeeDialog'
+import ChangePasswordDialog from './ChangePasswordDialog'
 import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTextField from '@core/components/mui/TextField'
 import TablePaginationComponent from '@components/TablePaginationComponent'
@@ -120,6 +122,9 @@ const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 const EmployeesTable = () => {
   // States
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState<Employee[]>(initialEmployees)
   const [globalFilter, setGlobalFilter] = useState('')
@@ -188,7 +193,39 @@ const EmployeesTable = () => {
       columnHelper.accessor('createdAt', {
         header: 'Created At',
         cell: ({ row }) => <Typography>{new Date(row.original.createdAt).toLocaleDateString()}</Typography>
-      })
+      }),
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => (
+          <div className='flex items-center gap-2'>
+            <Button
+              variant='tonal'
+              color='primary'
+              size='small'
+              startIcon={<i className='bx-edit' />}
+              onClick={() => {
+                setSelectedEmployee(row.original)
+                setEditDialogOpen(true)
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant='tonal'
+              color='secondary'
+              size='small'
+              startIcon={<i className='bx-lock-alt' />}
+              onClick={() => {
+                setSelectedEmployee(row.original)
+                setChangePasswordDialogOpen(true)
+              }}
+            >
+              Security
+            </Button>
+          </div>
+        )
+      }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -238,6 +275,16 @@ const EmployeesTable = () => {
 
   const handleAddEmployee = (newEmployee: Employee) => {
     setData(prev => [...prev, newEmployee])
+  }
+
+  const handleUpdateEmployee = (employeeId: number, updatedData: Partial<Employee>) => {
+    setData(prev => prev.map(emp => (emp.id === employeeId ? { ...emp, ...updatedData } : emp)))
+  }
+
+  const handleChangePassword = (employeeId: number, newPassword: string) => {
+    // In a real app, you would make an API call to update the password
+    // For now, we'll just show a success message
+    console.log(`Password changed for employee ${employeeId}`)
   }
 
   return (
@@ -349,6 +396,24 @@ const EmployeesTable = () => {
         open={employeeDialogOpen}
         handleClose={() => setEmployeeDialogOpen(false)}
         onAddEmployee={handleAddEmployee}
+      />
+      <EditEmployeeDialog
+        open={editDialogOpen}
+        handleClose={() => {
+          setEditDialogOpen(false)
+          setSelectedEmployee(null)
+        }}
+        employee={selectedEmployee}
+        onUpdateEmployee={handleUpdateEmployee}
+      />
+      <ChangePasswordDialog
+        open={changePasswordDialogOpen}
+        handleClose={() => {
+          setChangePasswordDialogOpen(false)
+          setSelectedEmployee(null)
+        }}
+        employee={selectedEmployee}
+        onChangePassword={handleChangePassword}
       />
     </>
   )

@@ -5,6 +5,8 @@
 'use server'
 
 // Data Imports
+import { revalidatePath } from 'next/cache'
+
 import { getServerSession } from 'next-auth'
 
 import { authOptions } from '@/libs/auth'

@@ -81,7 +81,7 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
 
       await updateEmployee(updatedEmployee)
 
-      // onUpdateEmployee(employee.id, updatedEmployee)
+      onUpdateEmployee(employee.id, updatedEmployee)
 
       // Show success toast
       toast.success('Employee updated successfully!', {

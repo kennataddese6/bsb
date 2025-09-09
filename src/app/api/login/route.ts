@@ -10,7 +10,6 @@ import { users } from './users'
 
 export async function POST(req: Request) {
   // Vars
-  console.log('api/login called')
   const { email, password } = await req.json()
   console.log('EMAIL AND PASSWORD FETCHED')
   const user = users.find(u => u.email === email && u.password === password)

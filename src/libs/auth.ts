@@ -1,74 +1,191 @@
 // Third-party Imports
 import CredentialProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { PrismaClient } from '@prisma/client'
-import type { NextAuthOptions } from 'next-auth'
-import type { Adapter } from 'next-auth/adapters'
+import type { DefaultSession, NextAuthOptions } from 'next-auth'
+import type { DefaultJWT as BaseJWT } from 'next-auth/jwt'
 
-const prisma = new PrismaClient()
+// API base URL
+const API_BASE_URL = 'http://3.23.64.97'
+
+// Type definitions for the external API responses
+interface ApiAuthResponse {
+  token: string
+  userId: string
+  role: string
+}
+
+interface ApiUserProfile {
+  id: string
+  fname: string
+  lname: string
+  email: string
+  role: string
+  accountStatus: string
+  emailVerified: boolean
+  verifiedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// Define base user type without extending NextAuth's User to avoid circular references
+interface BaseUser {
+  id: string
+  role: string
+  accessToken: string
+  name?: string | null
+  email?: string | null
+}
+
+// Define JWT type by extending the base JWT type
+type AuthJWT = BaseJWT & {
+  accessToken: string
+  accessTokenExpires: number
+  refreshToken?: string
+  user: {
+    id: string
+    name?: string | null
+    email?: string | null
+    role: string
+  }
+  error?: string
+}
+
+// Extend NextAuth types
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string
+      role: string
+      name?: string | null
+      email?: string | null
+    } & DefaultSession['user']
+    accessToken: string
+    error?: string
+  }
+
+  // Extend the default User type
+  interface User extends BaseUser {}
+}
+
+// Extend JWT type
+declare module 'next-auth/jwt' {
+  interface JWT extends AuthJWT {}
+}
+
+// Export types for use in the application
+export type User = BaseUser
+export type { AuthJWT as JWT }
+
+async function refreshAccessToken(token: AuthJWT): Promise<AuthJWT> {
+  try {
+    // If you have a refresh token endpoint, implement the refresh logic here
+    // Example implementation:
+    /*
+    const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: token.refreshToken })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error('Failed to refresh token');
+    }
+
+    return {
+      ...token,
+      accessToken: data.access_token,
+      accessTokenExpires: Date.now() + data.expires_in * 1000,
+      refreshToken: data.refresh_token ?? token.refreshToken,
+    };
+    */
+
+    // For now, we'll just return the existing token
+    return token
+  } catch (error) {
+    console.error('Error refreshing access token', error)
+
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError'
+    }
+  }
+}
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
-
   // ** Configure one or more authentication providers
-  // ** Please refer to https://next-auth.js.org/configuration/options#providers for more `providers` options
   providers: [
     CredentialProvider({
-      // ** The name to display on the sign in form (e.g. 'Sign in with...')
-      // ** For more details on Credentials Provider, visit https://next-auth.js.org/providers/credentials
+      id: 'credentials',
       name: 'Credentials',
-      type: 'credentials',
-
-      /*
-       * As we are using our own Sign-in page, we do not need to change
-       * username or password attributes manually in following credentials object.
-       */
-      credentials: {},
-      async authorize(credentials) {
-        /*
-         * You need to provide your own logic here that takes the credentials submitted and returns either
-         * an object representing a user or value that is false/null if the credentials are invalid.
-         * For e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-         * You can also use the `req` object to obtain additional parameters (i.e., the request IP address)
-         */
-        const { email, password } = credentials as { email: string; password: string }
+      credentials: {
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'Enter your email'
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: 'Enter your password'
+        }
+      },
+      async authorize(credentials: Record<'email' | 'password', string> | undefined) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required')
+        }
 
         try {
-          // ** Login API Call to match the user credentials and receive user data in response along with his role
-          const res = await fetch(`${process.env.API_URL}/login`, {
+          // Call the external login API
+          const res = await fetch(`${API_BASE_URL}/auth/signin`, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
             },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password
+            })
           })
 
-          const data = await res.json()
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}))
 
-          if (res.status === 401) {
-            throw new Error(JSON.stringify(data))
+            throw new Error(errorData.message || 'Login failed')
           }
 
-          if (res.status === 200) {
-            /*
-             * Please unset all the sensitive information of the user either from API response or before returning
-             * user data below. Below return statement will set the user object in the token and the same is set in
-             * the session which will be accessible all over the app.
-             */
-            return data
+          const data: ApiAuthResponse = await res.json()
+
+          // Get user profile using the token
+          const profileRes = await fetch(`${API_BASE_URL}/users/profile`, {
+            headers: {
+              Authorization: `Bearer ${data.token}`,
+              Accept: 'application/json'
+            }
+          })
+
+          if (!profileRes.ok) {
+            const errorData = await profileRes.json().catch(() => ({}))
+
+            throw new Error(errorData.message || 'Failed to fetch user profile')
           }
 
-          return null
-        } catch (e: any) {
-          throw new Error(e.message)
+          const userProfile: ApiUserProfile = await profileRes.json()
+
+          // Return user data to be stored in the session
+          return {
+            id: userProfile.id,
+            email: userProfile.email,
+            name: `${userProfile.fname} ${userProfile.lname}`.trim(),
+            role: userProfile.role,
+            accessToken: data.token
+          }
+        } catch (error: any) {
+          console.error('Authentication error:', error)
+          throw new Error(error.message || 'Failed to authenticate')
         }
       }
-    }),
-
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
     })
 
     // ** ...add more providers here
@@ -97,32 +214,45 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login'
   },
 
-  // ** Please refer to https://next-auth.js.org/configuration/options#callbacks for more `callbacks` options
   callbacks: {
-    /*
-     * While using `jwt` as a strategy, `jwt()` callback will be called before
-     * the `session()` callback. So we have to add custom parameters in `token`
-     * via `jwt()` callback to make them accessible in the `session()` callback
-     */
-    async jwt({ token, user }) {
-      if (user) {
-        /*
-         * For adding custom parameters to user in session, we first need to add those parameters
-         * in token which then will be available in the `session()` callback
-         */
-        token.name = user.name
-        token.role = user.role
-        token.id = user.id
+    async jwt({ token, user, account }) {
+      // Initial sign in
+      if (account && user) {
+        return {
+          accessToken: user.accessToken,
+          accessTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+          refreshToken: (user as any).refreshToken,
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: (user as any).role || 'user'
+          }
+        }
       }
 
-      return token
+      // Return previous token if the access token has not expired yet
+      if (Date.now() < token.accessTokenExpires) {
+        return token
+      }
+
+      // Access token has expired, try to update it
+      return refreshAccessToken(token)
     },
     async session({ session, token }) {
-      if (session.user) {
-        // ** Add custom params to user in session which are added in `jwt()` callback via `token` parameter
-        session.user.name = token.name
-        session.user.role = token.role
-        session.user.id = token.id
+      if (token) {
+        session.user = {
+          ...session.user,
+          id: token.user.id,
+          name: token.user.name || null,
+          email: token.user.email || null,
+          role: token.user.role || 'user'
+        }
+        session.accessToken = token.accessToken
+
+        if (token.error) {
+          session.error = token.error
+        }
       }
 
       return session

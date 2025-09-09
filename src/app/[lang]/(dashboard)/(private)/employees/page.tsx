@@ -17,8 +17,6 @@ const EmployeesPage = async ({ params }: { params: Promise<{ lang: Locale }> }) 
   const session = await getServerSession(authOptions)
   const user = session?.user
 
-  console.log('User:', user)
-
   return user?.role === 'admin' ? (
     <RoleGuard allowedRoles={['admin']} locale={resolvedParams.lang}>
       <EmployeesTableAdminView employees={employees} />

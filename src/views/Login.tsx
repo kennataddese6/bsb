@@ -27,6 +27,8 @@ import type { InferInput } from 'valibot'
 import classnames from 'classnames'
 
 // Type Imports
+import { toast } from 'react-toastify'
+
 import type { Locale } from '@configs/i18n'
 
 // Component Imports
@@ -73,6 +75,7 @@ const Login = () => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [errorState, setErrorState] = useState<ErrorType | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Hooks
   const router = useRouter()
@@ -95,6 +98,8 @@ const Login = () => {
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
   const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
+    setIsSubmitting(true)
+
     const res = await signIn('credentials', {
       email: data.email,
       password: data.password,
@@ -112,10 +117,22 @@ const Login = () => {
           body: JSON.stringify({ email: data.email, password: data.password })
         })
 
+        setIsSubmitting(false)
+
         const redirectURL = '/employees'
 
         router.replace(getLocalizedUrl(redirectURL, locale as Locale))
       } catch (error) {
+        setIsSubmitting(false)
+        toast.error('Error logging in. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        })
+
         // Fallback to default redirect
         const redirectURL = searchParams.get('redirectTo') ?? '/'
 
@@ -224,8 +241,8 @@ const Login = () => {
                 Forgot password?
               </Typography>
             </div>
-            <Button fullWidth variant='contained' type='submit'>
-              Login
+            <Button fullWidth variant='contained' type='submit' disabled={isSubmitting}>
+              {isSubmitting ? 'Logging in' : 'Login'}
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>

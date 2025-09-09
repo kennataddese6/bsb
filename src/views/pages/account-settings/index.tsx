@@ -11,6 +11,7 @@ import TabContext from '@mui/lab/TabContext'
 import TabPanel from '@mui/lab/TabPanel'
 
 // Component Imports
+
 import CustomTabList from '@core/components/mui/TabList'
 
 const AccountSettings = ({ tabContentList }: { tabContentList: { [key: string]: ReactElement } }) => {

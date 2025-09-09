@@ -15,6 +15,8 @@ import Divider from '@mui/material/Divider'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
 // Component Imports
+import { useSession } from 'next-auth/react'
+
 import CustomTextField from '@core/components/mui/TextField'
 
 type Data = {
@@ -50,7 +52,7 @@ const initialData: Data = {
 
 const languageData = ['English', 'Arabic', 'French', 'German', 'Portuguese']
 
-const AccountDetails = () => {
+const AccountDetails = ({ user }: { user: any }) => {
   // States
   const [formData, setFormData] = useState<Data>(initialData)
   const [fileInput, setFileInput] = useState<string>('')
@@ -118,7 +120,7 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='First Name'
-                value={formData.firstName}
+                value={user.name.split(' ')[0]}
                 placeholder='John'
                 onChange={e => handleFormChange('firstName', e.target.value)}
               />
@@ -127,7 +129,7 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Last Name'
-                value={formData.lastName}
+                value={user.name.split(' ')[1]}
                 placeholder='Doe'
                 onChange={e => handleFormChange('lastName', e.target.value)}
               />
@@ -136,7 +138,7 @@ const AccountDetails = () => {
               <CustomTextField
                 fullWidth
                 label='Email'
-                value={formData.email}
+                value={user.email}
                 placeholder='john.doe@gmail.com'
                 onChange={e => handleFormChange('email', e.target.value)}
               />

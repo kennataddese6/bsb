@@ -141,7 +141,7 @@ const AccountDetails = () => {
                 onChange={e => handleFormChange('email', e.target.value)}
               />
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            {/*   <Grid size={{ xs: 12, sm: 6 }}>
               <CustomTextField
                 fullWidth
                 label='Organization'
@@ -200,7 +200,7 @@ const AccountDetails = () => {
                 <MenuItem value='australia'>Australia</MenuItem>
                 <MenuItem value='germany'>Germany</MenuItem>
               </CustomTextField>
-            </Grid>
+            </Grid> */}
             <Grid size={{ xs: 12, sm: 6 }}>
               <CustomTextField
                 select
@@ -221,7 +221,7 @@ const AccountDetails = () => {
                 ))}
               </CustomTextField>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+            {/*      <Grid size={{ xs: 12, sm: 6 }}>
               <CustomTextField
                 select
                 fullWidth
@@ -264,7 +264,7 @@ const AccountDetails = () => {
                 <MenuItem value='pound'>Pound</MenuItem>
                 <MenuItem value='bitcoin'>Bitcoin</MenuItem>
               </CustomTextField>
-            </Grid>
+            </Grid> */}
             <Grid size={{ xs: 12 }} className='flex gap-4 flex-wrap'>
               <Button variant='contained' type='submit'>
                 Save Changes

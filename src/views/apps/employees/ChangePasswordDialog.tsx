@@ -126,7 +126,7 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
               Change Password
             </Typography>
             <Typography component='span' className='text-textSecondary'>
-              Update password for {employee.firstName} {employee.lastName}
+              Update password for {employee.fname} {employee.lname}
             </Typography>
           </div>
         </div>

@@ -254,9 +254,9 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
         cell: ({ row }) => (
           <div className={`flex items-center gap-1 ${modernTableStyles['action-buttons']}`}>
             <Button
-              variant='tonal'
-              color='primary'
-              size='small'
+              variant='text'
+              color='inherit'
+              size='large'
               className='min-w-0 px-2 py-1 rounded-lg hover:shadow-md transition-all duration-200'
               onClick={() => {
                 setSelectedEmployee(row.original)
@@ -267,9 +267,9 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
               <i className='bx-edit text-lg' />
             </Button>
             <Button
-              variant='tonal'
-              color='secondary'
-              size='small'
+              variant='text'
+              color='inherit'
+              size='large'
               className='min-w-0 px-2 py-1 rounded-lg hover:shadow-md transition-all duration-200'
               onClick={() => {
                 setSelectedEmployee(row.original)

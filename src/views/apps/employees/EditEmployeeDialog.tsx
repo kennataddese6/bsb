@@ -42,10 +42,10 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
     formState: { errors }
   } = useForm<EditEmployeeFormData>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
+      fname: '',
+      lname: '',
       email: '',
-      role: 'user'
+      role: 'employee'
     }
   })
 
@@ -53,8 +53,8 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
   useEffect(() => {
     if (employee) {
       resetForm({
-        firstName: employee.firstName,
-        lastName: employee.lastName,
+        firstName: employee.fname,
+        lastName: employee.lname,
         email: employee.email,
         role: employee.role
       })
@@ -228,10 +228,10 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
                 }}
                 {...(errors.role && { error: true, helperText: errors.role.message })}
               >
-                <MenuItem value='user'>
+                <MenuItem value='employee'>
                   <div className='flex items-center gap-2'>
                     <i className='bx-user text-lg text-success' />
-                    <span>User</span>
+                    <span>Employee</span>
                   </div>
                 </MenuItem>
                 <MenuItem value='admin'>

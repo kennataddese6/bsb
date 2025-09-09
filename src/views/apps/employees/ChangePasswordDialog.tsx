@@ -21,6 +21,7 @@ import type { Employee, ChangePasswordFormData } from '@/types/apps/employeeType
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
+import { changePassword } from '@/app/server/actions'
 
 type Props = {
   open: boolean
@@ -57,6 +58,13 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
     try {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000))
+
+      const newData = {
+        password: data.newPassword,
+        userId: employee.id
+      }
+
+      changePassword(newData)
 
       onChangePassword(employee.id, data.newPassword)
 

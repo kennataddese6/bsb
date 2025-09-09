@@ -1,6 +1,8 @@
 'use client'
 
 // React Imports
+import { create } from 'domain'
+
 import { useState } from 'react'
 
 // MUI Imports
@@ -23,6 +25,7 @@ import type { Employee, EmployeeFormData } from '@/types/apps/employeeTypes'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
+import { createEmployee, createEmployees } from '@/app/server/actions'
 
 type Props = {
   open: boolean
@@ -57,17 +60,17 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000))
 
-      const newEmployee: Employee = {
-        id: Date.now(), // Simple ID generation
-        firstName: data.firstName,
-        lastName: data.lastName,
+      const newEmployee = {
+        fname: data.firstName,
+        lname: data.lastName,
         email: data.email,
+        password: data.password,
         role: data.role,
         avatar: `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`,
         createdAt: new Date().toISOString().split('T')[0]
       }
 
-      onAddEmployee(newEmployee)
+      createEmployee(newEmployee)
 
       // Show success toast
       toast.success('Employee added successfully!', {

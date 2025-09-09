@@ -38,6 +38,25 @@ export const getEmployees = async () => {
   return data
 }
 
+export const createEmployee = async (employee: any) => {
+  const session = await getServerSession(authOptions)
+
+  const token = session?.accessToken
+
+  const response = await fetch('http://3.23.64.97/users', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(employee)
+  })
+
+  const data = await response.json()
+
+  return data
+}
+
 export const getEcommerceData = async () => {
   return eCommerceData
 }

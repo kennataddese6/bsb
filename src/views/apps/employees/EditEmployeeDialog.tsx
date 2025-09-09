@@ -75,6 +75,7 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         fname: data.firstName,
         lname: data.lastName,
         email: data.email,
+        id: employee.id,
         account_status: 'active'
       }
 

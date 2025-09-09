@@ -8,8 +8,9 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     label: dictionary['navigation'].employees,
     icon: 'bx-user-plus',
     href: '/employees'
-  },
-  {
+  }
+
+  /* {
     label: 'Employee Page',
     icon: 'bx-user',
     href: '/employee-page'
@@ -604,7 +605,7 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
         ]
       }
     ]
-  }
+  } */
 ]
 
 export default verticalMenuData

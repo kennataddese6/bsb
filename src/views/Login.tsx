@@ -112,18 +112,13 @@ const Login = () => {
           body: JSON.stringify({ email: data.email, password: data.password })
         })
 
-        if (userRes.ok) {
-          const userData = await userRes.json()
-          const redirectURL = userData.role === 'admin' ? '/employees' : '/employee-page'
-          router.replace(getLocalizedUrl(redirectURL, locale as Locale))
-        } else {
-          // Fallback to default redirect
-          const redirectURL = searchParams.get('redirectTo') ?? '/'
-          router.replace(getLocalizedUrl(redirectURL, locale as Locale))
-        }
+        const redirectURL = '/employees'
+
+        router.replace(getLocalizedUrl(redirectURL, locale as Locale))
       } catch (error) {
         // Fallback to default redirect
         const redirectURL = searchParams.get('redirectTo') ?? '/'
+
         router.replace(getLocalizedUrl(redirectURL, locale as Locale))
       }
     } else {

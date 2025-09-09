@@ -12,6 +12,7 @@ import Checkbox from '@mui/material/Checkbox'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import type { TextFieldProps } from '@mui/material/TextField'
+import Switch from '@mui/material/Switch'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -217,9 +218,33 @@ const EmployeesTable = () => {
           </div>
         )
       }),
+      columnHelper.accessor('accountStatus', {
+        header: 'Account Status',
+        cell: ({ row }) => {
+          const [enabled, setEnabled] = useState(row.original.accountStatus ?? true)
+
+          const toggleStatus = () => {
+            setEnabled(!enabled)
+            // Update the employee status in the main data state
+            const updatedData = data.map(emp =>
+              emp.id === row.original.id ? { ...emp, accountStatus: !enabled } : emp
+            )
+            setData(updatedData)
+          }
+
+          return (
+            <Switch
+              checked={enabled}
+              onChange={toggleStatus}
+              color='primary'
+              inputProps={{ 'aria-label': 'account status toggle' }}
+            />
+          )
+        }
+      }),
       columnHelper.accessor('createdAt', {
         header: 'Created At',
-        cell: ({ row }) => <Typography>{new Date(row.original.createdAt).toLocaleDateString()}</Typography>
+        cell: ({ row }) => <Typography color='text.primary'>{row.original.createdAt}</Typography>
       }),
       {
         id: 'actions',

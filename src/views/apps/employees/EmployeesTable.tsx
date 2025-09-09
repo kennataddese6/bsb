@@ -334,15 +334,6 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
             >
               Export
             </Button>
-            <Button
-              variant='contained'
-              color='primary'
-              className='max-sm:is-full shadow-lg hover:shadow-xl transition-all duration-200'
-              startIcon={<i className='bx-plus' />}
-              onClick={() => setEmployeeDialogOpen(true)}
-            >
-              Add Employee
-            </Button>
           </div>
         </CardContent>
         <div className='overflow-x-auto'>

@@ -115,11 +115,20 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
         <i className='bx-x' />
       </DialogCloseButton>
 
-      <DialogTitle variant='h4' className='flex gap-2 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        Add Employee
-        <Typography component='span' className='flex flex-col text-center'>
-          Create a new employee account
-        </Typography>
+      <DialogTitle variant='h4' className='flex gap-3 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
+        <div className='flex items-center justify-center gap-3'>
+          <div className='p-2 bg-primary-lighter rounded-lg'>
+            <i className='bx-user-plus text-2xl text-primary' />
+          </div>
+          <div>
+            <Typography variant='h4' className='font-bold'>
+              Add Employee
+            </Typography>
+            <Typography component='span' className='text-textSecondary'>
+              Create a new employee account
+            </Typography>
+          </div>
+        </div>
       </DialogTitle>
 
       <DialogContent className='pbs-0 sm:pli-16 sm:pbe-16'>
@@ -135,6 +144,11 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                   fullWidth
                   label='First Name'
                   placeholder='John'
+                  slotProps={{
+                    input: {
+                      startAdornment: <i className='bx-user text-xl text-textSecondary mr-2' />
+                    }
+                  }}
                   {...(errors.firstName && { error: true, helperText: errors.firstName.message })}
                 />
               )}
@@ -149,6 +163,11 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                   fullWidth
                   label='Last Name'
                   placeholder='Doe'
+                  slotProps={{
+                    input: {
+                      startAdornment: <i className='bx-user text-xl text-textSecondary mr-2' />
+                    }
+                  }}
                   {...(errors.lastName && { error: true, helperText: errors.lastName.message })}
                 />
               )}
@@ -172,6 +191,11 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                 type='email'
                 label='Email'
                 placeholder='john.doe@company.com'
+                slotProps={{
+                  input: {
+                    startAdornment: <i className='bx-envelope text-xl text-textSecondary mr-2' />
+                  }
+                }}
                 {...(errors.email && { error: true, helperText: errors.email.message })}
               />
             )}
@@ -194,6 +218,11 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                 type='password'
                 label='Password'
                 placeholder='Enter password'
+                slotProps={{
+                  input: {
+                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />
+                  }
+                }}
                 {...(errors.password && { error: true, helperText: errors.password.message })}
               />
             )}
@@ -209,10 +238,25 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                 fullWidth
                 label='Role'
                 {...field}
+                slotProps={{
+                  input: {
+                    startAdornment: <i className='bx-shield text-xl text-textSecondary mr-2' />
+                  }
+                }}
                 {...(errors.role && { error: true, helperText: errors.role.message })}
               >
-                <MenuItem value='user'>User</MenuItem>
-                <MenuItem value='admin'>Admin</MenuItem>
+                <MenuItem value='user'>
+                  <div className='flex items-center gap-2'>
+                    <i className='bx-user text-lg text-success' />
+                    <span>User</span>
+                  </div>
+                </MenuItem>
+                <MenuItem value='admin'>
+                  <div className='flex items-center gap-2'>
+                    <i className='bx-crown text-lg text-error' />
+                    <span>Admin</span>
+                  </div>
+                </MenuItem>
               </CustomTextField>
             )}
           />
@@ -220,13 +264,21 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       </DialogContent>
 
       <DialogActions className='justify-center gap-4 pbs-0 sm:pli-16 sm:pbe-16'>
-        <Button variant='tonal' color='error' onClick={handleReset} disabled={isSubmitting}>
+        <Button
+          variant='tonal'
+          color='error'
+          onClick={handleReset}
+          disabled={isSubmitting}
+          className='hover:shadow-md transition-all duration-200'
+          startIcon={<i className='bx-x' />}
+        >
           Cancel
         </Button>
         <Button
           variant='contained'
           onClick={handleSubmit(onSubmit)}
           disabled={isSubmitting}
+          className='shadow-lg hover:shadow-xl transition-all duration-200'
           startIcon={isSubmitting ? <i className='bx-loader-alt animate-spin' /> : <i className='bx-plus' />}
         >
           {isSubmitting ? 'Creating...' : 'Create Employee'}

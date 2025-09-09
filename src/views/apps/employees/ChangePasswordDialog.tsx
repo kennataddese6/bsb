@@ -108,11 +108,20 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
         <i className='bx-x' />
       </DialogCloseButton>
 
-      <DialogTitle variant='h4' className='flex gap-2 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        Change Password
-        <Typography component='span' className='flex flex-col text-center'>
-          Update password for {employee.firstName} {employee.lastName}
-        </Typography>
+      <DialogTitle variant='h4' className='flex gap-3 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
+        <div className='flex items-center justify-center gap-3'>
+          <div className='p-2 bg-secondary-lighter rounded-lg'>
+            <i className='bx-lock-alt text-2xl text-secondary' />
+          </div>
+          <div>
+            <Typography variant='h4' className='font-bold'>
+              Change Password
+            </Typography>
+            <Typography component='span' className='text-textSecondary'>
+              Update password for {employee.firstName} {employee.lastName}
+            </Typography>
+          </div>
+        </div>
       </DialogTitle>
 
       <DialogContent className='pbs-0 sm:pli-16 sm:pbe-16'>
@@ -134,6 +143,11 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
                 type='password'
                 label='New Password'
                 placeholder='Enter new password'
+                slotProps={{
+                  input: {
+                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />
+                  }
+                }}
                 {...(errors.newPassword && { error: true, helperText: errors.newPassword.message })}
               />
             )}
@@ -153,6 +167,11 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
                 type='password'
                 label='Confirm Password'
                 placeholder='Confirm new password'
+                slotProps={{
+                  input: {
+                    startAdornment: <i className='bx-check-circle text-xl text-textSecondary mr-2' />
+                  }
+                }}
                 {...(errors.confirmPassword && { error: true, helperText: errors.confirmPassword.message })}
               />
             )}
@@ -161,13 +180,21 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
       </DialogContent>
 
       <DialogActions className='justify-center gap-4 pbs-0 sm:pli-16 sm:pbe-16'>
-        <Button variant='tonal' color='error' onClick={handleReset} disabled={isSubmitting}>
+        <Button
+          variant='tonal'
+          color='error'
+          onClick={handleReset}
+          disabled={isSubmitting}
+          className='hover:shadow-md transition-all duration-200'
+          startIcon={<i className='bx-x' />}
+        >
           Cancel
         </Button>
         <Button
           variant='contained'
           onClick={handleSubmit(onSubmit)}
           disabled={isSubmitting}
+          className='shadow-lg hover:shadow-xl transition-all duration-200'
           startIcon={isSubmitting ? <i className='bx-loader-alt animate-spin' /> : <i className='bx-lock-alt' />}
         >
           {isSubmitting ? 'Changing...' : 'Change Password'}

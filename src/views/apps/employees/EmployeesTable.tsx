@@ -48,6 +48,7 @@ import { getInitials } from '@/utils/getInitials'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
+import modernTableStyles from './EmployeesTable.module.css'
 
 // Data Imports
 import { employees as initialEmployees } from '@/fake-db/apps/employees'
@@ -156,17 +157,31 @@ const EmployeesTable = () => {
       columnHelper.accessor('firstName', {
         header: 'Employee',
         cell: ({ row }) => (
-          <div className='flex items-center gap-3'>
-            {getAvatar({
-              avatar: row.original.avatar,
-              firstName: row.original.firstName,
-              lastName: row.original.lastName
-            })}
+          <div className='flex items-center gap-4'>
+            <div className={`relative ${modernTableStyles['avatar-container']}`}>
+              {getAvatar({
+                avatar: row.original.avatar,
+                firstName: row.original.firstName,
+                lastName: row.original.lastName
+              })}
+              <div
+                className={classnames(
+                  'absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-backgroundPaper',
+                  modernTableStyles['status-indicator'],
+                  {
+                    'bg-error': row.original.role === 'admin',
+                    'bg-success': row.original.role === 'user'
+                  }
+                )}
+              />
+            </div>
             <div className='flex flex-col items-start'>
-              <Typography variant='h6' className='hover:text-primary'>
+              <Typography variant='h6' className='hover:text-primary transition-colors duration-200 font-semibold'>
                 {`${row.original.firstName} ${row.original.lastName}`}
               </Typography>
-              <Typography variant='body2'>{row.original.email}</Typography>
+              <Typography variant='body2' className='text-textSecondary'>
+                {row.original.email}
+              </Typography>
             </div>
           </div>
         )
@@ -180,11 +195,23 @@ const EmployeesTable = () => {
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
             <div
-              className={classnames('rounded-full px-2 py-1 text-xs font-medium', {
-                'bg-error-lighter text-error': row.original.role === 'admin',
-                'bg-success-lighter text-success': row.original.role === 'user'
-              })}
+              className={classnames(
+                'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-200',
+                modernTableStyles['role-badge'],
+                {
+                  'bg-gradient-to-r from-error-lighter to-error/20 text-error border border-error/20':
+                    row.original.role === 'admin',
+                  'bg-gradient-to-r from-success-lighter to-success/20 text-success border border-success/20':
+                    row.original.role === 'user'
+                }
+              )}
             >
+              <div
+                className={classnames('w-2 h-2 rounded-full', {
+                  'bg-error': row.original.role === 'admin',
+                  'bg-success': row.original.role === 'user'
+                })}
+              />
               {row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1)}
             </div>
           </div>
@@ -198,30 +225,32 @@ const EmployeesTable = () => {
         id: 'actions',
         header: 'Actions',
         cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
+          <div className={`flex items-center gap-1 ${modernTableStyles['action-buttons']}`}>
             <Button
               variant='tonal'
               color='primary'
               size='small'
-              startIcon={<i className='bx-edit' />}
+              className='min-w-0 px-2 py-1 rounded-lg hover:shadow-md transition-all duration-200'
               onClick={() => {
                 setSelectedEmployee(row.original)
                 setEditDialogOpen(true)
               }}
+              title='Edit Employee'
             >
-              Edit
+              <i className='bx-edit text-lg' />
             </Button>
             <Button
               variant='tonal'
               color='secondary'
               size='small'
-              startIcon={<i className='bx-lock-alt' />}
+              className='min-w-0 px-2 py-1 rounded-lg hover:shadow-md transition-all duration-200'
               onClick={() => {
                 setSelectedEmployee(row.original)
                 setChangePasswordDialogOpen(true)
               }}
+              title='Change Password'
             >
-              Security
+              <i className='bx-lock-alt text-lg' />
             </Button>
           </div>
         )
@@ -289,37 +318,58 @@ const EmployeesTable = () => {
 
   return (
     <>
-      <Card>
-        <CardContent className='flex justify-between flex-wrap max-sm:flex-col sm:items-center gap-4'>
-          <div className='flex flex-col gap-1'>
-            <Typography variant='h4'>Employees</Typography>
-            <Typography variant='body2'>Manage your team members</Typography>
+      <Card className='shadow-lg border-0'>
+        <CardContent className='flex justify-between flex-wrap max-sm:flex-col sm:items-center gap-6 p-6'>
+          <div className='flex flex-col gap-2'>
+            <div className='flex items-center gap-3'>
+              <div className='p-2 bg-primary-lighter rounded-lg'>
+                <i className='bx-user-plus text-2xl text-primary' />
+              </div>
+              <div>
+                <Typography variant='h4' className='font-bold'>
+                  Employees
+                </Typography>
+                <Typography variant='body2' className='text-textSecondary'>
+                  Manage your team members and their access
+                </Typography>
+              </div>
+            </div>
           </div>
-          <div className='flex gap-4 max-sm:flex-col max-sm:is-full'>
+          <div className='flex gap-3 max-sm:flex-col max-sm:is-full'>
             <DebouncedInput
               value={globalFilter ?? ''}
               onChange={value => setGlobalFilter(String(value))}
               placeholder='Search employees...'
-              className='max-sm:is-full'
+              className='max-sm:is-full min-w-[250px]'
+              slotProps={{
+                input: {
+                  startAdornment: <i className='bx-search text-xl text-textSecondary mr-2' />
+                }
+              }}
             />
             <CustomTextField
               select
               value={table.getState().pagination.pageSize}
               onChange={e => table.setPageSize(Number(e.target.value))}
-              className='max-sm:is-full sm:is-[80px]'
+              className='max-sm:is-full sm:is-[100px]'
             >
               <MenuItem value='10'>10</MenuItem>
               <MenuItem value='25'>25</MenuItem>
               <MenuItem value='50'>50</MenuItem>
               <MenuItem value='100'>100</MenuItem>
             </CustomTextField>
-            <Button variant='tonal' color='secondary' startIcon={<i className='bx-export' />}>
+            <Button
+              variant='tonal'
+              color='secondary'
+              startIcon={<i className='bx-export' />}
+              className='hover:shadow-md transition-all duration-200'
+            >
               Export
             </Button>
             <Button
               variant='contained'
               color='primary'
-              className='max-sm:is-full'
+              className='max-sm:is-full shadow-lg hover:shadow-xl transition-all duration-200'
               startIcon={<i className='bx-plus' />}
               onClick={() => setEmployeeDialogOpen(true)}
             >
@@ -328,25 +378,25 @@ const EmployeesTable = () => {
           </div>
         </CardContent>
         <div className='overflow-x-auto'>
-          <table className={tableStyles.table}>
+          <table className={`${tableStyles.table} ${modernTableStyles['modern-table']}`}>
             <thead>
               {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
+                <tr key={headerGroup.id} className='border-b border-divider'>
                   {headerGroup.headers.map(header => (
-                    <th key={header.id}>
+                    <th key={header.id} className='px-6 py-4 text-left font-semibold text-textPrimary'>
                       {header.isPlaceholder ? null : (
                         <>
                           <div
-                            className={classnames({
-                              'flex items-center': header.column.getIsSorted(),
-                              'cursor-pointer select-none': header.column.getCanSort()
+                            className={classnames('flex items-center gap-2', {
+                              'cursor-pointer select-none hover:text-primary transition-colors duration-200':
+                                header.column.getCanSort()
                             })}
                             onClick={header.column.getToggleSortingHandler()}
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
                             {{
-                              asc: <i className='bx-chevron-up text-xl' />,
-                              desc: <i className='bx-chevron-down text-xl' />
+                              asc: <i className='bx-chevron-up text-lg text-primary' />,
+                              desc: <i className='bx-chevron-down text-lg text-primary' />
                             }[header.column.getIsSorted() as 'asc' | 'desc'] ?? null}
                           </div>
                         </>
@@ -359,8 +409,16 @@ const EmployeesTable = () => {
             {table.getFilteredRowModel().rows.length === 0 ? (
               <tbody>
                 <tr>
-                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center'>
-                    No employees found
+                  <td colSpan={table.getVisibleFlatColumns().length} className='text-center py-12'>
+                    <div className='flex flex-col items-center gap-3'>
+                      <i className='bx-user-x text-6xl text-textSecondary' />
+                      <Typography variant='h6' className='text-textSecondary'>
+                        No employees found
+                      </Typography>
+                      <Typography variant='body2' className='text-textSecondary'>
+                        Try adjusting your search criteria or add a new employee
+                      </Typography>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -371,9 +429,17 @@ const EmployeesTable = () => {
                   .rows.slice(0, table.getState().pagination.pageSize)
                   .map(row => {
                     return (
-                      <tr key={row.id} className={classnames({ selected: row.getIsSelected() })}>
+                      <tr
+                        key={row.id}
+                        className={classnames(
+                          'border-b border-divider hover:bg-backgroundPaper/50 transition-all duration-200 group',
+                          { 'bg-primary-lighter/20': row.getIsSelected() }
+                        )}
+                      >
                         {row.getVisibleCells().map(cell => (
-                          <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                          <td key={cell.id} className='px-6 py-4'>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
                         ))}
                       </tr>
                     )

@@ -2,10 +2,13 @@
  * ! The server actions below are used to fetch the static data from the fake-db. If you're using an ORM
  * ! (Object-Relational Mapping) or a database, you can swap the code below with your own database queries.
  */
-
 'use server'
 
 // Data Imports
+import { getServerSession } from 'next-auth'
+
+import { authOptions } from '@/libs/auth'
+
 import { db as eCommerceData } from '@/fake-db/apps/ecommerce'
 import { db as academyData } from '@/fake-db/apps/academy'
 import { db as vehicleData } from '@/fake-db/apps/logistics'
@@ -16,6 +19,24 @@ import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
+
+export const getEmployees = async () => {
+  const session = await getServerSession(authOptions)
+
+  const token = session?.accessToken
+
+  const response = await fetch('http://3.23.64.97/users?page_size=10&page=1&sort_direction=asc', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  const data = await response.json()
+
+  return data
+}
 
 export const getEcommerceData = async () => {
   return eCommerceData

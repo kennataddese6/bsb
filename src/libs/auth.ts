@@ -215,45 +215,31 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user, account }) {
-      // Initial sign in
-      if (account && user) {
-        return {
-          accessToken: user.accessToken,
-          accessTokenExpires: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-          refreshToken: (user as any).refreshToken,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: (user as any).role || 'user'
-          }
+    async jwt({ token, user }) {
+      // First time login, persist the backend token
+      if (user) {
+        token.accessToken = (user as any).accessToken
+        token.user = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: (user as any).role || 'user'
         }
       }
 
-      // Return previous token if the access token has not expired yet
-      if (Date.now() < token.accessTokenExpires) {
-        return token
-      }
-
-      // Access token has expired, try to update it
-      return refreshAccessToken(token)
+      return token
     },
     async session({ session, token }) {
-      if (token) {
-        session.user = {
-          ...session.user,
-          id: token.user.id,
-          name: token.user.name || null,
-          email: token.user.email || null,
-          role: token.user.role || 'user'
-        }
-        session.accessToken = token.accessToken
-
-        if (token.error) {
-          session.error = token.error
-        }
+      session.user = {
+        ...session.user,
+        id: token.user?.id,
+        name: token.user?.name || null,
+        email: token.user?.email || null,
+        role: token.user?.role || 'user'
       }
+
+      // Expose backend token to client
+      session.accessToken = token.accessToken as string
 
       return session
     }

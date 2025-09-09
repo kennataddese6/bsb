@@ -69,7 +69,7 @@ type RoleChipColorType = {
 
 export const roleChipColor: { [key: string]: RoleChipColorType } = {
   admin: { color: 'error' },
-  user: { color: 'success' }
+  employee: { color: 'success' }
 }
 
 type EmployeeTypeWithAction = Employee & {
@@ -121,14 +121,14 @@ const DebouncedInput = ({
 // Column Definitions
 const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
-const EmployeesTable = () => {
+const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
   // States
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState<Employee[]>(initialEmployees)
+  const [data, setData] = useState<Employee[]>(employees.users)
   const [globalFilter, setGlobalFilter] = useState('')
 
   const columns = useMemo<ColumnDef<EmployeeTypeWithAction, any>[]>(
@@ -162,8 +162,8 @@ const EmployeesTable = () => {
             <div className={`relative ${modernTableStyles['avatar-container']}`}>
               {getAvatar({
                 avatar: row.original.avatar,
-                firstName: row.original.firstName,
-                lastName: row.original.lastName
+                firstName: row.original.fname,
+                lastName: row.original.lname
               })}
               <div
                 className={classnames(
@@ -171,14 +171,14 @@ const EmployeesTable = () => {
                   modernTableStyles['status-indicator'],
                   {
                     'bg-error': row.original.role === 'admin',
-                    'bg-success': row.original.role === 'user'
+                    'bg-success': row.original.role === 'employee'
                   }
                 )}
               />
             </div>
             <div className='flex flex-col items-start'>
               <Typography variant='h6' className='hover:text-primary transition-colors duration-200 font-semibold'>
-                {`${row.original.firstName} ${row.original.lastName}`}
+                {`${row.original.fname} ${row.original.lname}`}
               </Typography>
               <Typography variant='body2' className='text-textSecondary'>
                 {row.original.email}
@@ -203,14 +203,14 @@ const EmployeesTable = () => {
                   'bg-gradient-to-r from-error-lighter to-error/20 text-error border border-error/20':
                     row.original.role === 'admin',
                   'bg-gradient-to-r from-success-lighter to-success/20 text-success border border-success/20':
-                    row.original.role === 'user'
+                    row.original.role === 'employee'
                 }
               )}
             >
               <div
                 className={classnames('w-2 h-2 rounded-full', {
                   'bg-error': row.original.role === 'admin',
-                  'bg-success': row.original.role === 'user'
+                  'bg-success': row.original.role === 'employee'
                 })}
               />
               {row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1)}
@@ -225,10 +225,12 @@ const EmployeesTable = () => {
 
           const toggleStatus = () => {
             setEnabled(!enabled)
+
             // Update the employee status in the main data state
             const updatedData = data.map(emp =>
               emp.id === row.original.id ? { ...emp, accountStatus: !enabled } : emp
             )
+
             setData(updatedData)
           }
 

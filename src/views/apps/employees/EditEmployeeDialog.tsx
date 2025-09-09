@@ -22,6 +22,7 @@ import type { Employee, EditEmployeeFormData } from '@/types/apps/employeeTypes'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
+import { updateEmployee } from '@/app/server/actions'
 
 type Props = {
   open: boolean
@@ -70,14 +71,16 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000))
 
-      const updatedEmployee: Partial<Employee> = {
-        firstName: data.firstName,
-        lastName: data.lastName,
+      const updatedEmployee /* : Partial<Employee>  */ = {
+        fname: data.firstName,
+        lname: data.lastName,
         email: data.email,
-        role: data.role
+        account_status: 'active'
       }
 
-      onUpdateEmployee(employee.id, updatedEmployee)
+      await updateEmployee(updatedEmployee)
+
+      // onUpdateEmployee(employee.id, updatedEmployee)
 
       // Show success toast
       toast.success('Employee updated successfully!', {

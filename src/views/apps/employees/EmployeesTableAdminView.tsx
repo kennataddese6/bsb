@@ -121,7 +121,7 @@ const DebouncedInput = ({
 // Column Definitions
 const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
-const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
+const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
   // States
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -218,11 +218,70 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
           </div>
         )
       }),
+      columnHelper.accessor('accountStatus', {
+        header: 'Account Status',
+        cell: ({ row }) => {
+          const [enabled, setEnabled] = useState(row.original.accountStatus ?? true)
 
+          const toggleStatus = () => {
+            setEnabled(!enabled)
+
+            // Update the employee status in the main data state
+            const updatedData = data.map(emp =>
+              emp.id === row.original.id ? { ...emp, accountStatus: !enabled } : emp
+            )
+
+            setData(updatedData)
+          }
+
+          return (
+            <Switch
+              checked={enabled}
+              onChange={toggleStatus}
+              color='primary'
+              inputProps={{ 'aria-label': 'account status toggle' }}
+            />
+          )
+        }
+      }),
       columnHelper.accessor('createdAt', {
         header: 'Created At',
         cell: ({ row }) => <Typography color='text.primary'>{row.original.createdAt}</Typography>
-      })
+      }),
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => (
+          <div className={`flex items-center gap-1 ${modernTableStyles['action-buttons']}`}>
+            <Button
+              variant='text'
+              color='inherit'
+              size='large'
+              className='min-w-0 px-2 py-1 rounded-lg hover:shadow-md transition-all duration-200'
+              onClick={() => {
+                setSelectedEmployee(row.original)
+                setEditDialogOpen(true)
+              }}
+              title='Edit Employee'
+            >
+              <i className='bx-edit text-lg' />
+            </Button>
+            <Button
+              variant='text'
+              color='inherit'
+              size='large'
+              className='min-w-0 px-2 py-1 rounded-lg hover:shadow-md transition-all duration-200'
+              onClick={() => {
+                setSelectedEmployee(row.original)
+                setChangePasswordDialogOpen(true)
+              }}
+              title='Change Password'
+            >
+              <i className='bx-lock-alt text-lg' />
+            </Button>
+          </div>
+        )
+      }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
@@ -453,4 +512,4 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
   )
 }
 
-export default EmployeesTable
+export default EmployeesTableAdminView

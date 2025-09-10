@@ -125,9 +125,14 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
           <Typography variant='h4' className='font-bold text-textPrimary'>
             Change Password
           </Typography>
-          <Typography variant='body2' className='text-textSecondary'>
-            Update password for {employee.fname} {employee.lname}
-          </Typography>
+          <div className='flex items-center justify-center gap-2'>
+            <Typography variant='body2' className='text-textSecondary'>
+              Update password for
+            </Typography>
+            <Typography variant='subtitle2' className='font-medium text-textPrimary bg-actionHover px-2 py-0.5 rounded'>
+              {employee.fname} {employee.lname}
+            </Typography>
+          </div>
         </div>
       </DialogTitle>
 

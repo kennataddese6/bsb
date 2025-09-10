@@ -2,6 +2,8 @@
 import classnames from 'classnames'
 
 // Type Imports
+import { getServerSession } from 'next-auth'
+
 import type { ShortcutsType } from '@components/layout/shared/ShortcutsDropdown'
 import type { NotificationsType } from '@components/layout/shared/NotificationsDropdown'
 
@@ -16,6 +18,7 @@ import UserDropdown from '@components/layout/shared/UserDropdown'
 
 // Util Imports
 import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
+import { authOptions } from '@/libs/auth'
 
 // Vars
 const shortcuts: ShortcutsType[] = [
@@ -105,12 +108,17 @@ const notifications: NotificationsType[] = [
   }
 ]
 
-const NavbarContent = () => {
+const NavbarContent = async () => {
+  const session = await getServerSession(authOptions)
+
+  console.log(session)
+
   return (
     <div className={classnames(verticalLayoutClasses.navbarContent, 'flex items-center justify-between gap-2 is-full')}>
       <div className='flex items-center gap-2'>
         <NavToggle />
-        <NavSearch />
+        {/* <NavSearch /> */}
+        <h3>{session?.user?.name}</h3>
       </div>
       <div className='flex items-center'>
         <LanguageDropdown />

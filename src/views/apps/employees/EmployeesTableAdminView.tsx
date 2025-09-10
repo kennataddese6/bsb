@@ -128,6 +128,10 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
   const [data, setData] = useState<Employee[]>(employees)
   const [globalFilter, setGlobalFilter] = useState('')
 
+  useEffect(() => {
+    setData(employees)
+  }, [employees])
+
   const columns = useMemo<ColumnDef<EmployeeTypeWithAction, any>[]>(
     () => [
       {

@@ -21,18 +21,21 @@ import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 
-export const getEmployees = async () => {
+export const getEmployees = async (searchParams: { page?: string }) => {
   const session = await getServerSession(authOptions)
 
   const token = session?.accessToken
 
-  const response = await fetch(`${process.env.BASE_URL}/users?page_size=10&page=1&sort_direction=desc`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+  const response = await fetch(
+    `${process.env.BASE_URL}/users?page_size=10&page=${searchParams?.page ?? 1}&sort_direction=desc`,
+    {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     }
-  })
+  )
 
   const data = await response.json()
 

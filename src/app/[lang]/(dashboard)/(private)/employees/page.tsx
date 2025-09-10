@@ -10,10 +10,17 @@ import { getEmployees } from '@/app/server/actions'
 import { authOptions } from '@/libs/auth'
 import EmployeesTableAdminView from '@/views/apps/employees/EmployeesTableAdminView'
 
-const EmployeesPage = async ({ params }: { params: Promise<{ lang: Locale }> }) => {
+const EmployeesPage = async ({
+  params,
+  searchParams
+}: {
+  params: Promise<{ lang: Locale }>
+  searchParams: Promise<{ page?: string }>
+}) => {
   const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
 
-  const data = await getEmployees()
+  const data = await getEmployees(resolvedSearchParams)
   const session = await getServerSession(authOptions)
   const user = session?.user
 

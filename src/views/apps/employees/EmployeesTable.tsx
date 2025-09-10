@@ -127,6 +127,10 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
   const [data, setData] = useState<Employee[]>(employees)
   const [globalFilter, setGlobalFilter] = useState('')
 
+  useEffect(() => {
+    setData(employees)
+  }, [employees])
+
   const columns = useMemo<ColumnDef<EmployeeTypeWithAction, any>[]>(
     () => [
       {

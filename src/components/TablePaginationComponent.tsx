@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import type { useReactTable } from '@tanstack/react-table'
 
 import type { PaginationData } from '@/types/apps/employeeTypes'
+import useChangeUrl from '@/hooks/useChangeUrl'
 
 const TablePaginationComponent = ({
   table,
@@ -14,6 +15,8 @@ const TablePaginationComponent = ({
   table: ReturnType<typeof useReactTable>
   meta: PaginationData
 }) => {
+  const { createPageUrl } = useChangeUrl()
+
   return (
     <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
       <Typography color='text.disabled'>
@@ -34,7 +37,8 @@ const TablePaginationComponent = ({
         count={meta?.lastPage || 1}
         page={meta?.currentPage || 1}
         onChange={(_, page) => {
-          table.setPageIndex(page - 1)
+          // table.setPageIndex(page - 1)
+          createPageUrl(page)
         }}
         showFirstButton
         showLastButton

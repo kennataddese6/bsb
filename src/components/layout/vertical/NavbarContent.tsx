@@ -115,10 +115,11 @@ const NavbarContent = async () => {
 
   return (
     <div className={classnames(verticalLayoutClasses.navbarContent, 'flex items-center justify-between gap-2 is-full')}>
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center gap-4'>
         <NavToggle />
-        {/* <NavSearch /> */}
-        <h3>{session?.user?.name}</h3>
+        <div className='flex items-center gap-2 border border-border rounded-lg px-3 py-1.5'>
+          <span className='text-sm font-medium text-textPrimary'>{session?.user?.name || 'User Account'}</span>
+        </div>
       </div>
       <div className='flex items-center'>
         <LanguageDropdown />

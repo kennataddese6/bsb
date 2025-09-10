@@ -260,15 +260,27 @@ const UserDropdown = () => {
         />
       )}
 
-      <ChangeUserPasswordDialog
-        open={changePasswordDialogOpen}
-        handleClose={() => setChangePasswordDialogOpen(false)}
-        onChangePassword={async (data: { currentPassword: string; newPassword: string }) => {
-          console.log('Change password:', data)
+      {session?.user && (
+        <ChangeUserPasswordDialog
+          open={changePasswordDialogOpen}
+          handleClose={() => setChangePasswordDialogOpen(false)}
+          employee={{
+            id: parseInt(session.user.id || '0'),
+            fname: session.user.name?.split(' ')[0] || '',
+            lname: session.user.name?.split(' ').slice(1).join(' ') || '',
+            email: session.user.email || '',
+            role: (session.user.role as 'user' | 'admin') || 'user',
+            avatar: session.user.image || '',
+            accountStatus: 'active',
+            createdAt: new Date().toISOString()
+          }}
+          onChangePassword={async (employeeId, newPassword) => {
+            console.log('Change password for employee:', employeeId, newPassword)
 
-          // Add your password change logic here
-        }}
-      />
+            // Add your password change logic here
+          }}
+        />
+      )}
     </>
   )
 }

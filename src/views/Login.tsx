@@ -109,7 +109,7 @@ const Login = () => {
     if (res && res.ok && res.error === null) {
       // Get user data to determine role-based redirect
       try {
-        const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/login`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -140,9 +140,19 @@ const Login = () => {
       }
     } else {
       if (res?.error) {
-        const error = JSON.parse(res.error)
+        setIsSubmitting(false)
+        toast.error('Error logging in. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        })
 
-        setErrorState(error)
+        // const error = JSON.parse(res.error)
+
+        // setErrorState(error)
       }
     }
   }

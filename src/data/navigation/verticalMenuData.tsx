@@ -8,8 +8,9 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     label: dictionary['navigation'].employees,
     icon: 'bx-user-plus',
     href: '/employees'
-  },
-  {
+  }
+
+  /*   {
     label: dictionary['navigation'].pages,
     icon: 'bx-dock-top',
     children: [
@@ -20,9 +21,8 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
       {
         label: dictionary['navigation'].accountSettings,
         href: '/pages/account-settings'
-      }
-
-      /*       {
+      },
+      {
         label: dictionary['navigation'].faq,
         href: '/pages/faq'
       },
@@ -54,9 +54,9 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
             target: '_blank'
           }
         ]
-      } */
+      }
     ]
-  }
+  } */
 
   /* {
     label: 'Employee Page',

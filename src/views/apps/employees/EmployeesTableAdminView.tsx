@@ -147,7 +147,7 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
                 fname: row.original.fname,
                 lname: row.original.lname
               })}
-              <div
+              {/*               <div
                 className={classnames(
                   'absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-backgroundPaper',
                   modernTableStyles['status-indicator'],
@@ -156,7 +156,7 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
                     'bg-success': row.original.role === 'employee'
                   }
                 )}
-              />
+              /> */}
             </div>
             <div className='flex flex-col items-start'>
               <Typography variant='h6' className='hover:text-primary transition-colors duration-200 font-semibold'>

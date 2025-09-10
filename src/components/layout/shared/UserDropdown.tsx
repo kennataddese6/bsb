@@ -8,8 +8,8 @@ import type { MouseEvent } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
-import { styled } from '@mui/material/styles'
-import Badge from '@mui/material/Badge'
+// import { styled } from '@mui/material/styles'
+// import Badge from '@mui/material/Badge'
 import Popper from '@mui/material/Popper'
 import Fade from '@mui/material/Fade'
 import Paper from '@mui/material/Paper'
@@ -35,14 +35,14 @@ import { useSettings } from '@core/hooks/useSettings'
 import { getLocalizedUrl } from '@/utils/i18n'
 
 // Styled component for badge content
-const BadgeContentSpan = styled('span')({
+/* const BadgeContentSpan = styled('span')({
   width: 8,
   height: 8,
   borderRadius: '50%',
   cursor: 'pointer',
   backgroundColor: 'var(--mui-palette-success-main)',
   boxShadow: '0 0 0 2px var(--mui-palette-background-paper)'
-})
+}) */
 
 const UserDropdown = () => {
   // States
@@ -87,21 +87,21 @@ const UserDropdown = () => {
 
   return (
     <>
-      <Badge
+      {/* <Badge
         ref={anchorRef}
         overlap='circular'
         badgeContent={<BadgeContentSpan onClick={handleDropdownOpen} />}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         className='mis-2.5'
-      >
-        <CustomAvatar
-          ref={anchorRef}
-          alt={session?.user?.name || ''}
-          src={session?.user?.image || ''}
-          onClick={handleDropdownOpen}
-          className='cursor-pointer'
-        />
-      </Badge>
+      > */}
+      <CustomAvatar
+        ref={anchorRef}
+        alt={session?.user?.name || ''}
+        src={session?.user?.image || ''}
+        onClick={handleDropdownOpen}
+        className='cursor-pointer'
+      />
+      {/* </Badge> */}
       <Popper
         open={open}
         transition

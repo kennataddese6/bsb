@@ -1,9 +1,10 @@
 export type Employee = {
   id: number
-  firstName: string
-  lastName: string
+  fname: string
+  lname: string
   email: string
-  role: 'admin' | 'user'
+  role: 'admin' | 'user' | 'employee'
+  accountStatus: 'active' | 'inactive'
   avatar?: string
   createdAt: string
 }

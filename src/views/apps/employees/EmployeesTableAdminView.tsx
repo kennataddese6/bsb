@@ -51,9 +51,6 @@ import { getInitials } from '@/utils/getInitials'
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
 
-// Data Imports
-import { employees as initialEmployees } from '@/fake-db/apps/employees'
-
 declare module '@tanstack/table-core' {
   interface FilterFns {
     fuzzy: FilterFn<unknown>
@@ -128,7 +125,7 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState<Employee[]>(employees.users)
+  const [data, setData] = useState<Employee[]>(employees)
   const [globalFilter, setGlobalFilter] = useState('')
 
   const columns = useMemo<ColumnDef<EmployeeTypeWithAction, any>[]>(
@@ -155,15 +152,15 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
           />
         )
       },
-      columnHelper.accessor('firstName', {
+      columnHelper.accessor('fname', {
         header: 'Employee',
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
             <div className={`relative ${modernTableStyles['avatar-container']}`}>
               {getAvatar({
                 avatar: row.original.avatar,
-                firstName: row.original.fname,
-                lastName: row.original.lname
+                fname: row.original.fname,
+                lname: row.original.lname
               })}
               <div
                 className={classnames(
@@ -221,23 +218,21 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
       columnHelper.accessor('accountStatus', {
         header: 'Account Status',
         cell: ({ row }) => {
-          const [enabled, setEnabled] = useState(row.original.accountStatus ?? true)
-
-          const toggleStatus = () => {
-            setEnabled(!enabled)
-
-            // Update the employee status in the main data state
-            const updatedData = data.map(emp =>
-              emp.id === row.original.id ? { ...emp, accountStatus: !enabled } : emp
-            )
-
-            setData(updatedData)
-          }
-
           return (
             <Switch
-              checked={enabled}
-              onChange={toggleStatus}
+              checked={row.original.accountStatus === 'active'}
+              onChange={() => {
+                setData(prevData =>
+                  prevData.map(emp =>
+                    emp.id === row.original.id
+                      ? {
+                          ...emp,
+                          accountStatus: emp.accountStatus === 'active' ? 'inactive' : 'active'
+                        }
+                      : emp
+                  )
+                )
+              }}
               color='primary'
               inputProps={{ 'aria-label': 'account status toggle' }}
             />
@@ -315,15 +310,15 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
 
-  const getAvatar = (params: Pick<Employee, 'avatar' | 'firstName' | 'lastName'>) => {
-    const { avatar, firstName, lastName } = params
+  const getAvatar = (params: Pick<Employee, 'avatar' | 'fname' | 'lname'>) => {
+    const { avatar, fname, lname } = params
 
     if (avatar) {
       return <CustomAvatar src={avatar} skin='light' size={34} />
     } else {
       return (
         <CustomAvatar skin='light' size={34}>
-          {getInitials(`${firstName} ${lastName}`)}
+          {getInitials(`${fname} ${lname}`)}
         </CustomAvatar>
       )
     }
@@ -340,7 +335,7 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
   const handleChangePassword = (employeeId: number, newPassword: string) => {
     // In a real app, you would make an API call to update the password
     // For now, we'll just show a success message
-    console.log(`Password changed for employee ${employeeId}`)
+    console.log(`Password changed for employee ${employeeId}`, newPassword)
   }
 
   return (

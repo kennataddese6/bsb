@@ -12,7 +12,6 @@ import Checkbox from '@mui/material/Checkbox'
 import MenuItem from '@mui/material/MenuItem'
 import TablePagination from '@mui/material/TablePagination'
 import type { TextFieldProps } from '@mui/material/TextField'
-import Switch from '@mui/material/Switch'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -50,9 +49,6 @@ import { getInitials } from '@/utils/getInitials'
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
-
-// Data Imports
-import { employees as initialEmployees } from '@/fake-db/apps/employees'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -128,7 +124,7 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
   const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState<Employee[]>(employees.users)
+  const [data, setData] = useState<Employee[]>(employees)
   const [globalFilter, setGlobalFilter] = useState('')
 
   const columns = useMemo<ColumnDef<EmployeeTypeWithAction, any>[]>(
@@ -155,15 +151,15 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
           />
         )
       },
-      columnHelper.accessor('firstName', {
+      columnHelper.accessor('fname', {
         header: 'Employee',
         cell: ({ row }) => (
           <div className='flex items-center gap-4'>
             <div className={`relative ${modernTableStyles['avatar-container']}`}>
               {getAvatar({
                 avatar: row.original.avatar,
-                firstName: row.original.fname,
-                lastName: row.original.lname
+                fname: row.original.fname,
+                lname: row.original.lname
               })}
               <div
                 className={classnames(
@@ -256,15 +252,15 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
 
-  const getAvatar = (params: Pick<Employee, 'avatar' | 'firstName' | 'lastName'>) => {
-    const { avatar, firstName, lastName } = params
+  const getAvatar = (params: Pick<Employee, 'avatar' | 'fname' | 'lname'>) => {
+    const { avatar, fname, lname } = params
 
     if (avatar) {
       return <CustomAvatar src={avatar} skin='light' size={34} />
     } else {
       return (
         <CustomAvatar skin='light' size={34}>
-          {getInitials(`${firstName} ${lastName}`)}
+          {getInitials(`${fname} ${lname}`)}
         </CustomAvatar>
       )
     }
@@ -281,7 +277,7 @@ const EmployeesTable = ({ employees }: { employees: Employee[] }) => {
   const handleChangePassword = (employeeId: number, newPassword: string) => {
     // In a real app, you would make an API call to update the password
     // For now, we'll just show a success message
-    console.log(`Password changed for employee ${employeeId}`)
+    console.log(`Password changed for employee ${employeeId}`, newPassword)
   }
 
   return (

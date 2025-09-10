@@ -13,16 +13,16 @@ import EmployeesTableAdminView from '@/views/apps/employees/EmployeesTableAdminV
 const EmployeesPage = async ({ params }: { params: Promise<{ lang: Locale }> }) => {
   const resolvedParams = await params
 
-  const employees = await getEmployees()
+  const data = await getEmployees()
   const session = await getServerSession(authOptions)
   const user = session?.user
 
   return user?.role === 'admin' ? (
     <RoleGuard allowedRoles={['admin']} locale={resolvedParams.lang}>
-      <EmployeesTableAdminView employees={employees} />
+      <EmployeesTableAdminView employees={data.users} />
     </RoleGuard>
   ) : (
-    <EmployeesTable employees={employees} />
+    <EmployeesTable employees={data.users} />
   )
 }
 

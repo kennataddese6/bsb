@@ -18,6 +18,7 @@ import MenuList from '@mui/material/MenuList'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
+import Box from '@mui/material/Box'
 
 // Third-party Imports
 import { signOut, useSession } from 'next-auth/react'
@@ -87,13 +88,6 @@ const UserDropdown = () => {
 
   return (
     <>
-      {/* <Badge
-        ref={anchorRef}
-        overlap='circular'
-        badgeContent={<BadgeContentSpan onClick={handleDropdownOpen} />}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        className='mis-2.5'
-      > */}
       <CustomAvatar
         ref={anchorRef}
         alt={session?.user?.name || ''}
@@ -101,7 +95,6 @@ const UserDropdown = () => {
         onClick={handleDropdownOpen}
         className='cursor-pointer'
       />
-      {/* </Badge> */}
       <Popper
         open={open}
         transition
@@ -117,26 +110,77 @@ const UserDropdown = () => {
               transformOrigin: placement === 'bottom-end' ? 'right top' : 'left top'
             }}
           >
-            <Paper className={settings.skin === 'bordered' ? 'border shadow-none' : 'shadow-lg'}>
+            <Paper className={settings.skin === 'bordered' ? 'border shadow-none' : 'shadow-lg'} sx={{ minWidth: 280 }}>
               <ClickAwayListener onClickAway={e => handleDropdownClose(e as MouseEvent | TouchEvent)}>
                 <MenuList>
-                  <div className='flex items-center plb-2 pli-5 gap-2' tabIndex={-1}>
-                    <CustomAvatar size={40} alt={session?.user?.name || ''} src={session?.user?.image || ''} />
-                    <div className='flex items-start flex-col'>
-                      <Typography variant='h6'>{session?.user?.name || ''}</Typography>
-                      <Typography variant='body2' color='text.disabled'>
+                  <div className='flex items-center p-4 gap-3' tabIndex={-1}>
+                    <CustomAvatar
+                      size={40}
+                      alt={session?.user?.name || ''}
+                      src={session?.user?.image || ''}
+                      className='shadow-sm border'
+                    />
+                    <div className='flex flex-col flex-1 min-w-0'>
+                      <div className='flex items-center gap-2'>
+                        <Typography variant='h6' noWrap className='flex-1 text-textPrimary'>
+                          {session?.user?.name || ''}
+                        </Typography>
+                        {session?.user?.role && (
+                          <Typography
+                            variant='caption'
+                            className='px-2 py-0.5 rounded-md bg-action-hover/50 text-primary font-medium'
+                            sx={{
+                              backgroundColor: 'var(--mui-palette-primary-lightOpacity)',
+                              color: 'var(--mui-palette-primary-main)'
+                            }}
+                          >
+                            {session.user.role.charAt(0).toUpperCase() + session.user.role.slice(1)}
+                          </Typography>
+                        )}
+                      </div>
+                      <Typography variant='body2' color='text.disabled' noWrap className='w-full text-sm'>
                         {session?.user?.email || ''}
                       </Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
-                  <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/user-profile')}>
-                    <i className='bx-user' />
-                    <Typography color='text.primary'>My Profile</Typography>
+                  <MenuItem
+                    className='gap-3 py-2.5 px-4'
+                    onClick={e => handleDropdownClose(e, '/pages/user-profile')}
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
+                        '&, & .MuiTypography-root, & i': {
+                          color: 'primary.main'
+                        }
+                      },
+                      transition: 'all 0.2s ease-in-out',
+                      borderRadius: 1,
+                      mx: 1.5,
+                      my: 0.5
+                    }}
+                  >
+                    <i className='bx-user text-xl' />
+                    <Typography className='font-medium'>My Profile</Typography>
                   </MenuItem>
-                  <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/account-settings')}>
-                    <i className='bx-cog' />
-                    <Typography color='text.primary'>Change Password</Typography>
+                  <MenuItem
+                    className='gap-3 py-2.5 px-4'
+                    onClick={e => handleDropdownClose(e, '/pages/account-settings')}
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
+                        '&, & .MuiTypography-root, & i': {
+                          color: 'primary.main'
+                        }
+                      },
+                      transition: 'all 0.2s ease-in-out',
+                      borderRadius: 1,
+                      mx: 1.5,
+                      my: 0.5
+                    }}
+                  >
+                    <i className='bx-cog text-xl' />
+                    <Typography className='font-medium'>Change Password</Typography>
                   </MenuItem>
                   {/*                   <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
                     <i className='bx-dollar' />
@@ -147,9 +191,38 @@ const UserDropdown = () => {
                     <Typography color='text.primary'>FAQ</Typography>
                   </MenuItem> */}
                   <Divider className='mlb-1' />
-                  <MenuItem className='gap-3' onClick={handleUserLogout}>
+                  <MenuItem
+                    className='gap-3 justify-center'
+                    onClick={handleUserLogout}
+                    sx={{
+                      '&.MuiMenuItem-root': {
+                        padding: '8px 16px',
+                        minHeight: 'auto',
+                        '&:hover': {
+                          backgroundColor: 'transparent'
+                        }
+                      },
+                      '& .MuiTypography-root': {
+                        color: 'error.main',
+                        fontWeight: 600,
+                        fontSize: '0.9375rem',
+                        transition: 'all 0.2s ease-in-out'
+                      },
+                      '& .bx-power-off': {
+                        color: 'error.main',
+                        fontSize: '1.25rem',
+                        transition: 'all 0.2s ease-in-out',
+                        marginTop: '2px'
+                      },
+                      '&:hover': {
+                        '& .MuiTypography-root, & .bx-power-off': {
+                          color: 'error.dark'
+                        }
+                      }
+                    }}
+                  >
                     <i className='bx-power-off' />
-                    <Typography color='text.primary'>Logout</Typography>
+                    <Typography>Logout</Typography>
                   </MenuItem>
                 </MenuList>
               </ClickAwayListener>

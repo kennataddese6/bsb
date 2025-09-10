@@ -19,7 +19,7 @@ const EmployeesPage = async ({ params }: { params: Promise<{ lang: Locale }> }) 
 
   return user?.role === 'admin' ? (
     <RoleGuard allowedRoles={['admin']} locale={resolvedParams.lang}>
-      <EmployeesTableAdminView employees={data.users} />
+      <EmployeesTableAdminView employees={data.users} meta={data.meta} />
     </RoleGuard>
   ) : (
     <EmployeesTable employees={data.users} />

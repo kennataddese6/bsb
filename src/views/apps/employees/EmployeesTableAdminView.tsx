@@ -34,7 +34,7 @@ import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
 // Type Imports
 import type { ThemeColor } from '@core/types'
-import type { Employee } from '@/types/apps/employeeTypes'
+import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
 
 // Component Imports
 import AddEmployeeDialog from './AddEmployeeDialog'
@@ -118,7 +118,7 @@ const DebouncedInput = ({
 // Column Definitions
 const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
-const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
+const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
   // States
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -471,7 +471,7 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} />}
+          component={() => <TablePaginationComponent table={table} meta={meta} />}
           count={table.getFilteredRowModel().rows.length}
           rowsPerPage={table.getState().pagination.pageSize}
           page={table.getState().pagination.pageIndex}

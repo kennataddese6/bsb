@@ -28,3 +28,11 @@ export type ChangePasswordFormData = {
   newPassword: string
   confirmPassword: string
 }
+
+export type PaginationData = {
+  currentPage: number
+  pageSize: number
+  firstPage: number
+  lastPage: number
+  totalRecords: number
+}

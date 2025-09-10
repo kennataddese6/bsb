@@ -128,10 +128,7 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
           </Typography>
           <div className='flex items-center justify-center gap-2'>
             <Typography variant='body2' className='text-textSecondary'>
-              Update password for
-            </Typography>
-            <Typography variant='subtitle2' className='font-medium text-textPrimary bg-actionHover px-2 py-0.5 rounded'>
-              {employee.fname} {employee.lname}
+              Change your password for your account
             </Typography>
           </div>
         </div>

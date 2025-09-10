@@ -111,8 +111,6 @@ const notifications: NotificationsType[] = [
 const NavbarContent = async () => {
   const session = await getServerSession(authOptions)
 
-  console.log(session)
-
   return (
     <div className={classnames(verticalLayoutClasses.navbarContent, 'flex items-center justify-between gap-2 is-full')}>
       <div className='flex items-center gap-4'>

@@ -22,7 +22,7 @@ const EmployeesPage = async ({ params }: { params: Promise<{ lang: Locale }> }) 
       <EmployeesTableAdminView employees={data.users} meta={data.meta} />
     </RoleGuard>
   ) : (
-    <EmployeesTable employees={data.users} />
+    <EmployeesTable employees={data.users} meta={data.meta} />
   )
 }
 

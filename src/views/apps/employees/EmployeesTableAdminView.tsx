@@ -330,7 +330,7 @@ const EmployeesTableAdminView = ({ employees }: { employees: Employee[] }) => {
   }
 
   const handleAddEmployee = (newEmployee: Employee) => {
-    setData(prev => [...prev, newEmployee])
+    setData(prev => [newEmployee, ...prev])
   }
 
   const handleUpdateEmployee = (employeeId: number, updatedData: Partial<Employee>) => {

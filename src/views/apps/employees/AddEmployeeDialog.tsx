@@ -1,7 +1,6 @@
 'use client'
 
 // React Imports
-import { create } from 'domain'
 
 import { useState } from 'react'
 
@@ -25,7 +24,7 @@ import type { Employee, EmployeeFormData } from '@/types/apps/employeeTypes'
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
-import { createEmployee, createEmployees } from '@/app/server/actions'
+import { createEmployee } from '@/app/server/actions'
 
 type Props = {
   open: boolean
@@ -65,12 +64,15 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
         lname: data.lastName,
         email: data.email,
         password: data.password,
-        role: data.role,
+        role: 'admin' as const,
         avatar: `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`,
         createdAt: new Date().toISOString().split('T')[0]
       }
 
-      createEmployee(newEmployee)
+      const res = await createEmployee(newEmployee)
+
+      console.log({ ...newEmployee, id: res.user.id })
+      onAddEmployee({ ...newEmployee, id: res.user.id })
 
       // Show success toast
       toast.success('Employee added successfully!', {

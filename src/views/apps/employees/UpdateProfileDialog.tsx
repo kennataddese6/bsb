@@ -172,10 +172,10 @@ const UpdateProfileDialog = ({ open, handleClose, employee, onUpdateEmployee }: 
       <DialogTitle className='text-center p-6 border-b'>
         <div className='flex flex-col gap-1'>
           <Typography variant='h4' className='font-bold text-textPrimary'>
-            Edit Employee
+            Update Profile
           </Typography>
           <Typography variant='body2' className='text-textSecondary'>
-            Update the employee&apos;s information below
+            Update your profile information below
           </Typography>
         </div>
       </DialogTitle>
@@ -325,7 +325,7 @@ const UpdateProfileDialog = ({ open, handleClose, employee, onUpdateEmployee }: 
           disabled={isSubmitting}
           startIcon={isSubmitting ? <i className='bx-loader-alt animate-spin' /> : <i className='bx-edit' />}
         >
-          {isSubmitting ? 'Updating...' : 'Update Employee'}
+          {isSubmitting ? 'Updating...' : 'Update Profile'}
         </Button>
       </DialogActions>
     </Dialog>

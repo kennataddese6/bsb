@@ -15,7 +15,7 @@ const EmployeesPage = async ({
   searchParams
 }: {
   params: Promise<{ lang: Locale }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{ page?: string; size?: string }>
 }) => {
   const resolvedParams = await params
   const resolvedSearchParams = await searchParams

@@ -50,6 +50,7 @@ import { getInitials } from '@/utils/getInitials'
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
+import useChangeUrl from '@/hooks/useChangeUrl'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -119,6 +120,8 @@ const DebouncedInput = ({
 const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
 const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
+  const { createPageSizeURL } = useChangeUrl()
+
   // States
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -375,8 +378,11 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
             />
             <CustomTextField
               select
-              value={table.getState().pagination.pageSize}
-              onChange={e => table.setPageSize(Number(e.target.value))}
+              value={meta?.pageSize || 10}
+              onChange={e => {
+                table.setPageSize(Number(e.target.value))
+                createPageSizeURL(Number(e.target.value))
+              }}
               className='max-sm:is-full sm:is-[100px]'
             >
               <MenuItem value='10'>10</MenuItem>

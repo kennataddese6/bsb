@@ -27,7 +27,7 @@ export default function useChangeUrl() {
   }
 
   const createPageSizeURL = (newPageSize: number | string) => {
-    if (newPageSize == 20) {
+    if (newPageSize == 10) {
       params.delete('size')
     } else {
       params.set('size', newPageSize.toString())

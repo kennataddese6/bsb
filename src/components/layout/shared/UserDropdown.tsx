@@ -34,6 +34,8 @@ import { useSettings } from '@core/hooks/useSettings'
 
 // Util Imports
 import { getLocalizedUrl } from '@/utils/i18n'
+import UpdateProfileDialog from '@/views/apps/employees/UpdateProfileDialog'
+import ChangeUserPasswordDialog from '@/views/apps/employees/ChangeUserPassword'
 
 // Styled component for badge content
 /* const BadgeContentSpan = styled('span')({
@@ -48,6 +50,8 @@ import { getLocalizedUrl } from '@/utils/i18n'
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false)
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
 
   // Refs
   const anchorRef = useRef<HTMLDivElement>(null)
@@ -62,9 +66,13 @@ const UserDropdown = () => {
     !open ? setOpen(true) : setOpen(false)
   }
 
-  const handleDropdownClose = (event?: MouseEvent<HTMLLIElement> | (MouseEvent | TouchEvent), url?: string) => {
-    if (url) {
-      router.push(getLocalizedUrl(url, locale as Locale))
+  const handleDropdownClose = (event?: MouseEvent<HTMLLIElement> | (MouseEvent | TouchEvent), action?: string) => {
+    if (action === 'profile') {
+      setProfileDialogOpen(true)
+    } else if (action === 'change-password') {
+      setChangePasswordDialogOpen(true)
+    } else if (action && action.startsWith('/')) {
+      router.push(getLocalizedUrl(action, locale as Locale))
     }
 
     if (anchorRef.current && anchorRef.current.contains(event?.target as HTMLElement)) {
@@ -146,7 +154,7 @@ const UserDropdown = () => {
                   <Divider className='mlb-1' />
                   <MenuItem
                     className='gap-3 py-2.5 px-4'
-                    onClick={e => handleDropdownClose(e, '/pages/user-profile')}
+                    onClick={e => handleDropdownClose(e, 'profile')}
                     sx={{
                       '&:hover': {
                         backgroundColor: 'action.hover',
@@ -165,7 +173,7 @@ const UserDropdown = () => {
                   </MenuItem>
                   <MenuItem
                     className='gap-3 py-2.5 px-4'
-                    onClick={e => handleDropdownClose(e, '/pages/account-settings')}
+                    onClick={e => handleDropdownClose(e, 'change-password')}
                     sx={{
                       '&:hover': {
                         backgroundColor: 'action.hover',
@@ -179,7 +187,7 @@ const UserDropdown = () => {
                       my: 0.5
                     }}
                   >
-                    <i className='bx-cog text-xl' />
+                    <i className='bx-lock-alt text-xl' />
                     <Typography className='font-medium'>Change Password</Typography>
                   </MenuItem>
                   {/*                   <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
@@ -230,6 +238,37 @@ const UserDropdown = () => {
           </Fade>
         )}
       </Popper>
+
+      {session?.user && (
+        <UpdateProfileDialog
+          open={profileDialogOpen}
+          handleClose={() => setProfileDialogOpen(false)}
+          employee={{
+            id: parseInt(session.user.id || '0'),
+            fname: session.user.name?.split(' ')[0] || '',
+            lname: session.user.name?.split(' ').slice(1).join(' ') || '',
+            email: session.user.email || '',
+            role: (session.user.role as 'user' | 'admin') || 'user',
+            avatar: session.user.image || '',
+            accountStatus: 'active',
+            createdAt: new Date().toISOString() // Add current date as default
+          }}
+          onUpdateEmployee={async (employeeId, updatedData) => {
+            // Handle employee update
+            console.log('Update employee:', employeeId, updatedData)
+          }}
+        />
+      )}
+
+      <ChangeUserPasswordDialog
+        open={changePasswordDialogOpen}
+        handleClose={() => setChangePasswordDialogOpen(false)}
+        onChangePassword={async (data: { currentPassword: string; newPassword: string }) => {
+          console.log('Change password:', data)
+
+          // Add your password change logic here
+        }}
+      />
     </>
   )
 }

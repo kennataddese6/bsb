@@ -32,7 +32,7 @@ type Props = {
   onChangePassword: (employeeId: number, newPassword: string) => void
 }
 
-const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }: Props) => {
+const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePassword }: Props) => {
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPasswordShown, setIsPasswordShown] = useState(false)
@@ -276,4 +276,4 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
   )
 }
 
-export default ChangePasswordDialog
+export default ChangeUserPasswordDialog

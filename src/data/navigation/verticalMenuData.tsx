@@ -8,6 +8,54 @@ const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>)
     label: dictionary['navigation'].employees,
     icon: 'bx-user-plus',
     href: '/employees'
+  },
+  {
+    label: dictionary['navigation'].pages,
+    icon: 'bx-dock-top',
+    children: [
+      {
+        label: dictionary['navigation'].userProfile,
+        href: '/pages/user-profile'
+      },
+      {
+        label: dictionary['navigation'].accountSettings,
+        href: '/pages/account-settings'
+      }
+
+      /*       {
+        label: dictionary['navigation'].faq,
+        href: '/pages/faq'
+      },
+      {
+        label: dictionary['navigation'].pricing,
+        href: '/pages/pricing'
+      },
+      {
+        label: dictionary['navigation'].miscellaneous,
+        children: [
+          {
+            label: dictionary['navigation'].comingSoon,
+            href: '/pages/misc/coming-soon',
+            target: '_blank'
+          },
+          {
+            label: dictionary['navigation'].underMaintenance,
+            href: '/pages/misc/under-maintenance',
+            target: '_blank'
+          },
+          {
+            label: dictionary['navigation'].pageNotFound404,
+            href: '/pages/misc/404-not-found',
+            target: '_blank'
+          },
+          {
+            label: dictionary['navigation'].notAuthorized401,
+            href: '/pages/misc/401-not-authorized',
+            target: '_blank'
+          }
+        ]
+      } */
+    ]
   }
 
   /* {

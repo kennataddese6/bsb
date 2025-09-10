@@ -10,6 +10,8 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
 
 // Third-party Imports
 import { useForm, Controller } from 'react-hook-form'
@@ -33,6 +35,8 @@ type Props = {
 const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }: Props) => {
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false)
 
   // Hooks
   const {
@@ -148,12 +152,23 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
               <CustomTextField
                 {...field}
                 fullWidth
-                type='password'
+                type={isPasswordShown ? 'text' : 'password'}
                 label='New Password'
                 placeholder='Enter new password'
                 slotProps={{
                   input: {
-                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />
+                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />,
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton
+                          edge='end'
+                          onClick={() => setIsPasswordShown(show => !show)}
+                          onMouseDown={e => e.preventDefault()}
+                        >
+                          <i className={isPasswordShown ? 'bx-show' : 'bx-hide'} />
+                        </IconButton>
+                      </InputAdornment>
+                    )
                   }
                 }}
                 {...(errors.newPassword && { error: true, helperText: errors.newPassword.message })}
@@ -172,12 +187,23 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
               <CustomTextField
                 {...field}
                 fullWidth
-                type='password'
+                type={isConfirmPasswordShown ? 'text' : 'password'}
                 label='Confirm Password'
                 placeholder='Confirm new password'
                 slotProps={{
                   input: {
-                    startAdornment: <i className='bx-check-circle text-xl text-textSecondary mr-2' />
+                    startAdornment: <i className='bx-check-circle text-xl text-textSecondary mr-2' />,
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton
+                          edge='end'
+                          onClick={() => setIsConfirmPasswordShown(show => !show)}
+                          onMouseDown={e => e.preventDefault()}
+                        >
+                          <i className={isConfirmPasswordShown ? 'bx-show' : 'bx-hide'} />
+                        </IconButton>
+                      </InputAdornment>
+                    )
                   }
                 }}
                 {...(errors.confirmPassword && { error: true, helperText: errors.confirmPassword.message })}

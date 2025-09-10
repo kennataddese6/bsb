@@ -13,6 +13,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import MenuItem from '@mui/material/MenuItem'
 import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
 
 // Third-party Imports
 import { useForm, Controller } from 'react-hook-form'
@@ -35,6 +36,7 @@ type Props = {
 const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isPasswordShown, setIsPasswordShown] = useState(false)
 
   // Hooks
   const {
@@ -220,12 +222,23 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
               <CustomTextField
                 {...field}
                 fullWidth
-                type='password'
+                type={isPasswordShown ? 'text' : 'password'}
                 label='Password'
                 placeholder='Enter password'
                 slotProps={{
                   input: {
-                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />
+                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />,
+                    endAdornment: (
+                      <InputAdornment position='end'>
+                        <IconButton
+                          edge='end'
+                          onClick={() => setIsPasswordShown(show => !show)}
+                          onMouseDown={e => e.preventDefault()}
+                        >
+                          <i className={isPasswordShown ? 'bx-show' : 'bx-hide'} />
+                        </IconButton>
+                      </InputAdornment>
+                    )
                   }
                 }}
                 {...(errors.password && { error: true, helperText: errors.password.message })}

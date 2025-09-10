@@ -120,24 +120,19 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
         <i className='bx-x' />
       </DialogCloseButton>
 
-      <DialogTitle variant='h4' className='flex gap-3 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        <div className='flex items-center justify-center gap-3'>
-          <div className='p-2 bg-secondary-lighter rounded-lg'>
-            <i className='bx-lock-alt text-2xl text-secondary' />
-          </div>
-          <div>
-            <Typography variant='h4' className='font-bold'>
-              Change Password
-            </Typography>
-            <Typography component='span' className='text-textSecondary'>
-              Update password for {employee.fname} {employee.lname}
-            </Typography>
-          </div>
+      <DialogTitle className='text-center p-6 border-b'>
+        <div className='flex flex-col gap-1'>
+          <Typography variant='h4' className='font-bold text-textPrimary'>
+            Change Password
+          </Typography>
+          <Typography variant='body2' className='text-textSecondary'>
+            Update password for {employee.fname} {employee.lname}
+          </Typography>
         </div>
       </DialogTitle>
 
-      <DialogContent className='pbs-0 sm:pli-16 sm:pbe-16'>
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
+      <DialogContent className='p-6'>
+        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
           <Controller
             name='newPassword'
             control={control}
@@ -213,10 +208,10 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
         </form>
       </DialogContent>
 
-      <DialogActions className='justify-center gap-4 pbs-0 sm:pli-16 sm:pbe-16'>
+      <DialogActions className='p-4 border-t gap-3'>
         <Button
-          variant='tonal'
-          color='error'
+          variant='outlined'
+          color='secondary'
           onClick={handleReset}
           disabled={isSubmitting}
           className='hover:shadow-md transition-all duration-200'
@@ -226,9 +221,9 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
         </Button>
         <Button
           variant='contained'
+          className='shadow-sm hover:shadow-md transition-all duration-200'
           onClick={handleSubmit(onSubmit)}
           disabled={isSubmitting}
-          className='shadow-lg hover:shadow-xl transition-all duration-200'
           startIcon={isSubmitting ? <i className='bx-loader-alt animate-spin' /> : <i className='bx-lock-alt' />}
         >
           {isSubmitting ? 'Changing...' : 'Change Password'}

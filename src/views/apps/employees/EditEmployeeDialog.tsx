@@ -43,10 +43,10 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
     formState: { errors }
   } = useForm<EditEmployeeFormData>({
     defaultValues: {
-      fname: '',
-      lname: '',
+      firstName: '',
+      lastName: '',
       email: '',
-      role: 'employee'
+      role: 'user' as const
     }
   })
 
@@ -57,7 +57,7 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         firstName: employee.fname,
         lastName: employee.lname,
         email: employee.email,
-        role: employee.role
+        role: employee.role as 'user' | 'admin'
       })
     }
   }, [employee, resetForm])
@@ -130,25 +130,20 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         <i className='bx-x' />
       </DialogCloseButton>
 
-      <DialogTitle variant='h4' className='flex gap-3 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        <div className='flex items-center justify-center gap-3'>
-          <div className='p-2 bg-warning-lighter rounded-lg'>
-            <i className='bx-edit text-2xl text-warning' />
-          </div>
-          <div>
-            <Typography variant='h4' className='font-bold'>
-              Edit Employee
-            </Typography>
-            <Typography component='span' className='text-textSecondary'>
-              Update employee information
-            </Typography>
-          </div>
+      <DialogTitle className='text-center p-6 border-b'>
+        <div className='flex flex-col gap-1'>
+          <Typography variant='h4' className='font-bold text-textPrimary'>
+            Edit Employee
+          </Typography>
+          <Typography variant='body2' className='text-textSecondary'>
+            Update the employee&apos;s information below
+          </Typography>
         </div>
       </DialogTitle>
 
-      <DialogContent className='pbs-0 sm:pli-16 sm:pbe-16'>
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
-          <div className='flex gap-4'>
+      <DialogContent className='p-6'>
+        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <Controller
               name='firstName'
               control={control}
@@ -251,10 +246,10 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         </form>
       </DialogContent>
 
-      <DialogActions className='justify-center gap-4 pbs-0 sm:pli-16 sm:pbe-16'>
+      <DialogActions className='p-4 border-t gap-3'>
         <Button
-          variant='tonal'
-          color='error'
+          variant='outlined'
+          color='secondary'
           onClick={handleReset}
           disabled={isSubmitting}
           className='hover:shadow-md transition-all duration-200'
@@ -264,9 +259,9 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         </Button>
         <Button
           variant='contained'
+          className='shadow-sm hover:shadow-md transition-all duration-200'
           onClick={handleSubmit(onSubmit)}
           disabled={isSubmitting}
-          className='shadow-lg hover:shadow-xl transition-all duration-200'
           startIcon={isSubmitting ? <i className='bx-loader-alt animate-spin' /> : <i className='bx-edit' />}
         >
           {isSubmitting ? 'Updating...' : 'Update Employee'}

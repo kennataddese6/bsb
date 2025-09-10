@@ -122,25 +122,20 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
         <i className='bx-x' />
       </DialogCloseButton>
 
-      <DialogTitle variant='h4' className='flex gap-3 flex-col text-center sm:pbs-16 sm:pbe-6 sm:pli-16'>
-        <div className='flex items-center justify-center gap-3'>
-          <div className='p-2 bg-primary-lighter rounded-lg'>
-            <i className='bx-user-plus text-2xl text-primary' />
-          </div>
-          <div>
-            <Typography variant='h4' className='font-bold'>
-              Add Employee
-            </Typography>
-            <Typography component='span' className='text-textSecondary'>
-              Create a new employee account
-            </Typography>
-          </div>
+      <DialogTitle className='text-center p-6 border-b'>
+        <div className='flex flex-col gap-1'>
+          <Typography variant='h4' className='font-bold text-textPrimary'>
+            Add New Employee
+          </Typography>
+          <Typography variant='body2' className='text-textSecondary'>
+            Fill in the details to create a new employee account
+          </Typography>
         </div>
       </DialogTitle>
 
-      <DialogContent className='pbs-0 sm:pli-16 sm:pbe-16'>
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6'>
-          <div className='flex gap-4'>
+      <DialogContent className='p-6'>
+        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             <Controller
               name='firstName'
               control={control}
@@ -278,30 +273,28 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
               </CustomTextField>
             )}
           />
+
+          <DialogActions className='p-4 border-t gap-3'>
+            <Button
+              variant='outlined'
+              color='secondary'
+              onClick={handleReset}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type='submit'
+              variant='contained'
+              className='shadow-sm'
+              disabled={isSubmitting}
+              endIcon={isSubmitting ? <i className='bx-loader bx-spin' /> : null}
+            >
+              {isSubmitting ? 'Adding...' : 'Add Employee'}
+            </Button>
+          </DialogActions>
         </form>
       </DialogContent>
-
-      <DialogActions className='justify-center gap-4 pbs-0 sm:pli-16 sm:pbe-16'>
-        <Button
-          variant='tonal'
-          color='error'
-          onClick={handleReset}
-          disabled={isSubmitting}
-          className='hover:shadow-md transition-all duration-200'
-          startIcon={<i className='bx-x' />}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant='contained'
-          onClick={handleSubmit(onSubmit)}
-          disabled={isSubmitting}
-          className='shadow-lg hover:shadow-xl transition-all duration-200'
-          startIcon={isSubmitting ? <i className='bx-loader-alt animate-spin' /> : <i className='bx-plus' />}
-        >
-          {isSubmitting ? 'Creating...' : 'Create Employee'}
-        </Button>
-      </DialogActions>
     </Dialog>
   )
 }

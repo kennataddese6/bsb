@@ -5,7 +5,6 @@
 'use server'
 
 // Data Imports
-import { revalidatePath } from 'next/cache'
 
 import { getServerSession } from 'next-auth'
 
@@ -27,7 +26,7 @@ export const getEmployees = async () => {
 
   const token = session?.accessToken
 
-  const response = await fetch('http://3.23.64.97/users?page_size=10&page=1&sort_direction=asc', {
+  const response = await fetch('http://3.23.64.97/users?page_size=10&page=1&sort_direction=desc', {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,

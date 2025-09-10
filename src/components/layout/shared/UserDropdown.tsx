@@ -136,16 +136,16 @@ const UserDropdown = () => {
                   </MenuItem>
                   <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/account-settings')}>
                     <i className='bx-cog' />
-                    <Typography color='text.primary'>Settings</Typography>
+                    <Typography color='text.primary'>Change Password</Typography>
                   </MenuItem>
-                  <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
+                  {/*                   <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/pricing')}>
                     <i className='bx-dollar' />
                     <Typography color='text.primary'>Pricing</Typography>
                   </MenuItem>
                   <MenuItem className='gap-3' onClick={e => handleDropdownClose(e, '/pages/faq')}>
                     <i className='bx-help-circle' />
                     <Typography color='text.primary'>FAQ</Typography>
-                  </MenuItem>
+                  </MenuItem> */}
                   <Divider className='mlb-1' />
                   <MenuItem className='gap-3' onClick={handleUserLogout}>
                     <i className='bx-power-off' />

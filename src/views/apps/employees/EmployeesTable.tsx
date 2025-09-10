@@ -6,7 +6,6 @@ import { useState, useEffect, useMemo } from 'react'
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import Checkbox from '@mui/material/Checkbox'
 import MenuItem from '@mui/material/MenuItem'
@@ -326,14 +325,6 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
               <MenuItem value='50'>50</MenuItem>
               <MenuItem value='100'>100</MenuItem>
             </CustomTextField>
-            <Button
-              variant='tonal'
-              color='secondary'
-              startIcon={<i className='bx-export' />}
-              className='hover:shadow-md transition-all duration-200'
-            >
-              Export
-            </Button>
           </div>
         </CardContent>
         <div className='overflow-x-auto'>

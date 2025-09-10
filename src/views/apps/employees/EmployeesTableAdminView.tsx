@@ -391,14 +391,6 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
               <MenuItem value='100'>100</MenuItem>
             </CustomTextField>
             <Button
-              variant='tonal'
-              color='secondary'
-              startIcon={<i className='bx-export' />}
-              className='hover:shadow-md transition-all duration-200'
-            >
-              Export
-            </Button>
-            <Button
               variant='contained'
               color='primary'
               className='max-sm:is-full shadow-lg hover:shadow-xl transition-all duration-200'

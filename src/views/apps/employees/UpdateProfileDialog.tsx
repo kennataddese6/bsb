@@ -3,6 +3,9 @@
 // React Imports
 import { useState, useEffect } from 'react'
 
+// Next Auth Imports
+import { useSession } from 'next-auth/react'
+
 // MUI Imports
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -20,22 +23,34 @@ import { toast } from 'react-toastify'
 import { uploadFile } from '@/app/server/file-upload'
 
 // Type Imports
-import type { Employee, EditEmployeeFormData } from '@/types/apps/employeeTypes'
+import type { EditEmployeeFormData } from '@/types/apps/employeeTypes'
 
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
-import { updateEmployee } from '@/app/server/actions'
 import ImageUpload from '@/components/image-upload/ImageUpload'
 
 type Props = {
   open: boolean
   handleClose: () => void
-  employee: Employee | null
-  onUpdateEmployee: (employeeId: number, updatedData: Partial<Employee>) => void
+  onUpdateProfile: (updatedData: { firstName: string; lastName: string; email: string; avatar?: string }) => Promise<void>
 }
 
-const UpdateProfileDialog = ({ open, handleClose, employee, onUpdateEmployee }: Props) => {
+const UpdateProfileDialog = ({ open, handleClose, onUpdateProfile }: Props) => {
+  const { data: session } = useSession()
+
+  // Get employee data from session
+  const employee = session?.user ? {
+    id: parseInt(session.user.id || '0'),
+    fname: session.user.name?.split(' ')[0] || '',
+    lname: session.user.name?.split(' ').slice(1).join(' ') || '',
+    email: session.user.email || '',
+    role: (session.user.role as 'user' | 'admin') || 'user',
+    avatar: session.user.image || '',
+    accountStatus: 'active',
+    createdAt: new Date().toISOString()
+  } : null
+
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -43,7 +58,7 @@ const UpdateProfileDialog = ({ open, handleClose, employee, onUpdateEmployee }: 
   const [uploadProgress, setUploadProgress] = useState(0)
   const [currentAvatar, setCurrentAvatar] = useState<string>('')
 
-  // Hooks
+  // Form handling
   const {
     control,
     reset: resetForm,
@@ -58,18 +73,49 @@ const UpdateProfileDialog = ({ open, handleClose, employee, onUpdateEmployee }: 
     }
   })
 
-  // Update form when employee changes
+  // Update form when session changes
   useEffect(() => {
-    if (employee) {
+    if (session?.user) {
       resetForm({
-        firstName: employee.fname,
-        lastName: employee.lname,
-        email: employee.email,
-        role: employee.role as 'user' | 'admin'
+        firstName: session.user.name?.split(' ')[0] || '',
+        lastName: session.user.name?.split(' ').slice(1).join(' ') || '',
+        email: session.user.email || '',
+        role: (session.user.role as 'user' | 'admin') || 'user'
       })
-      setCurrentAvatar(employee.avatar || '')
+      setCurrentAvatar(session.user.image || '')
     }
-  }, [employee, resetForm])
+  }, [session, resetForm])
+
+  const handleCloseDialog = () => {
+    setAvatarFile(null)
+    setUploadProgress(0)
+    setIsUploading(false)
+    handleClose()
+
+    if (session?.user) {
+      resetForm({
+        firstName: session.user.name?.split(' ')[0] || '',
+        lastName: session.user.name?.split(' ').slice(1).join(' ') || '',
+        email: session.user.email || '',
+        role: (session.user.role as 'user' | 'admin') || 'user'
+      })
+      setCurrentAvatar(session.user.image || '')
+    }
+  }
+
+  const handleReset = () => {
+    if (session?.user) {
+      resetForm({
+        firstName: session.user.name?.split(' ')[0] || '',
+        lastName: session.user.name?.split(' ').slice(1).join(' ') || '',
+        email: session.user.email || '',
+        role: (session.user.role as 'user' | 'admin') || 'user'
+      })
+      setCurrentAvatar(session.user.image || '')
+      setAvatarFile(null)
+      setUploadProgress(0)
+    }
+  }
 
   const onSubmit = async (data: EditEmployeeFormData) => {
     if (!employee) return
@@ -100,76 +146,71 @@ const UpdateProfileDialog = ({ open, handleClose, employee, onUpdateEmployee }: 
             draggable: true
           })
 
+          setIsUploading(false)
+          setIsSubmitting(false)
+
           return
         } finally {
           setIsUploading(false)
         }
       }
 
-      const updatedEmployee = {
-        fname: data.firstName,
-        lname: data.lastName,
-        email: data.email,
-        role: data.role,
-        avatar: avatarUrl,
-        id: employee.id,
-        accountStatus: 'active' as const
+      try {
+        // Update profile with new data
+        await onUpdateProfile({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          avatar: avatarUrl
+        })
+
+        // Show success toast
+        toast.success('Profile updated successfully!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        })
+
+        // Close dialog
+        handleClose()
+      } catch (error) {
+        console.error('Error updating profile:', error)
+        toast.error('Failed to update profile. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        })
       }
-
-      await updateEmployee(updatedEmployee)
-
-      onUpdateEmployee(employee.id, updatedEmployee)
-
-      // Show success toast
-      toast.success('Employee updated successfully!', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      })
-
-      // Close dialog
-      handleClose()
     } catch (error) {
-      toast.error('Failed to update employee. Please try again.', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      })
+      console.error('Error in form submission:', error)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleReset = () => {
-    setAvatarFile(null)
-    setUploadProgress(0)
-    setIsUploading(false)
-    handleClose()
-  }
-
   if (!employee) return null
 
   return (
-    <Dialog
-      fullWidth
-      maxWidth='sm'
-      open={open}
-      onClose={handleReset}
-      scroll='body'
-      closeAfterTransition={false}
-      sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
-    >
-      <DialogCloseButton onClick={handleReset} disableRipple>
-        <i className='bx-x' />
-      </DialogCloseButton>
+      <Dialog
+        fullWidth
+        maxWidth='sm'
+        open={open}
+        onClose={handleCloseDialog}
+        scroll='body'
+        closeAfterTransition={false}
+        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+      >
+        <DialogCloseButton onClick={handleCloseDialog} disableRipple>
+          <i className='bx-x' />
+        </DialogCloseButton>
 
-      <DialogTitle className='text-center p-6 border-b'>
+        <DialogTitle className='text-center p-6 border-b'>
         <div className='flex flex-col gap-1'>
           <Typography variant='h4' className='font-bold text-textPrimary'>
             Update Profile

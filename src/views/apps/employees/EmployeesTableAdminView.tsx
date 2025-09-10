@@ -50,6 +50,7 @@ import { getInitials } from '@/utils/getInitials'
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
 import useChangeUrl from '@/hooks/useChangeUrl'
+import { toUSADate } from '@/utils/toUSADate'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -225,7 +226,7 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
       }),
       columnHelper.accessor('createdAt', {
         header: 'Created At',
-        cell: ({ row }) => <Typography color='text.primary'>{row.original.createdAt}</Typography>
+        cell: ({ row }) => <Typography color='text.primary'>{toUSADate(row.original.createdAt)}</Typography>
       }),
       {
         id: 'actions',

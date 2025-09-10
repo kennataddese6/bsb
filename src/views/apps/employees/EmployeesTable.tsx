@@ -47,6 +47,7 @@ import { getInitials } from '@/utils/getInitials'
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
+import { toUSADate } from '@/utils/toUSADate'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -197,7 +198,7 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
 
       columnHelper.accessor('createdAt', {
         header: 'Created At',
-        cell: ({ row }) => <Typography color='text.primary'>{row.original.createdAt}</Typography>
+        cell: ({ row }) => <Typography color='text.primary'>{toUSADate(row.original.createdAt)}</Typography>
       })
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

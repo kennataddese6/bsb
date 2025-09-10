@@ -9,7 +9,6 @@ import type { NotificationsType } from '@components/layout/shared/NotificationsD
 
 // Component Imports
 import NavToggle from './NavToggle'
-import NavSearch from '@components/layout/shared/search'
 import LanguageDropdown from '@components/layout/shared/LanguageDropdown'
 import ModeDropdown from '@components/layout/shared/ModeDropdown'
 import ShortcutsDropdown from '@components/layout/shared/ShortcutsDropdown'

@@ -137,7 +137,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           // Call the external login API
-          const res = await fetch(`${API_BASE_URL}/auth/signin`, {
+          const res = await fetch(`${process.env.BASE_URL}/auth/signin`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -158,7 +158,7 @@ export const authOptions: NextAuthOptions = {
           const data: ApiAuthResponse = await res.json()
 
           // Get user profile using the token
-          const profileRes = await fetch(`${API_BASE_URL}/users/profile`, {
+          const profileRes = await fetch(`${process.env.BASE_URL}/users/profile`, {
             headers: {
               Authorization: `Bearer ${data.token}`,
               Accept: 'application/json'

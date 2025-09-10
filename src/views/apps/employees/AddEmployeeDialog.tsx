@@ -19,6 +19,9 @@ import InputAdornment from '@mui/material/InputAdornment'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
+// Server Actions
+import { uploadFile } from '@/app/server/file-upload'
+
 // Type Imports
 import type { Employee, EmployeeFormData } from '@/types/apps/employeeTypes'
 
@@ -26,6 +29,7 @@ import type { Employee, EmployeeFormData } from '@/types/apps/employeeTypes'
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import { createEmployee } from '@/app/server/actions'
+import ImageUpload from '@/components/image-upload/ImageUpload'
 
 type Props = {
   open: boolean
@@ -37,6 +41,9 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
 
   // Hooks
   const {
@@ -50,25 +57,54 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       lastName: '',
       email: '',
       password: '',
-      role: 'user'
+      role: 'user' as const
     }
   })
 
   const onSubmit = async (data: EmployeeFormData) => {
     setIsSubmitting(true)
+    let avatarUrl = ''
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Upload avatar if a new file was selected
+      if (avatarFile) {
+        setIsUploading(true)
+        setUploadProgress(0)
+        
+        try {
+          const uploadResponse = await uploadFile(avatarFile)
+          
+          avatarUrl = uploadResponse.url
+          setUploadProgress(100)
+        } catch (error) {
+          console.error('Error uploading avatar:', error)
+          toast.error('Failed to upload avatar. Please try again.', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true
+          })
+          
+          return
+        } finally {
+          setIsUploading(false)
+        }
+      } else {
+        // Use a default avatar if no file was uploaded
+        avatarUrl = `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`
+      }
 
-      const newEmployee = {
+      const newEmployee: Omit<Employee, 'id'> & { password: string } = {
         fname: data.firstName,
         lname: data.lastName,
         email: data.email,
-        password: data.password,
-        role: 'admin' as const,
-        avatar: `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`,
-        createdAt: new Date().toISOString().split('T')[0]
+        password: data.password, // This is only needed for the API call
+        role: data.role,
+        avatar: avatarUrl,
+        createdAt: new Date().toISOString().split('T')[0],
+        accountStatus: 'active' as const
       }
 
       const res = await createEmployee(newEmployee)
@@ -273,6 +309,28 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
               </CustomTextField>
             )}
           />
+
+          <div className='w-full py-4 border-t border-gray-100 mt-2'>
+            <Typography variant='subtitle2' className='text-textSecondary mb-4'>
+              Profile Photo
+            </Typography>
+            <div className='w-full'>
+              <ImageUpload
+                value={avatarFile ? URL.createObjectURL(avatarFile) : ''}
+                onChange={(file) => setAvatarFile(file)}
+                avatarSize={100}
+                label={isUploading ? 'Uploading...' : 'Upload Photo'}
+                disabled={isUploading || isSubmitting}
+                helperText={
+                  isUploading 
+                    ? `Uploading... ${Math.round(uploadProgress)}%`
+                    : 'Drag & drop an image or click to select (max 5MB)'
+                }
+                color={isUploading ? 'secondary' : 'primary'}
+                className={isUploading ? 'opacity-70' : ''}
+              />
+            </div>
+          </div>
 
           <DialogActions className='p-4 border-t gap-3'>
             <Button

@@ -16,6 +16,9 @@ import MenuItem from '@mui/material/MenuItem'
 import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
+// Server Actions
+import { uploadFile } from '@/app/server/file-upload'
+
 // Type Imports
 import type { Employee, EditEmployeeFormData } from '@/types/apps/employeeTypes'
 
@@ -23,6 +26,7 @@ import type { Employee, EditEmployeeFormData } from '@/types/apps/employeeTypes'
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import { updateEmployee } from '@/app/server/actions'
+import ImageUpload from '@/components/image-upload/ImageUpload'
 
 type Props = {
   open: boolean
@@ -34,6 +38,10 @@ type Props = {
 const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: Props) => {
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [currentAvatar, setCurrentAvatar] = useState<string>('')
 
   // Hooks
   const {
@@ -59,6 +67,7 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         email: employee.email,
         role: employee.role as 'user' | 'admin'
       })
+      setCurrentAvatar(employee.avatar || '')
     }
   }, [employee, resetForm])
 
@@ -66,18 +75,45 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
     if (!employee) return
 
     setIsSubmitting(true)
+    let avatarUrl = currentAvatar
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Upload new avatar if a file was selected
+      if (avatarFile) {
+        setIsUploading(true)
+        setUploadProgress(0)
+        
+        try {
+          const uploadResponse = await uploadFile(avatarFile)
+          
+          avatarUrl = uploadResponse.url
+          setCurrentAvatar(avatarUrl)
+          setUploadProgress(100)
+        } catch (error) {
+          console.error('Error uploading avatar:', error)
+          toast.error('Failed to upload avatar. Please try again.', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true
+          })
+          
+          return
+        } finally {
+          setIsUploading(false)
+        }
+      }
 
-      const updatedEmployee /* : Partial<Employee>  */ = {
+      const updatedEmployee = {
         fname: data.firstName,
         lname: data.lastName,
         email: data.email,
         role: data.role,
+        avatar: avatarUrl,
         id: employee.id,
-        account_status: 'active'
+        accountStatus: 'active' as const
       }
 
       await updateEmployee(updatedEmployee)
@@ -111,6 +147,9 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
   }
 
   const handleReset = () => {
+    setAvatarFile(null)
+    setUploadProgress(0)
+    setIsUploading(false)
     handleClose()
   }
 
@@ -243,6 +282,28 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
               </CustomTextField>
             )}
           />
+
+          <div className='w-full py-4 border-t border-gray-100 mt-2'>
+            <Typography variant='subtitle2' className='text-textSecondary mb-4'>
+              Profile Photo
+            </Typography>
+            <div className='w-full'>
+              <ImageUpload
+                value={avatarFile ? URL.createObjectURL(avatarFile) : currentAvatar}
+                onChange={(file) => setAvatarFile(file)}
+                avatarSize={100}
+                label={isUploading ? 'Uploading...' : 'Change Photo'}
+                disabled={isUploading || isSubmitting}
+                helperText={
+                  isUploading 
+                    ? `Uploading... ${Math.round(uploadProgress)}%`
+                    : 'Drag & drop an image or click to select (max 5MB)'
+                }
+                color={isUploading ? 'secondary' : 'primary'}
+                className={isUploading ? 'opacity-70' : ''}
+              />
+            </div>
+          </div>
         </form>
       </DialogContent>
 

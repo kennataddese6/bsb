@@ -26,7 +26,7 @@ export const getEmployees = async () => {
 
   const token = session?.accessToken
 
-  const response = await fetch('http://3.23.64.97/users?page_size=10&page=1&sort_direction=desc', {
+  const response = await fetch(`${process.env.BASE_URL}/users?page_size=10&page=1&sort_direction=desc`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export const createEmployee = async (employee: any) => {
 
   const token = session?.accessToken
 
-  const response = await fetch('http://3.23.64.97/users', {
+  const response = await fetch(`${process.env.BASE_URL}/users`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ export const updateEmployee = async (employee: any) => {
 
   const token = session?.accessToken
 
-  const response = await fetch(`http://3.23.64.97/users/${employee.id}`, {
+  const response = await fetch(`${process.env.BASE_URL}/users/${employee.id}`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export const updateProfile = async (employee: any) => {
 
   const token = session?.accessToken
 
-  const response = await fetch(`http://3.23.64.97/users/profile/update`, {
+  const response = await fetch(`${process.env.BASE_URL}/users/profile/update`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -101,7 +101,7 @@ export const changePassword = async (employee: any) => {
 
   const token = session?.accessToken
 
-  const response = await fetch(`http://3.23.64.97/users/change-password`, {
+  const response = await fetch(`${process.env.BASE_URL}/users/change-password`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ export const resetPassword = async (employee: any) => {
 
   const token = session?.accessToken
 
-  const response = await fetch(`http://3.23.64.97/users/profile/reset-password`, {
+  const response = await fetch(`${process.env.BASE_URL}/users/profile/reset-password`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token}`,

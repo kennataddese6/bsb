@@ -36,7 +36,6 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPasswordShown, setIsPasswordShown] = useState(false)
-  const [isOldPasswordShown, setIsOldPasswordShown] = useState(false)
   const [isConfirmPasswordShown, setIsConfirmPasswordShown] = useState(false)
 
   // Hooks
@@ -136,43 +135,6 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
 
       <DialogContent className='p-6'>
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
-          <Controller
-            name='newPassword'
-            control={control}
-            rules={{
-              required: 'New password is required',
-              minLength: {
-                value: 6,
-                message: 'Password must be at least 6 characters'
-              }
-            }}
-            render={({ field }) => (
-              <CustomTextField
-                {...field}
-                fullWidth
-                type={isOldPasswordShown ? 'text' : 'password'}
-                label='Old Password'
-                placeholder='Enter Old password'
-                slotProps={{
-                  input: {
-                    startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />,
-                    endAdornment: (
-                      <InputAdornment position='end'>
-                        <IconButton
-                          edge='end'
-                          onClick={() => setIsOldPasswordShown(show => !show)}
-                          onMouseDown={e => e.preventDefault()}
-                        >
-                          <i className={isOldPasswordShown ? 'bx-show' : 'bx-hide'} />
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }
-                }}
-                {...(errors.newPassword && { error: true, helperText: errors.newPassword.message })}
-              />
-            )}
-          />
           <Controller
             name='newPassword'
             control={control}

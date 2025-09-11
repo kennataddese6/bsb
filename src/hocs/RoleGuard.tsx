@@ -1,9 +1,11 @@
 'use client'
 
 // React Imports
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+
+import { useRouter } from 'next/navigation'
+
+import { useSession } from 'next-auth/react'
 
 // Type Imports
 import type { ChildrenType } from '@core/types'
@@ -30,6 +32,7 @@ const RoleGuard = ({ children, allowedRoles, locale }: Props) => {
     if (!session) {
       // Not authenticated, redirect to login
       router.replace(getLocalizedUrl('/login', locale))
+
       return
     }
 
@@ -38,6 +41,7 @@ const RoleGuard = ({ children, allowedRoles, locale }: Props) => {
     if (!userRole || !allowedRoles.includes(userRole)) {
       // User doesn't have required role, redirect to employee page
       router.replace(getLocalizedUrl('/employee-page', locale))
+
       return
     }
   }, [session, status, allowedRoles, locale, router])

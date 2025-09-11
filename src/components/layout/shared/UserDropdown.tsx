@@ -18,7 +18,8 @@ import MenuList from '@mui/material/MenuList'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
-import Box from '@mui/material/Box'
+
+// import Box from '@mui/material/Box'
 
 // Third-party Imports
 import { signOut, useSession } from 'next-auth/react'
@@ -243,20 +244,11 @@ const UserDropdown = () => {
         <UpdateProfileDialog
           open={profileDialogOpen}
           handleClose={() => setProfileDialogOpen(false)}
-          employee={{
-            id: parseInt(session.user.id || '0'),
-            fname: session.user.name?.split(' ')[0] || '',
-            lname: session.user.name?.split(' ').slice(1).join(' ') || '',
-            email: session.user.email || '',
-            role: (session.user.role as 'user' | 'admin') || 'user',
-            avatar: session.user.image || '',
-            accountStatus: 'active',
-            createdAt: new Date().toISOString() // Add current date as default
-          }}
-          onUpdateEmployee={async (employeeId, updatedData) => {
+
+          /*         onUpdateEmployee={async (employeeId: string, updatedData: () => void) => {
             // Handle employee update
             console.log('Update employee:', employeeId, updatedData)
-          }}
+          }} */
         />
       )}
 

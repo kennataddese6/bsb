@@ -33,23 +33,26 @@ import ImageUpload from '@/components/image-upload/ImageUpload'
 type Props = {
   open: boolean
   handleClose: () => void
-  onUpdateProfile: (updatedData: { firstName: string; lastName: string; email: string; avatar?: string }) => Promise<void>
+
+  // onUpdateProfile: (updatedData: { firstName: string; lastName: string; email: string; avatar?: string }) => Promise<void>
 }
 
-const UpdateProfileDialog = ({ open, handleClose, onUpdateProfile }: Props) => {
+const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props) => {
   const { data: session } = useSession()
 
   // Get employee data from session
-  const employee = session?.user ? {
-    id: parseInt(session.user.id || '0'),
-    fname: session.user.name?.split(' ')[0] || '',
-    lname: session.user.name?.split(' ').slice(1).join(' ') || '',
-    email: session.user.email || '',
-    role: (session.user.role as 'user' | 'admin') || 'user',
-    avatar: session.user.image || '',
-    accountStatus: 'active',
-    createdAt: new Date().toISOString()
-  } : null
+  const employee = session?.user
+    ? {
+        id: parseInt(session.user.id || '0'),
+        fname: session.user.name?.split(' ')[0] || '',
+        lname: session.user.name?.split(' ').slice(1).join(' ') || '',
+        email: session.user.email || '',
+        role: (session.user.role as 'user' | 'admin') || 'user',
+        avatar: session.user.image || '',
+        accountStatus: 'active',
+        createdAt: new Date().toISOString()
+      }
+    : null
 
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -119,7 +122,7 @@ const UpdateProfileDialog = ({ open, handleClose, onUpdateProfile }: Props) => {
 
   const onSubmit = async (data: EditEmployeeFormData) => {
     if (!employee) return
-
+    console.log('Form Data:', data)
     setIsSubmitting(true)
     let avatarUrl = currentAvatar
 
@@ -157,12 +160,12 @@ const UpdateProfileDialog = ({ open, handleClose, onUpdateProfile }: Props) => {
 
       try {
         // Update profile with new data
-        await onUpdateProfile({
+        /* await onUpdateProfile({
           firstName: data.firstName,
           lastName: data.lastName,
           email: data.email,
           avatar: avatarUrl
-        })
+        }) */
 
         // Show success toast
         toast.success('Profile updated successfully!', {
@@ -197,20 +200,20 @@ const UpdateProfileDialog = ({ open, handleClose, onUpdateProfile }: Props) => {
   if (!employee) return null
 
   return (
-      <Dialog
-        fullWidth
-        maxWidth='sm'
-        open={open}
-        onClose={handleCloseDialog}
-        scroll='body'
-        closeAfterTransition={false}
-        sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
-      >
-        <DialogCloseButton onClick={handleCloseDialog} disableRipple>
-          <i className='bx-x' />
-        </DialogCloseButton>
+    <Dialog
+      fullWidth
+      maxWidth='sm'
+      open={open}
+      onClose={handleCloseDialog}
+      scroll='body'
+      closeAfterTransition={false}
+      sx={{ '& .MuiDialog-paper': { overflow: 'visible' } }}
+    >
+      <DialogCloseButton onClick={handleCloseDialog} disableRipple>
+        <i className='bx-x' />
+      </DialogCloseButton>
 
-        <DialogTitle className='text-center p-6 border-b'>
+      <DialogTitle className='text-center p-6 border-b'>
         <div className='flex flex-col gap-1'>
           <Typography variant='h4' className='font-bold text-textPrimary'>
             Update Profile

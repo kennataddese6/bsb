@@ -4,14 +4,15 @@ import classnames from 'classnames'
 // Type Imports
 import { getServerSession } from 'next-auth'
 
-import type { ShortcutsType } from '@components/layout/shared/ShortcutsDropdown'
+// import type { ShortcutsType } from '@components/layout/shared/ShortcutsDropdown'
 import type { NotificationsType } from '@components/layout/shared/NotificationsDropdown'
 
 // Component Imports
 import NavToggle from './NavToggle'
 import LanguageDropdown from '@components/layout/shared/LanguageDropdown'
 import ModeDropdown from '@components/layout/shared/ModeDropdown'
-import ShortcutsDropdown from '@components/layout/shared/ShortcutsDropdown'
+
+// import ShortcutsDropdown from '@components/layout/shared/ShortcutsDropdown'
 import NotificationsDropdown from '@components/layout/shared/NotificationsDropdown'
 import UserDropdown from '@components/layout/shared/UserDropdown'
 
@@ -20,7 +21,7 @@ import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
 import { authOptions } from '@/libs/auth'
 
 // Vars
-const shortcuts: ShortcutsType[] = [
+/* const shortcuts: ShortcutsType[] = [
   {
     url: '/apps/calendar',
     icon: 'bx-calendar',
@@ -57,7 +58,7 @@ const shortcuts: ShortcutsType[] = [
     title: 'Settings',
     subtitle: 'Account Settings'
   }
-]
+] */
 
 const notifications: NotificationsType[] = [
   {
@@ -121,7 +122,7 @@ const NavbarContent = async () => {
       <div className='flex items-center'>
         <LanguageDropdown />
         <ModeDropdown />
-        <ShortcutsDropdown shortcuts={shortcuts} />
+        {/* <ShortcutsDropdown shortcuts={shortcuts} /> */}
         <NotificationsDropdown notifications={notifications} />
         <UserDropdown />
       </div>

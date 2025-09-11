@@ -7,7 +7,8 @@ import { useSession } from 'next-auth/react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-import Avatar from '@mui/material/Avatar'
+
+// import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 
 // Component Imports

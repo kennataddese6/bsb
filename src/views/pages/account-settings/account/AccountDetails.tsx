@@ -15,7 +15,7 @@ import Divider from '@mui/material/Divider'
 import type { SelectChangeEvent } from '@mui/material/Select'
 
 // Component Imports
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
 
 import CustomTextField from '@core/components/mui/TextField'
 

@@ -3,9 +3,6 @@ import CredentialProvider from 'next-auth/providers/credentials'
 import type { DefaultSession, NextAuthOptions } from 'next-auth'
 import type { DefaultJWT as BaseJWT } from 'next-auth/jwt'
 
-// API base URL
-const API_BASE_URL = 'http://3.23.64.97'
-
 // Type definitions for the external API responses
 interface ApiAuthResponse {
   token: string
@@ -75,30 +72,29 @@ declare module 'next-auth/jwt' {
 export type User = BaseUser
 export type { AuthJWT as JWT }
 
-async function refreshAccessToken(token: AuthJWT): Promise<AuthJWT> {
+/* async function refreshAccessToken(token: AuthJWT): Promise<AuthJWT> {
   try {
     // If you have a refresh token endpoint, implement the refresh logic here
     // Example implementation:
-    /*
+
     const response = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken: token.refreshToken })
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (!response.ok) {
-      throw new Error('Failed to refresh token');
+      throw new Error('Failed to refresh token')
     }
 
     return {
       ...token,
       accessToken: data.access_token,
       accessTokenExpires: Date.now() + data.expires_in * 1000,
-      refreshToken: data.refresh_token ?? token.refreshToken,
-    };
-    */
+      refreshToken: data.refresh_token ?? token.refreshToken
+    }
 
     // For now, we'll just return the existing token
     return token
@@ -110,7 +106,7 @@ async function refreshAccessToken(token: AuthJWT): Promise<AuthJWT> {
       error: 'RefreshAccessTokenError'
     }
   }
-}
+} */
 
 export const authOptions: NextAuthOptions = {
   // ** Configure one or more authentication providers

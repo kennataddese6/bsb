@@ -1,5 +1,5 @@
 // Next Imports
-import { useParams } from 'next/navigation'
+// import { useParams } from 'next/navigation'
 
 // MUI Imports
 import { useTheme } from '@mui/material/styles'
@@ -12,8 +12,9 @@ import type { getDictionary } from '@/utils/getDictionary'
 import type { VerticalMenuContextProps } from '@menu/components/vertical-menu/Menu'
 
 // Component Imports
-import { Menu, SubMenu, MenuItem, MenuSection } from '@menu/vertical-menu'
-import CustomChip from '@core/components/mui/Chip'
+import { Menu /*  SubMenu, MenuItem, MenuSection  */ } from '@menu/vertical-menu'
+
+// import CustomChip from '@core/components/mui/Chip'
 
 import { GenerateVerticalMenu } from '@components/GenerateMenu'
 
@@ -49,12 +50,14 @@ const RenderExpandIcon = ({ open, transitionDuration }: RenderExpandIconProps) =
 const VerticalMenu = ({ dictionary, scrollMenu }: Props) => {
   // Hooks
   const theme = useTheme()
-  const params = useParams()
+
+  // const params = useParams()
   const verticalNavOptions = useVerticalNav()
 
   // Vars
   const { transitionDuration, isBreakpointReached } = verticalNavOptions
-  const { lang: locale } = params
+
+  // const { lang: locale } = params
 
   const ScrollWrapper = isBreakpointReached ? 'div' : PerfectScrollbar
 

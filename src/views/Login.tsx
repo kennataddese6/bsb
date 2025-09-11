@@ -14,7 +14,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import Divider from '@mui/material/Divider'
+
+// import Divider from '@mui/material/Divider'
 import { styled, useTheme } from '@mui/material/styles'
 
 // Third-party Imports
@@ -254,24 +255,13 @@ const Login = () => {
             <Button fullWidth variant='contained' type='submit' disabled={isSubmitting}>
               {isSubmitting ? 'Logging in' : 'Login'}
             </Button>
-            <div className='flex justify-center items-center flex-wrap gap-2'>
+            {/*             <div className='flex justify-center items-center flex-wrap gap-2'>
               <Typography>New on our platform?</Typography>
               <Typography component={Link} href={getLocalizedUrl('/register', locale as Locale)} color='primary.main'>
                 Create an account
               </Typography>
-            </div>
-            <div className='bg-info-lighter p-4 rounded-lg'>
-              <Typography variant='body2' className='text-center mb-2 font-medium'>
-                Test Credentials:
-              </Typography>
-              <Typography variant='body2' className='text-center'>
-                Admin: admin@sneat.com / admin
-              </Typography>
-              <Typography variant='body2' className='text-center'>
-                User: jane.smith@company.com / user123
-              </Typography>
-            </div>
-            <Divider className='gap-2 text-textPrimary'>or</Divider>
+            </div> */}
+            {/*             <Divider className='gap-2 text-textPrimary'>or</Divider>
             <Button
               color='secondary'
               className='self-center text-textPrimary'
@@ -280,7 +270,7 @@ const Login = () => {
               onClick={() => signIn('google')}
             >
               Sign in with Google
-            </Button>
+            </Button> */}
           </form>
         </div>
       </div>

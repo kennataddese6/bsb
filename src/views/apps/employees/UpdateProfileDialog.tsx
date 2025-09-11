@@ -23,6 +23,7 @@ import { toast } from 'react-toastify'
 // import { uploadFile } from '@/app/server/file-upload'
 
 // Type Imports
+
 import type { EditEmployeeFormData } from '@/types/apps/employeeTypes'
 
 // Component Imports
@@ -39,7 +40,7 @@ type Props = {
 }
 
 const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props) => {
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
 
   // Get employee data from session
   const employee = session?.user
@@ -142,7 +143,14 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
           accountStatus: 'active' as const
         }
 
-        await updateProfile(updatedProfile)
+        const profile = await updateProfile(updatedProfile)
+
+        update({
+          name: `${profile.user.fname} ${profile.user.lname}`,
+          email: profile.user.email,
+          role: profile.user.role,
+          id: profile.user.id
+        })
 
         setCurrentAvatar(avatarUrl)
         setUploadProgress(100)

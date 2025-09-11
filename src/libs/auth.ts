@@ -211,7 +211,16 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, trigger, session, user }) {
+      if (trigger === 'update' && session?.name) {
+        // Note, that `session` can be any arbitrary object, remember to validate it!
+        token.user.name = session.name
+        token.user.email = session.email
+        token.user.role = session.role
+
+        return token
+      }
+
       // First time login, persist the backend token
       if (user) {
         token.accessToken = (user as any).accessToken

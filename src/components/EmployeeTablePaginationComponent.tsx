@@ -5,9 +5,16 @@ import Typography from '@mui/material/Typography'
 // Third Party Imports
 import type { useReactTable } from '@tanstack/react-table'
 
+import type { PaginationData } from '@/types/apps/employeeTypes'
 import useChangeUrl from '@/hooks/useChangeUrl'
 
-const TablePaginationComponent = ({ table }: { table: ReturnType<typeof useReactTable> }) => {
+const EmployeeTablePaginationComponent = ({
+  table,
+  meta
+}: {
+  table: ReturnType<typeof useReactTable>
+  meta: PaginationData
+}) => {
   const { createPageUrl } = useChangeUrl()
 
   return (
@@ -27,8 +34,8 @@ const TablePaginationComponent = ({ table }: { table: ReturnType<typeof useReact
         shape='rounded'
         color='primary'
         variant='tonal'
-        count={1}
-        page={20}
+        count={meta?.lastPage || 1}
+        page={meta?.currentPage || 1}
         onChange={(_, page) => {
           // table.setPageIndex(page - 1)
           createPageUrl(page)
@@ -40,4 +47,4 @@ const TablePaginationComponent = ({ table }: { table: ReturnType<typeof useReact
   )
 }
 
-export default TablePaginationComponent
+export default EmployeeTablePaginationComponent

@@ -39,7 +39,6 @@ import EditEmployeeDialog from './EditEmployeeDialog'
 import ChangePasswordDialog from './ChangePasswordDialog'
 import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTextField from '@core/components/mui/TextField'
-import TablePaginationComponent from '@components/TablePaginationComponent'
 
 // Util Imports
 import { getInitials } from '@/utils/getInitials'
@@ -48,6 +47,7 @@ import { getInitials } from '@/utils/getInitials'
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
 import { toUSADate } from '@/utils/toUSADate'
+import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginationComponent'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -377,7 +377,7 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
           </table>
         </div>
         <TablePagination
-          component={() => <TablePaginationComponent table={table} meta={meta} />}
+          component={() => <EmployeeTablePaginationComponent table={table} meta={meta} />}
           count={table.getFilteredRowModel().rows.length}
           rowsPerPage={table.getState().pagination.pageSize}
           page={table.getState().pagination.pageIndex}

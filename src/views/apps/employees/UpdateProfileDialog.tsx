@@ -20,7 +20,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
 // Server Actions
-import { uploadFile } from '@/app/server/file-upload'
+// import { uploadFile } from '@/app/server/file-upload'
 
 // Type Imports
 import type { EditEmployeeFormData } from '@/types/apps/employeeTypes'
@@ -29,6 +29,7 @@ import type { EditEmployeeFormData } from '@/types/apps/employeeTypes'
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import ImageUpload from '@/components/image-upload/ImageUpload'
+import { updateProfile } from '@/app/server/actions'
 
 type Props = {
   open: boolean
@@ -122,40 +123,46 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
 
   const onSubmit = async (data: EditEmployeeFormData) => {
     if (!employee) return
-    console.log('Form Data:', data)
     setIsSubmitting(true)
-    let avatarUrl = currentAvatar
+    const avatarUrl = currentAvatar
 
     try {
       // Upload new avatar if a file was selected
-      if (avatarFile) {
-        setIsUploading(true)
-        setUploadProgress(0)
+      setIsUploading(true)
+      setUploadProgress(0)
 
-        try {
-          const uploadResponse = await uploadFile(avatarFile)
-
-          avatarUrl = uploadResponse.url
-          setCurrentAvatar(avatarUrl)
-          setUploadProgress(100)
-        } catch (error) {
-          console.error('Error uploading avatar:', error)
-          toast.error('Failed to upload avatar. Please try again.', {
-            position: 'top-right',
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true
-          })
-
-          setIsUploading(false)
-          setIsSubmitting(false)
-
-          return
-        } finally {
-          setIsUploading(false)
+      try {
+        const updatedProfile = {
+          fname: data.firstName,
+          lname: data.lastName,
+          email: data.email,
+          role: data.role,
+          avatar: avatarUrl,
+          id: employee.id,
+          accountStatus: 'active' as const
         }
+
+        await updateProfile(updatedProfile)
+
+        setCurrentAvatar(avatarUrl)
+        setUploadProgress(100)
+      } catch (error) {
+        console.error('Error uploading avatar:', error)
+        toast.error('Failed to upload avatar. Please try again.', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true
+        })
+
+        setIsUploading(false)
+        setIsSubmitting(false)
+
+        return
+      } finally {
+        setIsUploading(false)
       }
 
       try {

@@ -70,10 +70,10 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       if (avatarFile) {
         setIsUploading(true)
         setUploadProgress(0)
-        
+
         try {
           const uploadResponse = await uploadFile(avatarFile)
-          
+
           avatarUrl = uploadResponse.url
           setUploadProgress(100)
         } catch (error) {
@@ -86,7 +86,7 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
             pauseOnHover: true,
             draggable: true
           })
-          
+
           return
         } finally {
           setIsUploading(false)
@@ -109,7 +109,6 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
 
       const res = await createEmployee(newEmployee)
 
-      console.log({ ...newEmployee, id: res.user.id })
       onAddEmployee({ ...newEmployee, id: res.user.id })
 
       // Show success toast
@@ -317,12 +316,12 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
             <div className='w-full'>
               <ImageUpload
                 value={avatarFile ? URL.createObjectURL(avatarFile) : ''}
-                onChange={(file) => setAvatarFile(file)}
+                onChange={file => setAvatarFile(file)}
                 avatarSize={100}
                 label={isUploading ? 'Uploading...' : 'Upload Photo'}
                 disabled={isUploading || isSubmitting}
                 helperText={
-                  isUploading 
+                  isUploading
                     ? `Uploading... ${Math.round(uploadProgress)}%`
                     : 'Drag & drop an image or click to select (max 5MB)'
                 }
@@ -333,12 +332,7 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
           </div>
 
           <DialogActions className='p-4 border-t gap-3'>
-            <Button
-              variant='outlined'
-              color='secondary'
-              onClick={handleReset}
-              disabled={isSubmitting}
-            >
+            <Button variant='outlined' color='secondary' onClick={handleReset} disabled={isSubmitting}>
               Cancel
             </Button>
             <Button

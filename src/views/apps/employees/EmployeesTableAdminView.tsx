@@ -32,6 +32,8 @@ import type { ColumnDef, FilterFn } from '@tanstack/react-table'
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
 // Type Imports
+import { toast } from 'react-toastify'
+
 import type { ThemeColor } from '@core/types'
 import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
 
@@ -123,14 +125,36 @@ const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
   const { createPageSizeURL } = useChangeUrl()
 
+  // State to track which employee is being updated
+  const [updatingEmployeeId, setUpdatingEmployeeId] = useState<string | null>(null)
+
   // Function to update employee account status
   const updateEmployeeStatus = async (employee: Employee) => {
-    const updatedEmployee = {
-      id: employee.id,
-      account_status: employee.accountStatus === 'active' ? 'suspended' : 'active'
-    }
+    const newStatus = employee.accountStatus === 'active' ? 'suspended' : 'active'
 
-    return await serverUpdateEmployee(updatedEmployee)
+    setUpdatingEmployeeId(employee.id)
+
+    try {
+      const response = await serverUpdateEmployee({
+        id: employee.id,
+        account_status: newStatus
+      })
+
+      if (response) {
+        // Update local state with the new status from response
+        setData(prevData => prevData.map(emp => (emp.id === employee.id ? { ...emp, accountStatus: newStatus } : emp)))
+      }
+
+      return response
+    } catch (error) {
+      console.error('Error updating employee status:', error)
+
+      // Revert the toggle if the API call fails
+      setData(prevData => [...prevData])
+      throw error
+    } finally {
+      setUpdatingEmployeeId(null)
+    }
   }
 
   // States
@@ -205,31 +229,12 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
           return (
             <Switch
               checked={row.original.accountStatus === 'active'}
+              disabled={updatingEmployeeId === row.original.id}
               onChange={async () => {
                 try {
-                  // Update local state optimistically
-                  const updatedData = data.map(emp =>
-                    emp.id === row.original.id
-                      ? {
-                          ...emp,
-                          accountStatus: emp.accountStatus === 'active' ? ('inactive' as const) : ('active' as const)
-                        }
-                      : emp
-                  )
-
-                  setData(updatedData)
-
-                  // Call server to update
                   await updateEmployeeStatus(row.original)
                 } catch (error) {
-                  // Revert on error
-                  setData(prevData =>
-                    prevData.map(emp =>
-                      emp.id === row.original.id ? { ...emp, accountStatus: row.original.accountStatus } : emp
-                    )
-                  )
-
-                  // You might want to show an error toast here
+                  toast.error('Failed to update account status')
                   console.error('Failed to update account status:', error)
                 }
               }}

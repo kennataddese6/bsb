@@ -50,7 +50,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         lname: session.user.name?.split(' ').slice(1).join(' ') || '',
         email: session.user.email || '',
         role: (session.user.role as 'user' | 'admin') || 'user',
-        avatar: session.user.avatar || '',
+        avatar: session.user.avatar || session.user.image || '',
         accountStatus: 'active',
         createdAt: new Date().toISOString()
       }
@@ -87,7 +87,9 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         email: session.user.email || '',
         role: (session.user.role as 'user' | 'admin') || 'user'
       })
-      setCurrentAvatar(session.user.image || '')
+
+      // Use avatar if available, otherwise fall back to image
+      setCurrentAvatar(session.user.avatar || session.user.image || '')
     }
   }, [session, resetForm])
 
@@ -104,7 +106,9 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         email: session.user.email || '',
         role: (session.user.role as 'user' | 'admin') || 'user'
       })
-      setCurrentAvatar(session.user.image || '')
+
+      // Reset to the original avatar from session
+      setCurrentAvatar(session.user.avatar || session.user.image || '')
     }
   }
 
@@ -116,7 +120,9 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         email: session.user.email || '',
         role: (session.user.role as 'user' | 'admin') || 'user'
       })
-      setCurrentAvatar(session.user.image || '')
+
+      // Reset to the original avatar from session
+      setCurrentAvatar(session.user.avatar || session.user.image || '')
       setAvatarFile(null)
       setUploadProgress(0)
     }

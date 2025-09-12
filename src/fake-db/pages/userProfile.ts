@@ -30,6 +30,7 @@ export const db: DB = {
         { property: 'Connections', value: '897', icon: 'bx-group' },
         { property: 'Projects Compiled', value: '146', icon: 'bx-grid-alt' }
       ],
+      avatar: '/images/avatars/1.png',
       connections: [
         {
           isFriend: false,
@@ -682,7 +683,7 @@ export const db: DB = {
     joiningDate: 'April 2021',
     designation: 'UX Designer',
     profileImg: '/images/avatars/1.png',
-    designationIcon: 'bx-palette',
-    coverImg: '/images/pages/profile-banner.png'
+    coverImg: '/images/pages/profile-banner.png',
+    designationIcon: 'bx-palette'
   }
 }

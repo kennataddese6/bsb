@@ -23,7 +23,7 @@ import type { Employee, ChangePasswordFormData } from '@/types/apps/employeeType
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
-import { changePassword } from '@/app/server/actions'
+import { resetPassword } from '@/app/server/actions'
 
 type Props = {
   open: boolean
@@ -68,7 +68,7 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
         userId: employee.id
       }
 
-      changePassword(newData)
+      resetPassword(newData)
 
       onChangePassword(employee.id, data.newPassword)
 

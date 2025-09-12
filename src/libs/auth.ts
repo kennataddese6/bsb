@@ -32,6 +32,7 @@ interface BaseUser {
   accessToken: string
   name?: string | null
   email?: string | null
+  avatar?: string | null
 }
 
 // Define JWT type by extending the base JWT type
@@ -41,10 +42,10 @@ type AuthJWT = BaseJWT & {
   refreshToken?: string
   user: {
     id: string
-    name?: string | null
-    email?: string | null
+    name: string | null
+    email: string | null
     role: string
-    avatar: string
+    avatar: string | null
   }
   error?: string
 }
@@ -57,6 +58,8 @@ declare module 'next-auth' {
       role: string
       name?: string | null
       email?: string | null
+      image?: string | null
+      avatar?: string | null
     } & DefaultSession['user']
     accessToken: string
     error?: string
@@ -216,12 +219,14 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, trigger, session, user }) {
-      if (trigger === 'update' && session?.name) {
+      if (trigger === 'update' && session) {
         // Note, that `session` can be any arbitrary object, remember to validate it!
-        token.user.name = session.name
-        token.user.email = session.email
-        token.user.role = session.role
-        token.user.avatar = session.avatar
+        const updatedSession = session as { name?: string; email?: string; role?: string; avatar?: string }
+
+        if (updatedSession.name) token.user.name = updatedSession.name
+        if (updatedSession.email) token.user.email = updatedSession.email
+        if (updatedSession.role) token.user.role = updatedSession.role
+        if (updatedSession.avatar !== undefined) token.user.avatar = updatedSession.avatar
 
         return token
       }
@@ -230,10 +235,10 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.accessToken = (user as any).accessToken
         token.user = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          avatar: user.avatar,
+          id: user.id || '',
+          name: user.name || null,
+          email: user.email || null,
+          avatar: user.avatar || null,
           role: (user as any).role || 'user'
         }
       }
@@ -243,11 +248,14 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.user = {
         ...session.user,
-        id: token.user?.id,
+        id: token.user?.id || '',
         name: token.user?.name || null,
         email: token.user?.email || null,
         role: token.user?.role || 'user',
-        avatar: token.user?.avatar
+        avatar: token.user?.avatar || null,
+
+        // For backward compatibility with NextAuth's default image property
+        image: token.user?.avatar || null
       }
 
       // Expose backend token to client

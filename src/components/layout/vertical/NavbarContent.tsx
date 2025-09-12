@@ -2,7 +2,7 @@
 import classnames from 'classnames'
 
 // import type { ShortcutsType } from '@components/layout/shared/ShortcutsDropdown'
-import type { NotificationsType } from '@components/layout/shared/NotificationsDropdown'
+// import type { NotificationsType } from '@components/layout/shared/NotificationsDropdown'
 
 // Component Imports
 import NavToggle from './NavToggle'
@@ -10,7 +10,7 @@ import LanguageDropdown from '@components/layout/shared/LanguageDropdown'
 import ModeDropdown from '@components/layout/shared/ModeDropdown'
 
 // import ShortcutsDropdown from '@components/layout/shared/ShortcutsDropdown'
-import NotificationsDropdown from '@components/layout/shared/NotificationsDropdown'
+// import NotificationsDropdown from '@components/layout/shared/NotificationsDropdown'
 import UserDropdown from '@components/layout/shared/UserDropdown'
 
 // Util Imports
@@ -57,7 +57,7 @@ import UserNameNavbar from '../shared/UserNameNavbar'
   }
 ] */
 
-const notifications: NotificationsType[] = [
+/* const notifications: NotificationsType[] = [
   {
     avatarImage: '/images/avatars/8.png',
     title: 'Congratulations Flora 🎉',
@@ -103,7 +103,7 @@ const notifications: NotificationsType[] = [
     time: 'Jan 6, 1:48 PM',
     read: true
   }
-]
+] */
 
 const NavbarContent = async () => {
   return (
@@ -116,7 +116,7 @@ const NavbarContent = async () => {
         <LanguageDropdown />
         <ModeDropdown />
         {/* <ShortcutsDropdown shortcuts={shortcuts} /> */}
-        <NotificationsDropdown notifications={notifications} />
+        {/* <NotificationsDropdown notifications={notifications} /> */}
         <UserDropdown />
       </div>
     </div>

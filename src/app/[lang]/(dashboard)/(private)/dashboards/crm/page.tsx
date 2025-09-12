@@ -1,4 +1,6 @@
 // MUI Imports
+import { redirect } from 'next/navigation'
+
 import Grid from '@mui/material/Grid2'
 
 // Components Imports
@@ -16,6 +18,8 @@ import TeamMembers from '@views/dashboards/crm/TeamMembers'
 import CustomersTable from '@views/dashboards/crm/CustomersTable'
 
 const DashboardCRM = () => {
+  redirect('/en/employees')
+
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12, md: 6, xl: 4 }}>

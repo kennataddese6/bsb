@@ -112,21 +112,6 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
     }
   }
 
-  const handleReset = () => {
-    if (session?.user) {
-      resetForm({
-        firstName: session.user.name?.split(' ')[0] || '',
-        lastName: session.user.name?.split(' ').slice(1).join(' ') || '',
-        email: session.user.email || '',
-        role: (session.user.role as 'user' | 'admin') || 'user'
-      })
-
-      // Reset to the original avatar from session
-      setCurrentAvatar(session.user.avatar || session.user.image || '')
-      setAvatarFile(null)
-      setUploadProgress(0)
-    }
-  }
 
   const onSubmit = async (data: EditEmployeeFormData) => {
     if (!employee) return
@@ -411,7 +396,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         <Button
           variant='outlined'
           color='secondary'
-          onClick={handleReset}
+          onClick={handleCloseDialog}
           disabled={isSubmitting}
           className='hover:shadow-md transition-all duration-200'
           startIcon={<i className='bx-x' />}

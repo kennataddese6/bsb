@@ -4,7 +4,7 @@ export type Employee = {
   lname: string
   email: string
   role: 'admin' | 'user' | 'employee'
-  accountStatus: 'active' | 'inactive'
+  accountStatus: 'active' | 'suspended'
   avatar?: string
   createdAt: string
 }

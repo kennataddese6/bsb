@@ -126,13 +126,13 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
   const { createPageSizeURL } = useChangeUrl()
 
   // State to track which employee is being updated
-  const [updatingEmployeeId, setUpdatingEmployeeId] = useState<string | null>(null)
+  const [updatingEmployeeId, setUpdatingEmployeeId] = useState<number | null>(null)
 
   // Function to update employee account status
   const updateEmployeeStatus = async (employee: Employee) => {
     const newStatus = employee.accountStatus === 'active' ? 'suspended' : 'active'
 
-    setUpdatingEmployeeId(`${employee.id}`)
+    setUpdatingEmployeeId(employee.id)
 
     try {
       const response = await serverUpdateEmployee({

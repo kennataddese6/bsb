@@ -171,28 +171,16 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
       columnHelper.accessor('role', {
         header: 'Role',
         cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
-            <div
-              className={classnames(
-                'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-200',
-                modernTableStyles['role-badge'],
-                {
-                  'bg-gradient-to-r from-error-lighter to-error/20 text-error border border-error/20':
-                    row.original.role === 'admin',
-                  'bg-gradient-to-r from-success-lighter to-success/20 text-success border border-success/20':
-                    row.original.role === 'employee'
-                }
-              )}
-            >
-              <div
-                className={classnames('w-2 h-2 rounded-full', {
-                  'bg-error': row.original.role === 'admin',
-                  'bg-success': row.original.role === 'employee'
-                })}
-              />
-              {row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1)}
-            </div>
-          </div>
+          <Typography
+            variant='caption'
+            className='px-2 py-0.5 rounded-md bg-action-hover/50 text-primary font-medium'
+            sx={{
+              backgroundColor: 'var(--mui-palette-primary-lightOpacity)',
+              color: 'var(--mui-palette-primary-main)'
+            }}
+          >
+            {row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1)}
+          </Typography>
         )
       }),
 

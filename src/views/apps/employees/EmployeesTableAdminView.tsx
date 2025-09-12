@@ -126,8 +126,7 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
   // Function to update employee account status
   const updateEmployeeStatus = async (employee: Employee) => {
     const updatedEmployee = {
-      ...employee,
-      accountStatus: employee.accountStatus === 'active' ? 'inactive' : ('active' as const),
+      id: employee.id,
       account_status: employee.accountStatus === 'active' ? 'suspended' : 'active'
     }
 

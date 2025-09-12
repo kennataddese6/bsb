@@ -20,7 +20,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
 // Server Actions
-// import { uploadFile } from '@/app/server/file-upload'
+import { uploadFile } from '@/app/server/file-upload'
 
 // Type Imports
 
@@ -349,7 +349,41 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
             <div className='w-full'>
               <ImageUpload
                 value={avatarFile ? URL.createObjectURL(avatarFile) : currentAvatar}
-                onChange={file => setAvatarFile(file)}
+                onChange={async file => {
+                  if (!file) {
+                    setAvatarFile(null)
+                    setCurrentAvatar('')
+
+                    return
+                  }
+
+                  try {
+                    setIsUploading(true)
+                    setUploadProgress(30)
+
+                    // Upload the file
+                    const response = await uploadFile(file)
+
+                    if (response?.url) {
+                      setCurrentAvatar(response.url)
+                      setUploadProgress(100)
+                    }
+
+                    setAvatarFile(file)
+                  } catch (error) {
+                    console.error('Error uploading file:', error)
+                    toast.error('Failed to upload image. Please try again.', {
+                      position: 'top-right',
+                      autoClose: 3000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true
+                    })
+                  } finally {
+                    setIsUploading(false)
+                  }
+                }}
                 avatarSize={100}
                 label={isUploading ? 'Uploading...' : 'Change Photo'}
                 disabled={isUploading || isSubmitting}

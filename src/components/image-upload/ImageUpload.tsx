@@ -15,7 +15,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import type { ThemeColor } from '@core/types'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',

@@ -11,16 +11,16 @@ export const uploadFile = async (file: File): Promise<{ url: string }> => {
   const token = session?.accessToken
 
   const formData = new FormData()
-  
+
   formData.append('file', file)
 
   try {
-    const response = await fetch(`${process.env.BASE_URL}/upload`, {
+    const response = await fetch(`${process.env.BASE_URL}/users/profile/upload-picture`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
-      body: formData,
+      body: formData
     })
 
     if (!response.ok) {

@@ -51,6 +51,7 @@ import modernTableStyles from './EmployeesTable.module.css'
 import useChangeUrl from '@/hooks/useChangeUrl'
 import { toUSADate } from '@/utils/toUSADate'
 import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginationComponent'
+import { updateEmployee as serverUpdateEmployee } from '@/app/server/actions'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -121,6 +122,17 @@ const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
 const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
   const { createPageSizeURL } = useChangeUrl()
+
+  // Function to update employee account status
+  const updateEmployeeStatus = async (employee: Employee) => {
+    const updatedEmployee = {
+      ...employee,
+      accountStatus: employee.accountStatus === 'active' ? 'inactive' : ('active' as const),
+      account_status: employee.accountStatus === 'active' ? 'suspended' : 'active'
+    }
+
+    return await serverUpdateEmployee(updatedEmployee)
+  }
 
   // States
   const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
@@ -194,17 +206,33 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
           return (
             <Switch
               checked={row.original.accountStatus === 'active'}
-              onChange={() => {
-                setData(prevData =>
-                  prevData.map(emp =>
+              onChange={async () => {
+                try {
+                  // Update local state optimistically
+                  const updatedData = data.map(emp =>
                     emp.id === row.original.id
                       ? {
                           ...emp,
-                          accountStatus: emp.accountStatus === 'active' ? 'inactive' : 'active'
+                          accountStatus: emp.accountStatus === 'active' ? ('inactive' as const) : ('active' as const)
                         }
                       : emp
                   )
-                )
+
+                  setData(updatedData)
+
+                  // Call server to update
+                  await updateEmployeeStatus(row.original)
+                } catch (error) {
+                  // Revert on error
+                  setData(prevData =>
+                    prevData.map(emp =>
+                      emp.id === row.original.id ? { ...emp, accountStatus: row.original.accountStatus } : emp
+                    )
+                  )
+
+                  // You might want to show an error toast here
+                  console.error('Failed to update account status:', error)
+                }
               }}
               color='primary'
               inputProps={{ 'aria-label': 'account status toggle' }}

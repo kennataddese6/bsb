@@ -50,7 +50,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         lname: session.user.name?.split(' ').slice(1).join(' ') || '',
         email: session.user.email || '',
         role: (session.user.role as 'user' | 'admin') || 'user',
-        avatar: session.user.image || '',
+        avatar: session.user.avatar || '',
         accountStatus: 'active',
         createdAt: new Date().toISOString()
       }
@@ -149,7 +149,8 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
           name: `${profile.user.fname} ${profile.user.lname}`,
           email: profile.user.email,
           role: profile.user.role,
-          id: profile.user.id
+          id: profile.user.id,
+          avatar: avatarUrl
         })
 
         setCurrentAvatar(avatarUrl)

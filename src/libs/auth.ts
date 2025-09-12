@@ -8,6 +8,7 @@ interface ApiAuthResponse {
   token: string
   userId: string
   role: string
+  avatar: string
 }
 
 interface ApiUserProfile {
@@ -16,6 +17,7 @@ interface ApiUserProfile {
   lname: string
   email: string
   role: string
+  avatar: string
   accountStatus: string
   emailVerified: boolean
   verifiedAt: string | null
@@ -42,6 +44,7 @@ type AuthJWT = BaseJWT & {
     name?: string | null
     email?: string | null
     role: string
+    avatar: string
   }
   error?: string
 }
@@ -175,6 +178,7 @@ export const authOptions: NextAuthOptions = {
             email: userProfile.email,
             name: `${userProfile.fname} ${userProfile.lname}`.trim(),
             role: userProfile.role,
+            avatar: userProfile.avatar,
             accessToken: data.token
           }
         } catch (error: any) {
@@ -217,6 +221,7 @@ export const authOptions: NextAuthOptions = {
         token.user.name = session.name
         token.user.email = session.email
         token.user.role = session.role
+        token.user.avatar = session.avatar
 
         return token
       }
@@ -228,6 +233,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
+          avatar: user.avatar,
           role: (user as any).role || 'user'
         }
       }
@@ -240,7 +246,8 @@ export const authOptions: NextAuthOptions = {
         id: token.user?.id,
         name: token.user?.name || null,
         email: token.user?.email || null,
-        role: token.user?.role || 'user'
+        role: token.user?.role || 'user',
+        avatar: token.user?.avatar
       }
 
       // Expose backend token to client

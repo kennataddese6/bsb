@@ -5,7 +5,7 @@ export type UserTable = {
   id: number
   name: string
   email: string
-  image: string
+  avatar: string
   password: string
   role?: 'admin' | 'user'
 }
@@ -18,7 +18,7 @@ export const users: UserTable[] = [
     name: 'John Doe',
     password: 'admin',
     email: 'admin@sneat.com',
-    image: '/images/avatars/1.png',
+    avatar: '/avatars/avatars/1.png',
     role: 'admin'
   },
   {
@@ -26,7 +26,7 @@ export const users: UserTable[] = [
     name: 'Jane Smith',
     password: 'user123',
     email: 'jane.smith@company.com',
-    image: '/images/avatars/2.png',
+    avatar: '/avatars/avatars/2.png',
     role: 'user'
   },
   {
@@ -34,7 +34,7 @@ export const users: UserTable[] = [
     name: 'Mike Johnson',
     password: 'user456',
     email: 'mike.johnson@company.com',
-    image: '/images/avatars/3.png',
+    avatar: '/images/avatars/3.png',
     role: 'user'
   }
 ]

@@ -92,6 +92,7 @@ export type ProfileTabType = {
   teams: ProfileTeamsType[]
   about: ProfileCommonType[]
   contacts: ProfileCommonType[]
+  avatar: string
   overview: ProfileCommonType[]
   teamsTech: ProfileTeamsTechType[]
   connections: ProfileConnectionsType[]

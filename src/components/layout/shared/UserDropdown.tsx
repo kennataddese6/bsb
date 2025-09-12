@@ -60,6 +60,7 @@ const UserDropdown = () => {
   // Hooks
   const router = useRouter()
   const { data: session } = useSession()
+
   const { settings } = useSettings()
   const { lang: locale } = useParams()
 
@@ -100,7 +101,7 @@ const UserDropdown = () => {
       <CustomAvatar
         ref={anchorRef}
         alt={session?.user?.name || ''}
-        src={session?.user?.image || ''}
+        src={session?.user?.avatar || ''}
         onClick={handleDropdownOpen}
         className='cursor-pointer'
       />
@@ -126,7 +127,7 @@ const UserDropdown = () => {
                     <CustomAvatar
                       size={40}
                       alt={session?.user?.name || ''}
-                      src={session?.user?.image || ''}
+                      src={session?.user?.avatar || ''}
                       className='shadow-sm border'
                     />
                     <div className='flex flex-col flex-1 min-w-0'>

@@ -132,7 +132,7 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
   const updateEmployeeStatus = async (employee: Employee) => {
     const newStatus = employee.accountStatus === 'active' ? 'suspended' : 'active'
 
-    setUpdatingEmployeeId(employee.id)
+    setUpdatingEmployeeId(`${employee.id}`)
 
     try {
       const response = await serverUpdateEmployee({

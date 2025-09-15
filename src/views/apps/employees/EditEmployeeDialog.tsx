@@ -28,6 +28,7 @@ import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import { updateEmployee } from '@/app/server/actions'
 import ImageUpload from '@/components/image-upload/ImageUpload'
 import { errorHandler } from '@/libs/errorhandler'
+import { errorToast } from '@/libs/errortoast'
 
 type Props = {
   open: boolean
@@ -108,14 +109,7 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
     } catch (error: unknown) {
       const message = errorHandler(error)
 
-      toast.error(message, {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      })
+      errorToast(message)
     } finally {
       setIsSubmitting(false)
     }

@@ -25,6 +25,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import { resetPassword } from '@/app/server/actions'
 import { errorHandler } from '@/libs/errorhandler'
+import { errorToast } from '@/libs/errortoast'
 
 type Props = {
   open: boolean
@@ -86,14 +87,7 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
     } catch (error: unknown) {
       const message = errorHandler(error)
 
-      toast.error(message, {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true
-      })
+      errorToast(message)
     } finally {
       setIsSubmitting(false)
     }

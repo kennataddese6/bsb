@@ -32,6 +32,7 @@ import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import ImageUpload from '@/components/image-upload/ImageUpload'
 import { updateProfile } from '@/app/server/actions'
 import { errorHandler } from '@/libs/errorhandler'
+import { errorToast } from '@/libs/errortoast'
 
 type Props = {
   open: boolean
@@ -185,14 +186,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
       } catch (error) {
         const message = errorHandler(error)
 
-        toast.error(message, {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        })
+        errorToast(message)
       }
     } catch (error) {
       console.error('Error in form submission:', error)

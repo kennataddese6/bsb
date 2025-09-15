@@ -146,6 +146,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         })
 
         setCurrentAvatar(avatarUrl)
+        handleClose()
         setUploadProgress(100)
       } catch (error: unknown) {
         const message = errorHandler(error)
@@ -153,33 +154,6 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         errorToast(message)
       } finally {
         setIsUploading(false)
-      }
-
-      try {
-        // Update profile with new data
-        /* await onUpdateProfile({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          avatar: avatarUrl
-        }) */
-
-        // Show success toast
-        /*         toast.success('Profile updated successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        })
- */
-        // Close dialog
-        handleClose()
-      } catch (error) {
-        const message = errorHandler(error)
-
-        errorToast(message)
       }
     } catch (error) {
       console.error('Error in form submission:', error)

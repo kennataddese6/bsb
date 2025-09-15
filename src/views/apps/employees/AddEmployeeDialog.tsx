@@ -30,6 +30,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import { createEmployee } from '@/app/server/actions'
 import ImageUpload from '@/components/image-upload/ImageUpload'
+import { errorHandler } from '@/libs/errorhandler'
 
 type Props = {
   open: boolean
@@ -97,8 +98,10 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       // Reset form and close dialog
       resetForm()
       handleClose()
-    } catch (error) {
-      toast.error('Failed to add employee. Please try again.', {
+    } catch (error: unknown) {
+      const message = errorHandler(error)
+
+      toast.error(message, {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,

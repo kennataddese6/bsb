@@ -4,12 +4,15 @@
  */
 'use server'
 
-// Data Imports
-
+// External Imports
+import axios from 'axios'
 import { getServerSession } from 'next-auth'
+
+// Local Imports
 
 import { authOptions } from '@/libs/auth'
 
+// Fake Database Imports
 import { db as eCommerceData } from '@/fake-db/apps/ecommerce'
 import { db as academyData } from '@/fake-db/apps/academy'
 import { db as vehicleData } from '@/fake-db/apps/logistics'
@@ -22,119 +25,146 @@ import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 
 export const getEmployees = async (searchParams: { page?: string; size?: string }) => {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  const token = session?.accessToken
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
 
-  const response = await fetch(
-    `${process.env.BASE_URL}/users?page_size=${searchParams?.size || 10}&page=${searchParams?.page || 1}&sort_direction=desc`,
-    {
-      method: 'GET',
+    const response = await axios.get(`${process.env.BASE_URL}/users`, {
+      params: {
+        page_size: searchParams?.size || 10,
+        page: searchParams?.page || 1,
+        sort_direction: 'desc'
+      },
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${session.accessToken}`,
         'Content-Type': 'application/json'
       }
-    }
-  )
+    })
 
-  const data = await response.json()
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching employees:', error)
 
-  return data
+    throw new Error(error?.message || 'Failed to fetch employees')
+  }
 }
 
 export const createEmployee = async (employee: any) => {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  const token = session?.accessToken
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
 
-  const response = await fetch(`${process.env.BASE_URL}/users`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(employee)
-  })
+    const response = await axios.post(`${process.env.BASE_URL}/users`, employee, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    })
 
-  const data = await response.json()
+    return response.data
+  } catch (error: any) {
+    console.error('Error creating employee:', error)
 
-  return data
+    throw new Error(error?.message || 'Failed to creating employee')
+  }
 }
 
 export const updateEmployee = async (employee: any) => {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  const token = session?.accessToken
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
 
-  const response = await fetch(`${process.env.BASE_URL}/users/${employee.id}`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(employee)
-  })
+    const response = await axios.patch(`${process.env.BASE_URL}/users/${employee.id}`, employee, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    })
 
-  const data = await response.json()
+    return response.data
+  } catch (error: any) {
+    console.error('Error updating employee:', error)
 
-  return data
+    throw new Error(error?.message || 'Error updating employee')
+  }
 }
 
 export const updateProfile = async (employee: any) => {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  const token = session?.accessToken
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
 
-  const response = await fetch(`${process.env.BASE_URL}/users/profile/update`, {
-    method: 'PATCH',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(employee)
-  })
+    const response = await axios.patch(`${process.env.BASE_URL}/users/profile/update`, employee, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    })
 
-  const data = await response.json()
+    return response.data
+  } catch (error: any) {
+    console.error('Error updating profile:', error)
 
-  return data
+    throw new Error(error?.message || 'Error updating profile')
+  }
 }
 
 export const changePassword = async (employee: any) => {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  const token = session?.accessToken
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
 
-  const response = await fetch(`${process.env.BASE_URL}/users/change-password`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(employee)
-  })
+    const response = await axios.put(`${process.env.BASE_URL}/users/change-password`, employee, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    })
 
-  const data = await response.json()
+    return response.data
+  } catch (error: any) {
+    console.error('Error changing password:', error)
 
-  return data
+    throw new Error(error?.message || 'Error changing password')
+  }
 }
 
 export const resetPassword = async (employee: any) => {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  const token = session?.accessToken
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
 
-  const response = await fetch(`${process.env.BASE_URL}/users/profile/reset-password`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(employee)
-  })
+    const response = await axios.put(`${process.env.BASE_URL}/users/profile/reset-password`, employee, {
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    })
 
-  const data = await response.json()
+    return response.data
+  } catch (error: any) {
+    console.error('Error changing password:', error)
 
-  return data
+    throw new Error(error?.message || 'Error changing password')
+  }
 }
 
 export const getEcommerceData = async () => {

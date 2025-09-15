@@ -31,6 +31,7 @@ import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import ImageUpload from '@/components/image-upload/ImageUpload'
 import { updateProfile } from '@/app/server/actions'
+import { errorHandler } from '@/libs/errorhandler'
 
 type Props = {
   open: boolean
@@ -112,7 +113,6 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
     }
   }
 
-
   const onSubmit = async (data: EditEmployeeFormData) => {
     if (!employee) return
     setIsSubmitting(true)
@@ -146,9 +146,10 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
 
         setCurrentAvatar(avatarUrl)
         setUploadProgress(100)
-      } catch (error) {
-        console.error('Error uploading avatar:', error)
-        toast.error('Failed to upload avatar. Please try again.', {
+      } catch (error: unknown) {
+        const message = errorHandler(error)
+
+        toast.error(message, {
           position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
@@ -156,11 +157,6 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
           pauseOnHover: true,
           draggable: true
         })
-
-        setIsUploading(false)
-        setIsSubmitting(false)
-
-        return
       } finally {
         setIsUploading(false)
       }
@@ -175,7 +171,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
         }) */
 
         // Show success toast
-        toast.success('Profile updated successfully!', {
+        /*         toast.success('Profile updated successfully!', {
           position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
@@ -183,12 +179,13 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
           pauseOnHover: true,
           draggable: true
         })
-
+ */
         // Close dialog
         handleClose()
       } catch (error) {
-        console.error('Error updating profile:', error)
-        toast.error('Failed to update profile. Please try again.', {
+        const message = errorHandler(error)
+
+        toast.error(message, {
           position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,

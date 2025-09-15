@@ -24,6 +24,7 @@ import type { Employee, ChangePasswordFormData } from '@/types/apps/employeeType
 import CustomTextField from '@core/components/mui/TextField'
 import DialogCloseButton from '@components/dialogs/DialogCloseButton'
 import { resetPassword } from '@/app/server/actions'
+import { errorHandler } from '@/libs/errorhandler'
 
 type Props = {
   open: boolean
@@ -65,7 +66,7 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
         userId: employee.id
       }
 
-      resetPassword(newData)
+      await resetPassword(newData)
 
       onChangePassword(employee.id, data.newPassword)
 
@@ -82,8 +83,10 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
       // Reset form and close dialog
       resetForm()
       handleClose()
-    } catch (error) {
-      toast.error('Failed to change password. Please try again.', {
+    } catch (error: unknown) {
+      const message = errorHandler(error)
+
+      toast.error(message, {
         position: 'top-right',
         autoClose: 3000,
         hideProgressBar: false,

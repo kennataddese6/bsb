@@ -60,9 +60,6 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
     setIsSubmitting(true)
 
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
       const newData = {
         password: data.newPassword,
         userId: employee.id

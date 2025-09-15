@@ -150,14 +150,7 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
       } catch (error: unknown) {
         const message = errorHandler(error)
 
-        toast.error(message, {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        })
+        errorToast(message)
       } finally {
         setIsUploading(false)
       }

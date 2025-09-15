@@ -44,6 +44,7 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [currentAvatar, setCurrentAvatar] = useState<string>('')
 
   // Hooks
   const {
@@ -63,38 +64,10 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
 
   const onSubmit = async (data: EmployeeFormData) => {
     setIsSubmitting(true)
-    let avatarUrl = ''
 
     try {
-      // Upload avatar if a new file was selected
-      if (avatarFile) {
-        setIsUploading(true)
-        setUploadProgress(0)
-
-        try {
-          const uploadResponse = await uploadFile(avatarFile)
-
-          avatarUrl = uploadResponse.url
-          setUploadProgress(100)
-        } catch (error) {
-          console.error('Error uploading avatar:', error)
-          toast.error('Failed to upload avatar. Please try again.', {
-            position: 'top-right',
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true
-          })
-
-          return
-        } finally {
-          setIsUploading(false)
-        }
-      } else {
-        // Use a default avatar if no file was uploaded
-        avatarUrl = `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`
-      }
+      // Use the already uploaded avatar or a default one
+      const avatarUrl = currentAvatar || `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`
 
       const newEmployee: Omit<Employee, 'id'> & { password: string } = {
         fname: data.firstName,
@@ -139,8 +112,12 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
   }
 
   const handleReset = () => {
-    handleClose()
+    setAvatarFile(null)
+    setCurrentAvatar('')
+    setUploadProgress(0)
+    setIsUploading(false)
     resetForm()
+    handleClose()
   }
 
   return (
@@ -253,8 +230,6 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                 {...field}
                 fullWidth
                 type={isPasswordShown ? 'text' : 'password'}
-                label='Password'
-                placeholder='Enter password'
                 slotProps={{
                   input: {
                     startAdornment: <i className='bx-lock-alt text-xl text-textSecondary mr-2' />,
@@ -262,10 +237,10 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                       <InputAdornment position='end'>
                         <IconButton
                           edge='end'
-                          onClick={() => setIsPasswordShown(show => !show)}
                           onMouseDown={e => e.preventDefault()}
+                          onClick={() => setIsPasswordShown(!isPasswordShown)}
                         >
-                          <i className={isPasswordShown ? 'bx-show' : 'bx-hide'} />
+                          <i className={isPasswordShown ? 'bx-hide' : 'bx-show'} />
                         </IconButton>
                       </InputAdornment>
                     )
@@ -315,8 +290,38 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
             </Typography>
             <div className='w-full'>
               <ImageUpload
-                value={avatarFile ? URL.createObjectURL(avatarFile) : ''}
-                onChange={file => setAvatarFile(file)}
+                value={avatarFile ? URL.createObjectURL(avatarFile) : currentAvatar}
+                onChange={async file => {
+                  if (!file) {
+                    setAvatarFile(null)
+                    setCurrentAvatar('')
+
+                    return
+                  }
+
+                  setAvatarFile(file)
+                  setIsUploading(true)
+                  setUploadProgress(0)
+
+                  try {
+                    const uploadResponse = await uploadFile(file)
+
+                    setCurrentAvatar(uploadResponse.url)
+                    setUploadProgress(100)
+                  } catch (error) {
+                    console.error('Error uploading avatar:', error)
+                    toast.error('Failed to upload avatar. Please try again.', {
+                      position: 'top-right',
+                      autoClose: 3000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true
+                    })
+                  } finally {
+                    setIsUploading(false)
+                  }
+                }}
                 avatarSize={100}
                 label={isUploading ? 'Uploading...' : 'Upload Photo'}
                 disabled={isUploading || isSubmitting}

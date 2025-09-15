@@ -75,37 +75,9 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
     if (!employee) return
 
     setIsSubmitting(true)
-    let avatarUrl = currentAvatar
+    const avatarUrl = currentAvatar // Already uploaded in the onChange handler
 
     try {
-      // Upload new avatar if a file was selected
-      if (avatarFile) {
-        setIsUploading(true)
-        setUploadProgress(0)
-        
-        try {
-          const uploadResponse = await uploadFile(avatarFile)
-          
-          avatarUrl = uploadResponse.url
-          setCurrentAvatar(avatarUrl)
-          setUploadProgress(100)
-        } catch (error) {
-          console.error('Error uploading avatar:', error)
-          toast.error('Failed to upload avatar. Please try again.', {
-            position: 'top-right',
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true
-          })
-          
-          return
-        } finally {
-          setIsUploading(false)
-        }
-      }
-
       const updatedEmployee = {
         fname: data.firstName,
         lname: data.lastName,
@@ -290,12 +262,42 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
             <div className='w-full'>
               <ImageUpload
                 value={avatarFile ? URL.createObjectURL(avatarFile) : currentAvatar}
-                onChange={(file) => setAvatarFile(file)}
+                onChange={async file => {
+                  if (!file) {
+                    setAvatarFile(null)
+                    setCurrentAvatar('')
+
+                    return
+                  }
+
+                  setAvatarFile(file)
+                  setIsUploading(true)
+                  setUploadProgress(0)
+
+                  try {
+                    const uploadResponse = await uploadFile(file)
+
+                    setCurrentAvatar(uploadResponse.url)
+                    setUploadProgress(100)
+                  } catch (error) {
+                    console.error('Error uploading avatar:', error)
+                    toast.error('Failed to upload avatar. Please try again.', {
+                      position: 'top-right',
+                      autoClose: 3000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true
+                    })
+                  } finally {
+                    setIsUploading(false)
+                  }
+                }}
                 avatarSize={100}
                 label={isUploading ? 'Uploading...' : 'Change Photo'}
                 disabled={isUploading || isSubmitting}
                 helperText={
-                  isUploading 
+                  isUploading
                     ? `Uploading... ${Math.round(uploadProgress)}%`
                     : 'Drag & drop an image or click to select (max 5MB)'
                 }

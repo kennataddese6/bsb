@@ -6,6 +6,16 @@ export default function useChangeUrl() {
   const searchParams = useSearchParams()
   const params = new URLSearchParams(searchParams)
 
+  const createSalesFrequencyUrl = (query: 'yearly' | 'quarterly') => {
+    if (!query) {
+      params.delete('freq')
+    } else {
+      params.set('freq', query.toString())
+    }
+
+    replace(`${pathname}?${params.toString()}`)
+  }
+
   const createSearchUrl = (query: any) => {
     if (!query) {
       params.delete('search')
@@ -39,6 +49,7 @@ export default function useChangeUrl() {
   return {
     createPageUrl,
     createPageSizeURL,
-    createSearchUrl
+    createSearchUrl,
+    createSalesFrequencyUrl
   }
 }

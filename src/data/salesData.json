@@ -1,8 +1,15 @@
 {
   "years": [
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
     "2021",
     "2022",
-    "2023"
+    "2023",
+    "2024",
+    "2025"
   ],
   "months": [
     "Jan",
@@ -20,7 +27,166 @@
   ],
   "salesData": [
     {
-      "year": "2021",
+      "year": "2016",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 15
+        },
+        {
+          "month": "Feb",
+          "value": 22
+        },
+        {
+          "month": "Mar",
+          "value": 28
+        },
+        {
+          "month": "Apr",
+          "value": 35
+        },
+        {
+          "month": "May",
+          "value": 42
+        },
+        {
+          "month": "Jun",
+          "value": 38
+        },
+        {
+          "month": "Jul",
+          "value": 45
+        },
+        {
+          "month": "Aug",
+          "value": 52
+        },
+        {
+          "month": "Sep",
+          "value": 48
+        },
+        {
+          "month": "Oct",
+          "value": 55
+        },
+        {
+          "month": "Nov",
+          "value": 62
+        },
+        {
+          "month": "Dec",
+          "value": 68
+        }
+      ]
+    },
+    {
+      "year": "2017",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 25
+        },
+        {
+          "month": "Feb",
+          "value": 32
+        },
+        {
+          "month": "Mar",
+          "value": 28
+        },
+        {
+          "month": "Apr",
+          "value": 35
+        },
+        {
+          "month": "May",
+          "value": 42
+        },
+        {
+          "month": "Jun",
+          "value": 48
+        },
+        {
+          "month": "Jul",
+          "value": 55
+        },
+        {
+          "month": "Aug",
+          "value": 62
+        },
+        {
+          "month": "Sep",
+          "value": 58
+        },
+        {
+          "month": "Oct",
+          "value": 65
+        },
+        {
+          "month": "Nov",
+          "value": 72
+        },
+        {
+          "month": "Dec",
+          "value": 78
+        }
+      ]
+    },
+    {
+      "year": "2018",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 35
+        },
+        {
+          "month": "Feb",
+          "value": 42
+        },
+        {
+          "month": "Mar",
+          "value": 38
+        },
+        {
+          "month": "Apr",
+          "value": 45
+        },
+        {
+          "month": "May",
+          "value": 52
+        },
+        {
+          "month": "Jun",
+          "value": 48
+        },
+        {
+          "month": "Jul",
+          "value": 55
+        },
+        {
+          "month": "Aug",
+          "value": 62
+        },
+        {
+          "month": "Sep",
+          "value": 68
+        },
+        {
+          "month": "Oct",
+          "value": 75
+        },
+        {
+          "month": "Nov",
+          "value": 82
+        },
+        {
+          "month": "Dec",
+          "value": 88
+        }
+      ]
+    },
+    {
+      "year": "2019",
       "data": [
         {
           "month": "Jan",
@@ -32,19 +198,19 @@
         },
         {
           "month": "Mar",
-          "value": 48
+          "value": 58
         },
         {
           "month": "Apr",
-          "value": 60
+          "value": 45
         },
         {
           "month": "May",
-          "value": 55
+          "value": 52
         },
         {
           "month": "Jun",
-          "value": 70
+          "value": 58
         },
         {
           "month": "Jul",
@@ -52,11 +218,11 @@
         },
         {
           "month": "Aug",
-          "value": 75
+          "value": 72
         },
         {
           "month": "Sep",
-          "value": 80
+          "value": 78
         },
         {
           "month": "Oct",
@@ -64,11 +230,117 @@
         },
         {
           "month": "Nov",
-          "value": 90
+          "value": 82
         },
         {
           "month": "Dec",
+          "value": 78
+        }
+      ]
+    },
+    {
+      "year": "2020",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 55
+        },
+        {
+          "month": "Feb",
+          "value": 62
+        },
+        {
+          "month": "Mar",
+          "value": 48
+        },
+        {
+          "month": "Apr",
+          "value": 35
+        },
+        {
+          "month": "May",
+          "value": 42
+        },
+        {
+          "month": "Jun",
+          "value": 58
+        },
+        {
+          "month": "Jul",
+          "value": 65
+        },
+        {
+          "month": "Aug",
+          "value": 72
+        },
+        {
+          "month": "Sep",
+          "value": 68
+        },
+        {
+          "month": "Oct",
+          "value": 75
+        },
+        {
+          "month": "Nov",
+          "value": 82
+        },
+        {
+          "month": "Dec",
+          "value": 88
+        }
+      ]
+    },
+    {
+      "year": "2021",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 65
+        },
+        {
+          "month": "Feb",
+          "value": 62
+        },
+        {
+          "month": "Mar",
+          "value": 68
+        },
+        {
+          "month": "Apr",
+          "value": 75
+        },
+        {
+          "month": "May",
+          "value": 72
+        },
+        {
+          "month": "Jun",
+          "value": 78
+        },
+        {
+          "month": "Jul",
+          "value": 85
+        },
+        {
+          "month": "Aug",
+          "value": 82
+        },
+        {
+          "month": "Sep",
+          "value": 88
+        },
+        {
+          "month": "Oct",
           "value": 95
+        },
+        {
+          "month": "Nov",
+          "value": 92
+        },
+        {
+          "month": "Dec",
+          "value": 98
         }
       ]
     },
@@ -77,31 +349,31 @@
       "data": [
         {
           "month": "Jan",
-          "value": 50
-        },
-        {
-          "month": "Feb",
-          "value": 58
-        },
-        {
-          "month": "Mar",
-          "value": 65
-        },
-        {
-          "month": "Apr",
-          "value": 70
-        },
-        {
-          "month": "May",
           "value": 75
         },
         {
-          "month": "Jun",
+          "month": "Feb",
+          "value": 72
+        },
+        {
+          "month": "Mar",
+          "value": 78
+        },
+        {
+          "month": "Apr",
+          "value": 75
+        },
+        {
+          "month": "May",
           "value": 82
         },
         {
-          "month": "Jul",
+          "month": "Jun",
           "value": 88
+        },
+        {
+          "month": "Jul",
+          "value": 85
         },
         {
           "month": "Aug",
@@ -109,19 +381,19 @@
         },
         {
           "month": "Sep",
-          "value": 85
+          "value": 98
         },
         {
           "month": "Oct",
-          "value": 90
-        },
-        {
-          "month": "Nov",
           "value": 95
         },
         {
+          "month": "Nov",
+          "value": 92
+        },
+        {
           "month": "Dec",
-          "value": 100
+          "value": 108
         }
       ]
     },
@@ -130,51 +402,157 @@
       "data": [
         {
           "month": "Jan",
-          "value": 60
+          "value": 85
         },
         {
           "month": "Feb",
-          "value": 65
+          "value": 82
         },
         {
           "month": "Mar",
-          "value": 70
+          "value": 88
         },
         {
           "month": "Apr",
-          "value": 75
+          "value": 85
         },
         {
           "month": "May",
-          "value": 80
+          "value": 92
         },
         {
           "month": "Jun",
-          "value": 85
+          "value": 98
         },
         {
           "month": "Jul",
-          "value": 90
+          "value": 105
         },
         {
           "month": "Aug",
-          "value": 95
+          "value": 102
         },
         {
           "month": "Sep",
-          "value": 100
+          "value": 108
         },
         {
           "month": "Oct",
-          "value": 95
+          "value": 115
         },
         {
           "month": "Nov",
-          "value": 90
+          "value": 112
         },
         {
           "month": "Dec",
-          "value": 85
+          "value": 118
+        }
+      ]
+    },
+    {
+      "year": "2024",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 95
+        },
+        {
+          "month": "Feb",
+          "value": 92
+        },
+        {
+          "month": "Mar",
+          "value": 98
+        },
+        {
+          "month": "Apr",
+          "value": 95
+        },
+        {
+          "month": "May",
+          "value": 102
+        },
+        {
+          "month": "Jun",
+          "value": 108
+        },
+        {
+          "month": "Jul",
+          "value": 115
+        },
+        {
+          "month": "Aug",
+          "value": 122
+        },
+        {
+          "month": "Sep",
+          "value": 118
+        },
+        {
+          "month": "Oct",
+          "value": 125
+        },
+        {
+          "month": "Nov",
+          "value": 132
+        },
+        {
+          "month": "Dec",
+          "value": 128
+        }
+      ]
+    },
+    {
+      "year": "2025",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 105
+        },
+        {
+          "month": "Feb",
+          "value": 112
+        },
+        {
+          "month": "Mar",
+          "value": 108
+        },
+        {
+          "month": "Apr",
+          "value": 115
+        },
+        {
+          "month": "May",
+          "value": 122
+        },
+        {
+          "month": "Jun",
+          "value": 118
+        },
+        {
+          "month": "Jul",
+          "value": 125
+        },
+        {
+          "month": "Aug",
+          "value": 132
+        },
+        {
+          "month": "Sep",
+          "value": 138
+        },
+        {
+          "month": "Oct",
+          "value": 135
+        },
+        {
+          "month": "Nov",
+          "value": 142
+        },
+        {
+          "month": "Dec",
+          "value": 148
         }
       ]
     }

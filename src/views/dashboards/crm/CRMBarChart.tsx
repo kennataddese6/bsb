@@ -50,7 +50,18 @@ const CRMBarChart = () => {
   const options: ApexOptions = {
     chart: {
       parentHeightOffset: 0,
-      toolbar: { show: true },
+      toolbar: {
+        show: true,
+        tools: {
+          download: false,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        }
+      },
       zoom: { enabled: true },
       foreColor: disabledText
     },
@@ -243,20 +254,7 @@ const CRMBarChart = () => {
             chart: {
               ...options.chart,
               type: 'bar',
-              stacked: false,
-              toolbar: {
-                ...options.chart?.toolbar,
-                tools: {
-                  ...options.chart?.toolbar?.tools,
-                  download: true,
-                  selection: true,
-                  zoom: true,
-                  zoomin: true,
-                  zoomout: true,
-                  pan: true,
-                  reset: true
-                }
-              }
+              stacked: false
             },
             plotOptions: {
               ...options.plotOptions,

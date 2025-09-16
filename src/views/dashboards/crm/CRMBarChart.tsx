@@ -1,13 +1,31 @@
 'use client'
 
-// Next Imports
+// ** React Imports
+import { useState, useEffect } from 'react'
+
+// ** Next Imports
 import dynamic from 'next/dynamic'
 
-// MUI Imports
+// ** MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import { useTheme } from '@mui/material/styles'
+
+// ** Types
+interface SalesData {
+  year: string
+  data: Array<{
+    month: string
+    value: number
+  }>
+}
+
+interface ChartData {
+  years: string[]
+  months: string[]
+  salesData: SalesData[]
+}
 
 // Third-party Imports
 import type { ApexOptions } from 'apexcharts'
@@ -19,15 +37,16 @@ const CRMBarChart = () => {
   // Hooks
   const theme = useTheme()
 
-  // Data for each month (9 months) with 10 years of data each
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
-  const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+  // State
+  const [chartData, setChartData] = useState<ChartData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Vars
-  const primaryColor = theme.palette.primary.main
+  // ** Vars
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
 
+  // ** Chart Options
   const options: ApexOptions = {
     chart: {
       parentHeightOffset: 0,
@@ -112,7 +131,7 @@ const CRMBarChart = () => {
     },
     xaxis: {
       type: 'category',
-      categories: months,
+      categories: chartData?.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
       axisBorder: { show: false },
       axisTicks: { color: divider },
       labels: {
@@ -150,28 +169,31 @@ const CRMBarChart = () => {
     ]
   }
 
-  // Generate more dynamic and vibrant sales data
-  const getRandomVariation = (base: number, variation: number) => {
-    return base + (Math.random() * variation * 2 - variation)
-  }
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await import('@/data/salesData.json')
 
-  const series = years.map((year, yearIndex) => {
-    // Base values that increase slightly each year
-    const baseValue = 30 + yearIndex * 8
+        setChartData(response.default)
+      } catch (err: unknown) {
+        console.error('Error loading sales data:', err)
+        setError('Failed to load sales data')
+      } finally {
+        setIsLoading(false)
+      }
+    }
 
-    const monthlyPattern = months.map((_, i) => {
-      // Create a more natural sales pattern with seasonal variations
-      const seasonalFactor = 1 + 0.3 * Math.sin((i / months.length) * Math.PI * 2)
-      const randomFactor = 0.8 + Math.random() * 0.4 // Random factor between 0.8 and 1.2
+    fetchData()
+  }, [])
 
-      return baseValue * seasonalFactor * randomFactor
-    })
-
-    return {
-      name: year.toString(),
-      data: months.map((month, monthIndex) => ({
-        x: month,
-        y: Math.round(monthlyPattern[monthIndex] * (Math.random() * 10 + 50)), // Varying percentages
+  // Transform data for the chart
+  const series =
+    chartData?.salesData.map((yearData, yearIndex) => ({
+      name: yearData.year,
+      data: yearData.data.map(item => ({
+        x: item.month,
+        y: item.value,
         fillColor: [
           '#4f81bd',
           '#c0504d',
@@ -185,14 +207,24 @@ const CRMBarChart = () => {
           '#9c27b0'
         ][yearIndex % 10]
       }))
-    }
-  })
+    })) || []
+
+  if (isLoading) {
+    return <div>Loading sales data...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
+
+  // Extract years from chart data
+  const years = chartData?.years || []
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>
       <CardHeader
         title='Annual Sales Performance'
-        subheader='Yearly comparison (2016-2025)'
+        subheader={`Yearly comparison (${years[0] || ''}${years.length > 1 ? `-${years[years.length - 1]}` : ''})`}
         sx={{
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],

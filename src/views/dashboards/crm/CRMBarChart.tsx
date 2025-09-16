@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
+import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 
 // ** Types
@@ -184,6 +185,7 @@ const CRMBarChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        await new Promise(resolve => setTimeout(resolve, 5000))
         const response = await import('@/data/salesData.json')
 
         setChartData(response.default)
@@ -221,7 +223,24 @@ const CRMBarChart = () => {
     })) || []
 
   if (isLoading) {
-    return <div>Loading sales data...</div>
+    return (
+      <Card className='bs-full' sx={{ width: '100%' }}>
+        <CardHeader
+          title={<Skeleton variant='text' width={200} height={32} />}
+          subheader={<Skeleton variant='text' width={150} height={24} />}
+          sx={{
+            flexDirection: ['column', 'row'],
+            alignItems: ['flex-start', 'center'],
+            '& .MuiCardHeader-action': { display: 'none' },
+            flexWrap: 'wrap',
+            '& .MuiCardHeader-content': { mb: [2, 0] }
+          }}
+        />
+        <CardContent sx={{ p: 3, height: 450, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Skeleton variant='rectangular' height='100%' />
+        </CardContent>
+      </Card>
+    )
   }
 
   if (error) {

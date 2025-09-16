@@ -17,18 +17,16 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 
 // ** Types
-interface SalesData {
-  year: string
-  data: Array<{
-    month: string
-    value: number
-  }>
-}
-
 interface ChartData {
   years: string[]
   months: string[]
-  salesData: SalesData[]
+  salesData: Array<{
+    year: string
+    data: Array<{
+      month: string
+      value: number
+    }>
+  }>
 }
 
 // Third-party Imports
@@ -42,7 +40,12 @@ const CRMBarChart = () => {
   const theme = useTheme()
 
   // State
-  const [chartData, setChartData] = useState<ChartData | null>(null)
+
+  const [chartData, setChartData] = useState<{
+    yearly: ChartData
+    quarterly: ChartData & { quarters: string[] }
+  } | null>(null)
+
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [view, setView] = useState<'yearly' | 'quarterly'>('yearly')
@@ -149,8 +152,8 @@ const CRMBarChart = () => {
       type: 'category',
       categories:
         view === 'quarterly'
-          ? ['Q1', 'Q2', 'Q3', 'Q4']
-          : chartData?.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+          ? chartData?.quarterly.quarters || ['Q1', 'Q2', 'Q3', 'Q4']
+          : chartData?.yearly.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
       axisBorder: { show: false },
       axisTicks: { color: divider },
       labels: {
@@ -193,9 +196,16 @@ const CRMBarChart = () => {
     const fetchData = async () => {
       try {
         await new Promise(resolve => setTimeout(resolve, 5000))
-        const response = await import('@/data/salesData.json')
 
-        setChartData(response.default)
+        const [yearlyResponse, quarterlyResponse] = await Promise.all([
+          import('@/data/salesData.json'),
+          import('@/data/quarterlySalesData.json')
+        ])
+
+        setChartData({
+          yearly: yearlyResponse.default,
+          quarterly: quarterlyResponse.default
+        })
       } catch (err: unknown) {
         console.error('Error loading sales data:', err)
         setError('Failed to load sales data')
@@ -211,50 +221,28 @@ const CRMBarChart = () => {
   const series = useMemo(() => {
     if (!chartData) return []
 
-    return chartData.salesData.map((yearData, yearIndex) => {
-      let displayData = [...yearData.data]
+    const dataSource = view === 'quarterly' ? chartData.quarterly : chartData.yearly
+    const dataKey = view === 'quarterly' ? 'quarter' : 'month'
 
-      if (view === 'quarterly') {
-        // Group data by quarters
-        const quarters = [
-          { name: 'Q1', months: ['Jan', 'Feb', 'Mar'] },
-          { name: 'Q2', months: ['Apr', 'May', 'Jun'] },
-          { name: 'Q3', months: ['Jul', 'Aug', 'Sep'] },
-          { name: 'Q4', months: ['Oct', 'Nov', 'Dec'] }
-        ]
-
-        displayData = quarters.map(quarter => {
-          const quarterMonths = displayData.filter(item => quarter.months.includes(item.month))
-
-          const avgValue = quarterMonths.reduce((sum, item) => sum + item.value, 0) / quarterMonths.length
-
-          return {
-            month: quarter.name,
-            value: Math.round(avgValue * 10) / 10 // Round to 1 decimal place
-          }
-        })
-      }
-
-      return {
-        name: yearData.year,
-        data: displayData.map(item => ({
-          x: item.month,
-          y: item.value,
-          fillColor: [
-            '#4f81bd',
-            '#c0504d',
-            '#9bbb59',
-            '#8064a2',
-            '#4bacc6',
-            '#f79646',
-            '#8c8c8c',
-            '#4aacc5',
-            '#d16b16',
-            '#9c27b0'
-          ][yearIndex % 10]
-        }))
-      }
-    })
+    return dataSource.salesData.map((yearData, yearIndex) => ({
+      name: yearData.year,
+      data: yearData.data.map(item => ({
+        x: item[dataKey],
+        y: item.value,
+        fillColor: [
+          '#4f81bd',
+          '#c0504d',
+          '#9bbb59',
+          '#8064a2',
+          '#4bacc6',
+          '#f79646',
+          '#8c8c8c',
+          '#4aacc5',
+          '#d16b16',
+          '#9c27b0'
+        ][yearIndex % 10]
+      }))
+    }))
   }, [chartData, view])
 
   if (isLoading) {
@@ -283,7 +271,7 @@ const CRMBarChart = () => {
   }
 
   // Extract years from chart data
-  const years = chartData?.years || []
+  const years = chartData?.yearly.years || []
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>

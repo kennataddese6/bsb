@@ -1,7 +1,7 @@
 'use client'
 
 // ** React Imports
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 
 // ** Next Imports
 import dynamic from 'next/dynamic'
@@ -15,23 +15,20 @@ import { useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
-// ** Component Imports
-const ChartSkeleton = dynamic(() => import('./components/ChartSkeleton'), {
-  loading: () => null,
-  ssr: false
-})
-
 // ** Types
+type ChartData = YearlyChartData | QuarterlyChartData
+
 interface BaseChartData {
   years: string[]
   salesData: Array<{
     year: string
-    data: Array<
-      {
-        value: number
-      } & Record<string, any>
-    >
+    data: Array<{
+      value: number
+      [key: string]: any
+    }>
   }>
+  months?: string[]
+  quarters?: string[]
 }
 
 interface YearlyChartData extends BaseChartData {
@@ -59,26 +56,26 @@ interface QuarterlyChartData extends BaseChartData {
 // Third-party Imports
 import type { ApexOptions } from 'apexcharts'
 
+import useChangeUrl from '@/hooks/useChangeUrl'
+
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const CRMBarChart = () => {
+const CRMBarChart = ({ data }: { data: ChartData }) => {
   // Hooks
   const theme = useTheme()
 
   // State
-  const [chartData, setChartData] = useState<{
-    yearly: YearlyChartData
-    quarterly: QuarterlyChartData
-  } | null>(null)
-
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { createSalesFrequencyUrl } = useChangeUrl()
   const [view, setView] = useState<'yearly' | 'quarterly'>('yearly')
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
+
+  // Determine if the data is yearly or quarterly
+  const isYearly = 'months' in data && Array.isArray(data.months)
+  const isQuarterly = 'quarters' in data && Array.isArray(data.quarters)
 
   // ** Chart Options
   const options: ApexOptions = {
@@ -176,10 +173,21 @@ const CRMBarChart = () => {
     },
     xaxis: {
       type: 'category',
-      categories:
-        view === 'quarterly'
-          ? chartData?.quarterly.quarters || ['Q1', 'Q2', 'Q3', 'Q4']
-          : chartData?.yearly.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      categories: (() => {
+        if (view === 'quarterly') {
+          if (isQuarterly) {
+            return (data as QuarterlyChartData).quarters
+          }
+
+          return ['Q1', 'Q2', 'Q3', 'Q4']
+        }
+
+        if (isYearly) {
+          return (data as YearlyChartData).months
+        }
+
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      })(),
       axisBorder: { show: false },
       axisTicks: { color: divider },
       labels: {
@@ -217,93 +225,62 @@ const CRMBarChart = () => {
     ]
   }
 
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 5000))
-
-        const [yearlyResponse, quarterlyResponse] = await Promise.all([
-          import('@/data/salesData.json'),
-          import('@/data/quarterlySalesData.json')
-        ])
-
-        setChartData({
-          yearly: yearlyResponse.default,
-          quarterly: quarterlyResponse.default
-        })
-      } catch (err: unknown) {
-        console.error('Error loading sales data:', err)
-        setError('Failed to load sales data')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, []) // Empty dependency array means this effect runs once on mount
-
   // Transform data for the chart
   const series = useMemo(() => {
-    if (!chartData) return []
+    if (!data) return []
 
-    if (view === 'quarterly') {
-      return chartData.quarterly.salesData.map((yearData, yearIndex) => ({
+    const colors = [
+      '#4f81bd',
+      '#c0504d',
+      '#9bbb59',
+      '#8064a2',
+      '#4bacc6',
+      '#f79646',
+      '#8c8c8c',
+      '#4aacc5',
+      '#d16b16',
+      '#9c27b0'
+    ]
+
+    if (view === 'quarterly' && isQuarterly) {
+      const quarterlyData = data as QuarterlyChartData
+
+      return quarterlyData.salesData.map((yearData, yearIndex) => ({
         name: yearData.year,
         data: yearData.data.map(item => ({
           x: item.quarter,
           y: item.value,
-          fillColor: [
-            '#4f81bd',
-            '#c0504d',
-            '#9bbb59',
-            '#8064a2',
-            '#4bacc6',
-            '#f79646',
-            '#8c8c8c',
-            '#4aacc5',
-            '#d16b16',
-            '#9c27b0'
-          ][yearIndex % 10]
-        }))
-      }))
-    } else {
-      return chartData.yearly.salesData.map((yearData, yearIndex) => ({
-        name: yearData.year,
-        data: yearData.data.map(item => ({
-          x: item.month,
-          y: item.value,
-          fillColor: [
-            '#4f81bd',
-            '#c0504d',
-            '#9bbb59',
-            '#8064a2',
-            '#4bacc6',
-            '#f79646',
-            '#8c8c8c',
-            '#4aacc5',
-            '#d16b16',
-            '#9c27b0'
-          ][yearIndex % 10]
+          fillColor: colors[yearIndex % colors.length]
         }))
       }))
     }
-  }, [chartData, view])
 
-  if (isLoading) {
-    return <ChartSkeleton />
-  }
+    if (isYearly) {
+      const yearlyData = data as YearlyChartData
 
-  if (error) {
-    return <div>Error: {error}</div>
-  }
+      return yearlyData.salesData.map((yearData, yearIndex) => ({
+        name: yearData.year,
+        data: yearlyData.salesData[0].data.map((_, i) => {
+          const item = yearData.data[i]
 
-  if (!chartData) {
+          return {
+            x: `Month ${i + 1}`,
+            y: item.value,
+            fillColor: colors[yearIndex % colors.length]
+          }
+        })
+      }))
+    }
+
+    return []
+  }, [data, view, isYearly, isQuarterly])
+
+  if (!data) {
     return <div>No data available</div>
   }
 
   // Extract years from chart data
-  const years = chartData.yearly.years || []
+  const years = data.years || []
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>
@@ -316,7 +293,10 @@ const CRMBarChart = () => {
               color='primary'
               value={view}
               exclusive
-              onChange={(_, newView) => newView && setView(newView)}
+              onChange={(_, newView) => {
+                newView && setView(newView)
+                createSalesFrequencyUrl(newView)
+              }}
               aria-label='chart view type'
               size='small'
               sx={{

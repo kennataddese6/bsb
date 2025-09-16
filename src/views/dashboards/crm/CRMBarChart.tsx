@@ -1,7 +1,7 @@
 'use client'
 
 // ** React Imports
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 // ** Next Imports
 import dynamic from 'next/dynamic'
@@ -11,6 +11,9 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 
 // ** Types
@@ -42,6 +45,7 @@ const CRMBarChart = () => {
   const [chartData, setChartData] = useState<ChartData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [view, setView] = useState<'yearly' | 'quarterly'>('yearly')
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'
@@ -143,7 +147,10 @@ const CRMBarChart = () => {
     },
     xaxis: {
       type: 'category',
-      categories: chartData?.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      categories:
+        view === 'quarterly'
+          ? ['Q1', 'Q2', 'Q3', 'Q4']
+          : chartData?.months || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
       axisBorder: { show: false },
       axisTicks: { color: divider },
       labels: {
@@ -198,29 +205,57 @@ const CRMBarChart = () => {
     }
 
     fetchData()
-  }, [])
+  }, []) // Empty dependency array means this effect runs once on mount
 
   // Transform data for the chart
-  const series =
-    chartData?.salesData.map((yearData, yearIndex) => ({
-      name: yearData.year,
-      data: yearData.data.map(item => ({
-        x: item.month,
-        y: item.value,
-        fillColor: [
-          '#4f81bd',
-          '#c0504d',
-          '#9bbb59',
-          '#8064a2',
-          '#4bacc6',
-          '#f79646',
-          '#8c8c8c',
-          '#4aacc5',
-          '#d16b16',
-          '#9c27b0'
-        ][yearIndex % 10]
-      }))
-    })) || []
+  const series = useMemo(() => {
+    if (!chartData) return []
+
+    return chartData.salesData.map((yearData, yearIndex) => {
+      let displayData = [...yearData.data]
+
+      if (view === 'quarterly') {
+        // Group data by quarters
+        const quarters = [
+          { name: 'Q1', months: ['Jan', 'Feb', 'Mar'] },
+          { name: 'Q2', months: ['Apr', 'May', 'Jun'] },
+          { name: 'Q3', months: ['Jul', 'Aug', 'Sep'] },
+          { name: 'Q4', months: ['Oct', 'Nov', 'Dec'] }
+        ]
+
+        displayData = quarters.map(quarter => {
+          const quarterMonths = displayData.filter(item => quarter.months.includes(item.month))
+
+          const avgValue = quarterMonths.reduce((sum, item) => sum + item.value, 0) / quarterMonths.length
+
+          return {
+            month: quarter.name,
+            value: Math.round(avgValue * 10) / 10 // Round to 1 decimal place
+          }
+        })
+      }
+
+      return {
+        name: yearData.year,
+        data: displayData.map(item => ({
+          x: item.month,
+          y: item.value,
+          fillColor: [
+            '#4f81bd',
+            '#c0504d',
+            '#9bbb59',
+            '#8064a2',
+            '#4bacc6',
+            '#f79646',
+            '#8c8c8c',
+            '#4aacc5',
+            '#d16b16',
+            '#9c27b0'
+          ][yearIndex % 10]
+        }))
+      }
+    })
+  }, [chartData, view])
 
   if (isLoading) {
     return (
@@ -253,12 +288,40 @@ const CRMBarChart = () => {
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>
       <CardHeader
-        title='Annual Sales Performance'
-        subheader={`Yearly comparison (${years[0] || ''}${years.length > 1 ? `-${years[years.length - 1]}` : ''})`}
+        title='Sales Performance'
+        subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${years[0] || ''}${years.length > 1 ? `-${years[years.length - 1]}` : ''})`}
+        action={
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <ToggleButtonGroup
+              color='primary'
+              value={view}
+              exclusive
+              onChange={(_, newView) => newView && setView(newView)}
+              aria-label='chart view type'
+              size='small'
+              sx={{
+                '& .MuiToggleButton-root': {
+                  px: 3,
+                  py: 1,
+                  '&.Mui-selected': {
+                    backgroundColor: 'primary.main',
+                    color: 'primary.contrastText',
+                    '&:hover': {
+                      backgroundColor: 'primary.dark'
+                    }
+                  }
+                }
+              }}
+            >
+              <ToggleButton value='yearly'>Yearly</ToggleButton>
+              <ToggleButton value='quarterly'>Quarterly</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        }
         sx={{
           flexDirection: ['column', 'row'],
           alignItems: ['flex-start', 'center'],
-          '& .MuiCardHeader-action': { display: 'none' },
+          '& .MuiCardHeader-action': { mt: [2, 0] },
           flexWrap: 'wrap',
           '& .MuiCardHeader-content': { mb: [2, 0] }
         }}

@@ -4,19 +4,22 @@ import Grid from '@mui/material/Grid2'
 
 // Components Imports
 import CRMBarChart from '@views/dashboards/crm/CRMBarChart'
+import { getSalesData } from '@/app/server/actions'
 
 // import EarningReports from '@views/dashboards/crm/EarningReports'
 // import SalesAnalytics from '@views/dashboards/crm/SalesAnalytics'
 // import SalesStats from '@views/dashboards/crm/SalesStats'
 
-const DashboardCRM = () => {
+const DashboardCRM = async ({ searchParams }: { searchParams: Promise<{ freq?: 'yearly' | 'quarterly' }> }) => {
   // redirect('/en/employees')
+  const resolvedSearchParams = await searchParams
+  const data = await getSalesData(resolvedSearchParams)
 
   return (
     <Grid container spacing={6}>
       {/* Full-width Bar Chart */}
       <Grid size={{ xs: 12 }}>
-        <CRMBarChart />
+        <CRMBarChart data={data} />
       </Grid>
 
       {/* Key Metrics Cards */}

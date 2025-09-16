@@ -150,26 +150,43 @@ const CRMBarChart = () => {
     ]
   }
 
-  // Generate data for the chart - one series per year
-  const series = years.map((year, yearIndex) => ({
-    name: year.toString(),
-    data: months.map((month, monthIndex) => ({
-      x: month,
-      y: 30 + yearIndex * 5 + monthIndex * 10,
-      fillColor: [
-        '#4f81bd',
-        '#c0504d',
-        '#9bbb59',
-        '#8064a2',
-        '#4bacc6',
-        '#f79646',
-        '#8c8c8c',
-        '#4aacc5',
-        '#d16b16',
-        '#9c27b0'
-      ][yearIndex % 10]
-    }))
-  }))
+  // Generate more dynamic and vibrant sales data
+  const getRandomVariation = (base: number, variation: number) => {
+    return base + (Math.random() * variation * 2 - variation)
+  }
+
+  const series = years.map((year, yearIndex) => {
+    // Base values that increase slightly each year
+    const baseValue = 30 + yearIndex * 8
+
+    const monthlyPattern = months.map((_, i) => {
+      // Create a more natural sales pattern with seasonal variations
+      const seasonalFactor = 1 + 0.3 * Math.sin((i / months.length) * Math.PI * 2)
+      const randomFactor = 0.8 + Math.random() * 0.4 // Random factor between 0.8 and 1.2
+
+      return baseValue * seasonalFactor * randomFactor
+    })
+
+    return {
+      name: year.toString(),
+      data: months.map((month, monthIndex) => ({
+        x: month,
+        y: Math.round(monthlyPattern[monthIndex] * (Math.random() * 10 + 50)), // Varying percentages
+        fillColor: [
+          '#4f81bd',
+          '#c0504d',
+          '#9bbb59',
+          '#8064a2',
+          '#4bacc6',
+          '#f79646',
+          '#8c8c8c',
+          '#4aacc5',
+          '#d16b16',
+          '#9c27b0'
+        ][yearIndex % 10]
+      }))
+    }
+  })
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>

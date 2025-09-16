@@ -17,13 +17,35 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 
 // ** Types
-interface ChartData {
+interface BaseChartData {
   years: string[]
+  salesData: Array<{
+    year: string
+    data: Array<
+      {
+        value: number
+      } & Record<string, any>
+    >
+  }>
+}
+
+interface YearlyChartData extends BaseChartData {
   months: string[]
   salesData: Array<{
     year: string
     data: Array<{
       month: string
+      value: number
+    }>
+  }>
+}
+
+interface QuarterlyChartData extends BaseChartData {
+  quarters: string[]
+  salesData: Array<{
+    year: string
+    data: Array<{
+      quarter: string
       value: number
     }>
   }>
@@ -40,10 +62,9 @@ const CRMBarChart = () => {
   const theme = useTheme()
 
   // State
-
   const [chartData, setChartData] = useState<{
-    yearly: ChartData
-    quarterly: ChartData & { quarters: string[] }
+    yearly: YearlyChartData
+    quarterly: QuarterlyChartData
   } | null>(null)
 
   const [isLoading, setIsLoading] = useState(true)
@@ -221,28 +242,47 @@ const CRMBarChart = () => {
   const series = useMemo(() => {
     if (!chartData) return []
 
-    const dataSource = view === 'quarterly' ? chartData.quarterly : chartData.yearly
-    const dataKey = view === 'quarterly' ? 'quarter' : 'month'
-
-    return dataSource.salesData.map((yearData, yearIndex) => ({
-      name: yearData.year,
-      data: yearData.data.map(item => ({
-        x: item[dataKey],
-        y: item.value,
-        fillColor: [
-          '#4f81bd',
-          '#c0504d',
-          '#9bbb59',
-          '#8064a2',
-          '#4bacc6',
-          '#f79646',
-          '#8c8c8c',
-          '#4aacc5',
-          '#d16b16',
-          '#9c27b0'
-        ][yearIndex % 10]
+    if (view === 'quarterly') {
+      return chartData.quarterly.salesData.map((yearData, yearIndex) => ({
+        name: yearData.year,
+        data: yearData.data.map(item => ({
+          x: item.quarter,
+          y: item.value,
+          fillColor: [
+            '#4f81bd',
+            '#c0504d',
+            '#9bbb59',
+            '#8064a2',
+            '#4bacc6',
+            '#f79646',
+            '#8c8c8c',
+            '#4aacc5',
+            '#d16b16',
+            '#9c27b0'
+          ][yearIndex % 10]
+        }))
       }))
-    }))
+    } else {
+      return chartData.yearly.salesData.map((yearData, yearIndex) => ({
+        name: yearData.year,
+        data: yearData.data.map(item => ({
+          x: item.month,
+          y: item.value,
+          fillColor: [
+            '#4f81bd',
+            '#c0504d',
+            '#9bbb59',
+            '#8064a2',
+            '#4bacc6',
+            '#f79646',
+            '#8c8c8c',
+            '#4aacc5',
+            '#d16b16',
+            '#9c27b0'
+          ][yearIndex % 10]
+        }))
+      }))
+    }
   }, [chartData, view])
 
   if (isLoading) {

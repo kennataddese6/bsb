@@ -10,11 +10,16 @@ import dynamic from 'next/dynamic'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import Skeleton from '@mui/material/Skeleton'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+
+// ** Component Imports
+const ChartSkeleton = dynamic(() => import('./components/ChartSkeleton'), {
+  loading: () => null,
+  ssr: false
+})
 
 // ** Types
 interface BaseChartData {
@@ -286,32 +291,19 @@ const CRMBarChart = () => {
   }, [chartData, view])
 
   if (isLoading) {
-    return (
-      <Card className='bs-full' sx={{ width: '100%' }}>
-        <CardHeader
-          title={<Skeleton variant='text' width={200} height={32} />}
-          subheader={<Skeleton variant='text' width={150} height={24} />}
-          sx={{
-            flexDirection: ['column', 'row'],
-            alignItems: ['flex-start', 'center'],
-            '& .MuiCardHeader-action': { display: 'none' },
-            flexWrap: 'wrap',
-            '& .MuiCardHeader-content': { mb: [2, 0] }
-          }}
-        />
-        <CardContent sx={{ p: 3, height: 450, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Skeleton variant='rectangular' height='100%' />
-        </CardContent>
-      </Card>
-    )
+    return <ChartSkeleton />
   }
 
   if (error) {
     return <div>Error: {error}</div>
   }
 
+  if (!chartData) {
+    return <div>No data available</div>
+  }
+
   // Extract years from chart data
-  const years = chartData?.yearly.years || []
+  const years = chartData.yearly.years || []
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>

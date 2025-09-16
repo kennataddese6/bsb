@@ -23,6 +23,28 @@ import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
+import salesData from '@/data/salesData.json'
+import quarterlySalesData from '@/data/quarterlySalesData.json'
+
+export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined }) => {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
+
+    if (searchParams?.freq === 'quarterly') {
+      return quarterlySalesData
+    }
+
+    return salesData
+  } catch (error: any) {
+    console.error('Error Sales Data:', error)
+
+    throw new Error(error?.message || 'Failed to fetch Sales Data')
+  }
+}
 
 export const getEmployees = async (searchParams: { page?: string; size?: string }) => {
   try {

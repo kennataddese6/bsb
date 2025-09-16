@@ -7,6 +7,8 @@ import { useState, useMemo } from 'react'
 import dynamic from 'next/dynamic'
 
 // ** MUI Imports
+import { useSearchParams } from 'next/navigation'
+
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
@@ -64,10 +66,14 @@ const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexChart
 const CRMBarChart = ({ data }: { data: ChartData }) => {
   // Hooks
   const theme = useTheme()
+  const searchParams = useSearchParams()
 
   // State
   const { createSalesFrequencyUrl } = useChangeUrl()
-  const [view, setView] = useState<'yearly' | 'quarterly'>('yearly')
+
+  const [view, setView] = useState<'yearly' | 'quarterly'>(
+    (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
+  )
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'
@@ -291,7 +297,7 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <ToggleButtonGroup
               color='primary'
-              value={view}
+              value={searchParams.get('freq') || 'yearly'}
               exclusive
               onChange={(_, newView) => {
                 newView && setView(newView)

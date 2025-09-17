@@ -80,14 +80,14 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
       }
     )
 
-    console.log(searchParams?.sales, 'some data')
-    console.log(response.data)
+    // Normalize possibly null/undefined salesData from backend
+    const rawSalesData = Array.isArray(response.data?.salesData) ? response.data.salesData : []
 
     if (searchParams?.freq === 'quarterly') {
-      return { years: yearsStr, quarters, salesData: transformToQuarterlyData(response.data.salesData) }
+      return { years: yearsStr, quarters, salesData: transformToQuarterlyData(rawSalesData) }
     }
 
-    return { years: yearsStr, months, salesData: response.data.salesData }
+    return { years: yearsStr, months, salesData: rawSalesData }
   } catch (error: any) {
     console.error('Error Sales Data:', error)
 

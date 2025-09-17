@@ -255,7 +255,7 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
         name: yearData.year,
         data: yearData.data.map(item => ({
           x: item.quarter,
-          y: item.value,
+          y: typeof item.value === 'number' ? item.value : Number(item.value) || 0,
           fillColor: colors[yearIndex % colors.length]
         }))
       }))
@@ -273,7 +273,7 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
           if (item) {
             return {
               x: `Month ${i + 1}`,
-              y: item.value,
+              y: typeof item.value === 'number' ? item.value : Number(item.value) || 0,
               fillColor: colors[yearIndex % colors.length]
             }
           } else {

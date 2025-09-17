@@ -65,7 +65,13 @@ import useChangeUrl from '@/hooks/useChangeUrl'
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPersons?: Array<{ id: string; name: string }> }) => {
+const CRMBarChart = ({
+  data,
+  salesPersons = []
+}: {
+  data: ChartData
+  salesPersons?: Array<{ id: string; name: string }>
+}) => {
   // Hooks
   const theme = useTheme()
   const searchParams = useSearchParams()
@@ -79,9 +85,19 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
 
   // ** Salesperson Options from server (prepend 'All Sales')
   const salesOptions: Array<{ id: string; name: string }> = useMemo(() => {
-    const unique = Array.isArray(salesPersons) ? salesPersons : []
+    const list = Array.isArray(salesPersons) ? salesPersons : []
+    const map = new Map<string, { id: string; name: string }>()
 
-    return [{ id: 'all', name: 'All Sales' }, ...unique]
+    // Always include the "All Sales" option
+    map.set('all', { id: 'all', name: 'All Sales' })
+
+    for (const s of list) {
+      if (s && typeof s.id === 'string' && !map.has(s.id)) {
+        map.set(s.id, { id: s.id, name: s.name })
+      }
+    }
+
+    return Array.from(map.values())
   }, [salesPersons])
 
   // ** Vars
@@ -337,20 +353,21 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
               }}
               options={salesOptions}
               getOptionLabel={opt => opt.name}
-              value={
-                selectedSales === 'all' ? null : salesOptions.find(o => o.id === selectedSales) || null
-              }
+              value={selectedSales === 'all' ? null : salesOptions.find(o => o.id === selectedSales) || null}
               inputValue={salesInput}
               onInputChange={(_, newInput) => setSalesInput(newInput)}
               isOptionEqualToValue={(option, value) => option.id === value.id}
               onChange={(_, newValue) => {
                 const id = newValue?.id
-                
+
                 createSalesFrequencyUrl(view)
                 createSalesPersonUrl(id ? id : null)
               }}
-              renderInput={params => (
-                <TextField {...params} placeholder='Search or select sales' />
+              renderInput={params => <TextField {...params} placeholder='Search or select sales' />}
+              renderOption={(props, option) => (
+                <li {...props} key={option.id}>
+                  {option.name}
+                </li>
               )}
               ListboxProps={{
                 sx: {

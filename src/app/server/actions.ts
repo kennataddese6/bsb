@@ -43,7 +43,7 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
 
     const response = await axios.post(
       `${process.env.BASE_URL}/reports/sales`,
-      { years: years, sales: searchParams?.sales || 'all' },
+      { years: years, salesPerson: searchParams?.sales || '' },
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,
@@ -51,6 +51,9 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
         }
       }
     )
+
+    console.log(searchParams?.sales, 'some data')
+    console.log(response.data)
 
     if (searchParams?.freq === 'quarterly') {
       return { years: yearsStr, quarters, salesData: transformToQuarterlyData(response.data.salesData) }

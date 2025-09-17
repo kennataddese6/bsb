@@ -263,7 +263,9 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
     if (view === 'quarterly' && isQuarterly) {
       const quarterlyData = data as QuarterlyChartData
 
-      return quarterlyData.salesData.map((yearData, yearIndex) => ({
+      const sorted = [...quarterlyData.salesData].sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10))
+
+      return sorted.map((yearData, yearIndex) => ({
         name: yearData.year,
         data: yearData.data.map(item => ({
           x: item.quarter,
@@ -276,7 +278,9 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
     if (isYearly) {
       const yearlyData = data as YearlyChartData
 
-      return yearlyData.salesData.map((yearData, yearIndex) => ({
+      const sorted = [...yearlyData.salesData].sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10))
+
+      return sorted.map((yearData, yearIndex) => ({
         name: yearData.year,
         data: yearlyData.salesData[0].data.map((_, i) => {
           const item = yearData.data[i]
@@ -305,14 +309,15 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
     return <div>No data available</div>
   }
 
-  // Extract years from chart data
+  // Extract years from chart data and sort ascending for display
   const years = data.years || []
+  const yearsSorted = [...years].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>
       <CardHeader
         title='Sales Performance'
-        subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${years[0] || ''}${years.length > 1 ? `-${years[years.length - 1]}` : ''})`}
+        subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${yearsSorted[0] || ''}${yearsSorted.length > 1 ? `-${yearsSorted[yearsSorted.length - 1]}` : ''})`}
         action={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <ToggleButtonGroup

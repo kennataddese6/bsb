@@ -319,37 +319,22 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
         subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${yearsSorted[0] || ''}${yearsSorted.length > 1 ? `-${yearsSorted[yearsSorted.length - 1]}` : ''})`}
         action={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <ToggleButtonGroup
-              color='primary'
-              value={searchParams.get('freq') || 'yearly'}
-              exclusive
-              onChange={(_, newView) => {
-                newView && setView(newView)
-                createSalesFrequencyUrl(newView)
-              }}
-              aria-label='chart view type'
-              size='small'
-              sx={{
-                '& .MuiToggleButton-root': {
-                  px: 3,
-                  py: 1,
-                  '&.Mui-selected': {
-                    backgroundColor: 'primary.main',
-                    color: 'primary.contrastText',
-                    '&:hover': {
-                      backgroundColor: 'primary.dark'
-                    }
-                  }
-                }
-              }}
-            >
-              <ToggleButton value='yearly'>Yearly</ToggleButton>
-              <ToggleButton value='quarterly'>Quarterly</ToggleButton>
-            </ToggleButtonGroup>
-
             <Autocomplete
               size='small'
-              sx={{ minWidth: 240 }}
+              sx={{
+                minWidth: 240,
+                '& .MuiOutlinedInput-root': {
+                  height: 36,
+                  borderRadius: 1
+                },
+                '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                  borderRadius: 1
+                },
+                '& .MuiOutlinedInput-input': {
+                  py: 0,
+                  fontSize: '0.875rem'
+                }
+              }}
               options={salesOptions}
               getOptionLabel={opt => opt.name}
               value={
@@ -380,6 +365,35 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
                 }
               }}
             />
+
+            <ToggleButtonGroup
+              color='primary'
+              value={searchParams.get('freq') || 'yearly'}
+              exclusive
+              onChange={(_, newView) => {
+                newView && setView(newView)
+                createSalesFrequencyUrl(newView)
+              }}
+              aria-label='chart view type'
+              size='small'
+              sx={{
+                '& .MuiToggleButton-root': {
+                  px: 3,
+                  height: 36,
+                  lineHeight: 1,
+                  '&.Mui-selected': {
+                    backgroundColor: 'primary.main',
+                    color: 'primary.contrastText',
+                    '&:hover': {
+                      backgroundColor: 'primary.dark'
+                    }
+                  }
+                }
+              }}
+            >
+              <ToggleButton value='yearly'>Yearly</ToggleButton>
+              <ToggleButton value='quarterly'>Quarterly</ToggleButton>
+            </ToggleButtonGroup>
           </Box>
         }
         sx={{

@@ -209,12 +209,12 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
           colors: disabledText,
           fontSize: '13px'
         },
-        formatter: (val: number) => `${val}%`
+        formatter: (val: number) => `${val}$`
       }
     },
     tooltip: {
       y: {
-        formatter: (val: number) => `${val}%`
+        formatter: (val: number) => `${val}$`
       }
     },
     responsive: [
@@ -374,7 +374,7 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
             },
             tooltip: {
               y: {
-                formatter: (val: number) => `${val}% growth`,
+                formatter: (val: number) => `${val}$`,
                 title: {
                   formatter: (seriesName: string) => `${seriesName}:`
                 }

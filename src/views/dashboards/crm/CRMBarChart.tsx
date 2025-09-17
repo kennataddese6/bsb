@@ -358,6 +358,25 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
                 }}
                 displayEmpty
                 inputProps={{ 'aria-label': 'Select salesperson' }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      mt: 1,
+                      borderRadius: 2,
+                      boxShadow: theme.shadows[3],
+                      '& .MuiList-root': {
+                        maxHeight: 300,
+                        overflowY: 'auto',
+                        scrollbarWidth: 'thin',
+                        '&::-webkit-scrollbar': { width: 6 },
+                        '&::-webkit-scrollbar-thumb': {
+                          backgroundColor: 'var(--mui-palette-divider)',
+                          borderRadius: 8
+                        }
+                      }
+                    }
+                  }
+                }}
               >
                 {salesOptions.map(opt => (
                   <MenuItem key={opt.id} value={opt.id}>

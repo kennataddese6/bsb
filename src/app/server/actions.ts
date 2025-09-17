@@ -36,9 +36,9 @@ export const getSalesPerson = async (searchParams: { page?: string; size?: strin
 
     const response = await axios.get(`${process.env.BASE_URL}/salesperson`, {
       params: {
-        page_size: searchParams?.size || 10,
+        pageSize: searchParams?.size || 200,
         page: searchParams?.page || 1,
-        sort_direction: 'desc'
+        search: ''
       },
       headers: {
         Authorization: `Bearer ${session.accessToken}`,

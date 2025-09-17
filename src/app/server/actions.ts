@@ -34,13 +34,11 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
       throw new Error('Authentication required')
     }
 
-    if (searchParams?.freq === 'quarterly') {
-      return quarterlySalesData
-    }
-
     const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    const quarters = ['Q1', 'Q2', 'Q3', 'Q4']
 
     const response = await axios.post(
       `${process.env.BASE_URL}/reports/sales`,
@@ -52,6 +50,10 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
         }
       }
     )
+
+    if (searchParams?.freq === 'quarterly') {
+      return { years, quarters, salesData: quarterlySalesData.salesData }
+    }
 
     return { years, months, salesData: response.data.salesData }
   } catch (error: any) {

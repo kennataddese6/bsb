@@ -385,7 +385,7 @@ const CRMBarChart = ({
                 <MenuItem disableRipple disableTouchRipple disableGutters sx={{ px: 2, py: 1 }}>
                   <TextField
                     autoFocus
-                    placeholder='Search sales'
+                    placeholder='Search salesperson'
                     size='small'
                     value={salesFilter}
                     onChange={e => {

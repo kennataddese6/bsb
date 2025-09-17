@@ -24,7 +24,7 @@ import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
-import quarterlySalesData from '@/data/quarterlySalesData.json'
+import { transformToQuarterlyData } from '@/utils/transformSalesData'
 
 export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined }) => {
   try {
@@ -34,7 +34,7 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
       throw new Error('Authentication required')
     }
 
-    const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+    const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
 
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -52,7 +52,7 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
     )
 
     if (searchParams?.freq === 'quarterly') {
-      return { years, quarters, salesData: quarterlySalesData.salesData }
+      return { years, quarters, salesData: transformToQuarterlyData(response.data.salesData) }
     }
 
     return { years, months, salesData: response.data.salesData }

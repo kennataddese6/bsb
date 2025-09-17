@@ -2,6 +2,7 @@
  * ! The server actions below are used to fetch the static data from the fake-db. If you're using an ORM
  * ! (Object-Relational Mapping) or a database, you can swap the code below with your own database queries.
  */
+
 'use server'
 
 // External Imports
@@ -23,7 +24,6 @@ import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
-import salesData from '@/data/salesData.json'
 import quarterlySalesData from '@/data/quarterlySalesData.json'
 
 export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined }) => {
@@ -38,7 +38,22 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
       return quarterlySalesData
     }
 
-    return salesData
+    const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    const response = await axios.post(
+      `${process.env.BASE_URL}/reports/sales`,
+      { years: years },
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    return { years, months, salesData: response.data.salesData }
   } catch (error: any) {
     console.error('Error Sales Data:', error)
 

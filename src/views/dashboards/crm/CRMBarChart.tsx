@@ -16,9 +16,8 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 
 // ** Types
 type ChartData = YearlyChartData | QuarterlyChartData
@@ -89,6 +88,7 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
   const selectedSales = (searchParams.get('sales') as string) || 'all'
+  const [salesInput, setSalesInput] = useState('')
 
   // Determine if the data is yearly or quarterly
   const isYearly = 'months' in data && Array.isArray(data.months)
@@ -347,44 +347,39 @@ const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPerson
               <ToggleButton value='quarterly'>Quarterly</ToggleButton>
             </ToggleButtonGroup>
 
-            <FormControl size='small' sx={{ minWidth: 180 }}>
-              <Select
-                value={selectedSales}
-                onChange={e => {
-                  const val = e.target.value as string
-
-                  createSalesFrequencyUrl(view)
-                  createSalesPersonUrl(val === 'all' ? null : val)
-                }}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Select salesperson' }}
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      mt: 1,
-                      borderRadius: 2,
-                      boxShadow: theme.shadows[3],
-                      '& .MuiList-root': {
-                        maxHeight: 300,
-                        overflowY: 'auto',
-                        scrollbarWidth: 'thin',
-                        '&::-webkit-scrollbar': { width: 6 },
-                        '&::-webkit-scrollbar-thumb': {
-                          backgroundColor: 'var(--mui-palette-divider)',
-                          borderRadius: 8
-                        }
-                      }
-                    }
+            <Autocomplete
+              size='small'
+              sx={{ minWidth: 240 }}
+              options={salesOptions}
+              getOptionLabel={opt => opt.name}
+              value={
+                selectedSales === 'all' ? null : salesOptions.find(o => o.id === selectedSales) || null
+              }
+              inputValue={salesInput}
+              onInputChange={(_, newInput) => setSalesInput(newInput)}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onChange={(_, newValue) => {
+                const id = newValue?.id
+                
+                createSalesFrequencyUrl(view)
+                createSalesPersonUrl(id ? id : null)
+              }}
+              renderInput={params => (
+                <TextField {...params} placeholder='Search or select sales' />
+              )}
+              ListboxProps={{
+                sx: {
+                  maxHeight: 300,
+                  overflowY: 'auto',
+                  scrollbarWidth: 'thin',
+                  '&::-webkit-scrollbar': { width: 6 },
+                  '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'var(--mui-palette-divider)',
+                    borderRadius: 8
                   }
-                }}
-              >
-                {salesOptions.map(opt => (
-                  <MenuItem key={opt.id} value={opt.id}>
-                    {opt.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                }
+              }}
+            />
           </Box>
         }
         sx={{

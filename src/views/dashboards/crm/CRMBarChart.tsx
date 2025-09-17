@@ -268,11 +268,19 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
         name: yearData.year,
         data: yearlyData.salesData[0].data.map((_, i) => {
           const item = yearData.data[i]
+          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-          return {
-            x: `Month ${i + 1}`,
-            y: item.value,
-            fillColor: colors[yearIndex % colors.length]
+          if (item) {
+            return {
+              x: `Month ${i + 1}`,
+              y: item.value,
+              fillColor: colors[yearIndex % colors.length]
+            }
+          } else {
+            return {
+              x: months[i],
+              y: 0
+            }
           }
         })
       }))

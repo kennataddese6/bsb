@@ -382,7 +382,18 @@ const CRMBarChart = ({
                   }
                 }}
               >
-                <MenuItem disableRipple disableTouchRipple disableGutters sx={{ px: 2, py: 1 }}>
+                <MenuItem
+                  disableRipple
+                  disableTouchRipple
+                  disableGutters
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    '&:hover': { backgroundColor: 'transparent' },
+                    '&.Mui-focusVisible': { backgroundColor: 'transparent' },
+                    '&.Mui-selected': { backgroundColor: 'transparent !important' }
+                  }}
+                >
                   <TextField
                     autoFocus
                     placeholder='Search salesperson'

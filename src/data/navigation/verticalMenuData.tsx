@@ -5,6 +5,16 @@ import type { getDictionary } from '@/utils/getDictionary'
 const verticalMenuData = (dictionary: Awaited<ReturnType<typeof getDictionary>>): VerticalMenuDataType[] => [
   // This is how you will normally render submenu
   {
+    label: dictionary['navigation'].dashboards,
+
+    /* suffix: {
+      label: '5',
+      color: 'error'
+    }, */
+    icon: 'bx-home-smile',
+    href: '/dashboards/crm'
+  },
+  {
     label: dictionary['navigation'].employees,
     icon: 'bx-user-plus',
     href: '/employees'

@@ -9,8 +9,8 @@ import SalesChartServer from './SalesChartServer'
 // import SalesStats from '@views/dashboards/crm/SalesStats'
 
 const DashboardCRM = ({ searchParams }: { searchParams: Promise<{ freq?: 'yearly' | 'quarterly' }> }) => {
-  const sp = use(searchParams)
-  const suspenseKey = `freq=${sp?.freq ?? ''}`
+  const sp = use(searchParams) as { freq?: 'yearly' | 'quarterly'; sales?: string }
+  const suspenseKey = `freq=${sp?.freq ?? ''}&sales=${sp?.sales ?? ''}`
 
   return (
     <Suspense key={suspenseKey} fallback={<ChartSkeleton />}>

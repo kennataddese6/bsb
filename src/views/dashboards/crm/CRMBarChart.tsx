@@ -16,6 +16,9 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
 
 // ** Types
 type ChartData = YearlyChartData | QuarterlyChartData
@@ -69,15 +72,24 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
   const searchParams = useSearchParams()
 
   // State
-  const { createSalesFrequencyUrl } = useChangeUrl()
+  const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
 
   const [view, setView] = useState<'yearly' | 'quarterly'>(
     (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
   )
 
+  // ** Salesperson Options (could be moved to data source)
+  const salesOptions: Array<{ id: string; name: string }> = [
+    { id: 'all', name: 'All Sales' },
+    { id: '1D', name: 'david Friedman' },
+    { id: 'AC', name: 'Anthony Callie' },
+    { id: 'AH', name: 'ARON HERZOG' }
+  ]
+
   // ** Vars
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
+  const selectedSales = (searchParams.get('sales') as string) || 'all'
 
   // Determine if the data is yearly or quarterly
   const isYearly = 'months' in data && Array.isArray(data.months)
@@ -330,6 +342,26 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
               <ToggleButton value='yearly'>Yearly</ToggleButton>
               <ToggleButton value='quarterly'>Quarterly</ToggleButton>
             </ToggleButtonGroup>
+
+            <FormControl size='small' sx={{ minWidth: 180 }}>
+              <Select
+                value={selectedSales}
+                onChange={e => {
+                  const val = e.target.value as string
+
+                  createSalesFrequencyUrl(view)
+                  createSalesPersonUrl(val === 'all' ? null : val)
+                }}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Select salesperson' }}
+              >
+                {salesOptions.map(opt => (
+                  <MenuItem key={opt.id} value={opt.id}>
+                    {opt.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         }
         sx={{

@@ -8,7 +8,7 @@ import { getSalesData } from '@/app/server/actions'
 const SalesChartServer = async ({
   searchParams
 }: {
-  searchParams: Promise<{ freq?: 'yearly' | 'quarterly' }>
+  searchParams: Promise<{ freq?: 'yearly' | 'quarterly'; sales?: string }>
 }) => {
   const resolvedSearchParams = await searchParams
   const data = await getSalesData(resolvedSearchParams)

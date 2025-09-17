@@ -16,6 +16,16 @@ export default function useChangeUrl() {
     replace(`${pathname}?${params.toString()}`)
   }
 
+  const createSalesPersonUrl = (salesId?: string | null) => {
+    if (!salesId) {
+      params.delete('sales')
+    } else {
+      params.set('sales', salesId)
+    }
+
+    replace(`${pathname}?${params.toString()}`)
+  }
+
   const createSearchUrl = (query: any) => {
     if (!query) {
       params.delete('search')
@@ -50,6 +60,7 @@ export default function useChangeUrl() {
     createPageUrl,
     createPageSizeURL,
     createSearchUrl,
-    createSalesFrequencyUrl
+    createSalesFrequencyUrl,
+    createSalesPersonUrl
   }
 }

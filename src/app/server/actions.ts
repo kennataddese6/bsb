@@ -26,7 +26,7 @@ import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { transformToQuarterlyData } from '@/utils/transformSalesData'
 
-export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined }) => {
+export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined; sales?: string }) => {
   try {
     const session = await getServerSession(authOptions)
 
@@ -43,7 +43,7 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
 
     const response = await axios.post(
       `${process.env.BASE_URL}/reports/sales`,
-      { years: years },
+      { years: years, sales: searchParams?.sales || 'all' },
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

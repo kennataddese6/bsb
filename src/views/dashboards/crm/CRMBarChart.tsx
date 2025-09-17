@@ -66,7 +66,7 @@ import useChangeUrl from '@/hooks/useChangeUrl'
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const CRMBarChart = ({ data }: { data: ChartData }) => {
+const CRMBarChart = ({ data, salesPersons = [] }: { data: ChartData; salesPersons?: Array<{ id: string; name: string }> }) => {
   // Hooks
   const theme = useTheme()
   const searchParams = useSearchParams()
@@ -78,13 +78,12 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
     (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
   )
 
-  // ** Salesperson Options (could be moved to data source)
-  const salesOptions: Array<{ id: string; name: string }> = [
-    { id: 'all', name: 'All Sales' },
-    { id: '1D', name: 'david Friedman' },
-    { id: 'AC', name: 'Anthony Callie' },
-    { id: 'AH', name: 'ARON HERZOG' }
-  ]
+  // ** Salesperson Options from server (prepend 'All Sales')
+  const salesOptions: Array<{ id: string; name: string }> = useMemo(() => {
+    const unique = Array.isArray(salesPersons) ? salesPersons : []
+
+    return [{ id: 'all', name: 'All Sales' }, ...unique]
+  }, [salesPersons])
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'

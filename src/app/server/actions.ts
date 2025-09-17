@@ -25,6 +25,7 @@ import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { transformToQuarterlyData } from '@/utils/transformSalesData'
+import { getYearRange, toYearStrings, MONTHS, QUARTERS } from '@/utils/dateConstants'
 
 export const getSalesPerson = async (searchParams: { page?: string; size?: string }) => {
   try {
@@ -62,12 +63,12 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
       throw new Error('Authentication required')
     }
 
-    const years = [2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
-    const yearsStr = years.map(String)
+    const years = getYearRange(2016)
+    const yearsStr = toYearStrings(years)
 
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const months = [...MONTHS]
 
-    const quarters = ['Q1', 'Q2', 'Q3', 'Q4']
+    const quarters = [...QUARTERS]
 
     const response = await axios.post(
       `${process.env.BASE_URL}/reports/sales`,

@@ -63,6 +63,7 @@ interface QuarterlyChartData extends BaseChartData {
 import type { ApexOptions } from 'apexcharts'
 
 import useChangeUrl from '@/hooks/useChangeUrl'
+import { MONTHS, QUARTERS } from '@/utils/dateConstants'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
@@ -223,14 +224,14 @@ const CRMBarChart = ({
             return (data as QuarterlyChartData).quarters
           }
 
-          return ['Q1', 'Q2', 'Q3', 'Q4']
+          return [...QUARTERS]
         }
 
         if (isYearly) {
           return (data as YearlyChartData).months
         }
 
-        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        return [...MONTHS]
       })(),
       axisBorder: { show: false },
       axisTicks: { color: divider },
@@ -310,7 +311,7 @@ const CRMBarChart = ({
         name: yearData.year,
         data: yearlyData.salesData[0].data.map((_, i) => {
           const item = yearData.data[i]
-          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+          const months = [...MONTHS]
 
           if (item) {
             return {

@@ -26,6 +26,34 @@ import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { transformToQuarterlyData } from '@/utils/transformSalesData'
 
+export const getSalesPerson = async (searchParams: { page?: string; size?: string }) => {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
+
+    const response = await axios.get(`${process.env.BASE_URL}/salesperson`, {
+      params: {
+        page_size: searchParams?.size || 10,
+        page: searchParams?.page || 1,
+        sort_direction: 'desc'
+      },
+      headers: {
+        Authorization: `Bearer ${session.accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    return response.data
+  } catch (error: any) {
+    console.error('Error fetching employees:', error)
+
+    throw new Error(error?.message || 'Failed to fetch employees')
+  }
+}
+
 export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined; sales?: string }) => {
   try {
     const session = await getServerSession(authOptions)

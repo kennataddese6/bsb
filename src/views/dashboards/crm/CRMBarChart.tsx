@@ -16,7 +16,9 @@ import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Autocomplete from '@mui/material/Autocomplete'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
 import TextField from '@mui/material/TextField'
 
 // ** Types
@@ -104,7 +106,16 @@ const CRMBarChart = ({
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
   const selectedSales = (searchParams.get('sales') as string) || 'all'
-  const [salesInput, setSalesInput] = useState('')
+  const [salesFilter, setSalesFilter] = useState('')
+
+  const filteredOptions = useMemo(() => {
+    const lower = salesFilter.trim().toLowerCase()
+    const allItem = salesOptions.find(o => o.id === 'all')
+
+    const rest = salesOptions.filter(o => o.id !== 'all' && (!lower || o.name.toLowerCase().includes(lower)))
+
+    return allItem ? [allItem, ...rest] : rest
+  }, [salesOptions, salesFilter])
 
   // Determine if the data is yearly or quarterly
   const isYearly = 'months' in data && Array.isArray(data.months)
@@ -335,53 +346,67 @@ const CRMBarChart = ({
         subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${yearsSorted[0] || ''}${yearsSorted.length > 1 ? `-${yearsSorted[yearsSorted.length - 1]}` : ''})`}
         action={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Autocomplete
-              size='small'
-              sx={{
-                minWidth: 240,
-                '& .MuiOutlinedInput-root': {
-                  height: 36,
-                  borderRadius: 1
-                },
-                '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                  borderRadius: 1
-                },
-                '& .MuiOutlinedInput-input': {
-                  py: 0,
-                  fontSize: '0.875rem'
-                }
-              }}
-              options={salesOptions}
-              getOptionLabel={opt => opt.name}
-              value={selectedSales === 'all' ? null : salesOptions.find(o => o.id === selectedSales) || null}
-              inputValue={salesInput}
-              onInputChange={(_, newInput) => setSalesInput(newInput)}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              onChange={(_, newValue) => {
-                const id = newValue?.id
+            <FormControl size='small' sx={{ minWidth: 240 }}>
+              <Select
+                value={selectedSales}
+                onChange={e => {
+                  const val = e.target.value as string
 
-                createSalesFrequencyUrl(view)
-                createSalesPersonUrl(id ? id : null)
-              }}
-              renderInput={params => <TextField {...params} placeholder='Search or select sales' />}
-              renderOption={(props, option) => (
-                <li {...props} key={option.id}>
-                  {option.name}
-                </li>
-              )}
-              ListboxProps={{
-                sx: {
-                  maxHeight: 300,
-                  overflowY: 'auto',
-                  scrollbarWidth: 'thin',
-                  '&::-webkit-scrollbar': { width: 6 },
-                  '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: 'var(--mui-palette-divider)',
-                    borderRadius: 8
+                  createSalesFrequencyUrl(view)
+                  createSalesPersonUrl(val === 'all' ? null : val)
+                }}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Select salesperson' }}
+                sx={{
+                  height: 36,
+                  '& .MuiSelect-select': { py: 0, display: 'flex', alignItems: 'center' },
+                  borderRadius: 1
+                }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      mt: 1,
+                      borderRadius: 1,
+                      boxShadow: theme.shadows[3],
+                      '& .MuiList-root': {
+                        maxHeight: 320,
+                        overflowY: 'auto',
+                        scrollbarWidth: 'thin',
+                        '&::-webkit-scrollbar': { width: 6 },
+                        '&::-webkit-scrollbar-thumb': {
+                          backgroundColor: 'var(--mui-palette-divider)',
+                          borderRadius: 8
+                        }
+                      }
+                    }
                   }
-                }
-              }}
-            />
+                }}
+              >
+                <MenuItem disableRipple disableTouchRipple disableGutters sx={{ px: 2, py: 1 }}>
+                  <TextField
+                    autoFocus
+                    placeholder='Search sales'
+                    size='small'
+                    value={salesFilter}
+                    onChange={e => {
+                      e.stopPropagation()
+                      setSalesFilter(e.target.value)
+                    }}
+                    onKeyDown={e => {
+                      // Prevent Select's default type-to-select behavior while typing in the search field
+                      e.stopPropagation()
+                    }}
+                    onClick={e => e.stopPropagation()}
+                    sx={{ width: '100%' }}
+                  />
+                </MenuItem>
+                {filteredOptions.map(opt => (
+                  <MenuItem key={opt.id} value={opt.id}>
+                    {opt.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             <ToggleButtonGroup
               color='primary'
@@ -423,6 +448,7 @@ const CRMBarChart = ({
       />
       <CardContent sx={{ p: 3 }}>
         <AppReactApexCharts
+          key={`${view}-${selectedSales}`}
           type='bar'
           width='100%'
           height={450}

@@ -24,7 +24,7 @@ import { db as profileData } from '@/fake-db/pages/userProfile'
 import { db as faqData } from '@/fake-db/pages/faq'
 import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
-import { transformToQuarterlyData } from '@/utils/transformSalesData'
+import { transformToQuarterlyData, normalizeToFullMonthlyData } from '@/utils/transformSalesData'
 import { getYearRange, toYearStrings, MONTHS, QUARTERS } from '@/utils/dateConstants'
 
 export const getSalesPerson = async (searchParams: { page?: string; size?: string }) => {
@@ -88,7 +88,10 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
       return { years: yearsStr, quarters, salesData: transformToQuarterlyData(rawSalesData) }
     }
 
-    return { years: yearsStr, months, salesData: rawSalesData }
+    // Ensure each year's monthly data includes all 12 months in canonical order
+    const normalizedMonthly = normalizeToFullMonthlyData(rawSalesData, months)
+
+    return { years: yearsStr, months, salesData: normalizedMonthly }
   } catch (error: any) {
     console.error('Error Sales Data:', error)
 

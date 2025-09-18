@@ -75,6 +75,8 @@ const CRMBarChart = ({
   data: ChartData
   salesPersons?: Array<{ id: string; name: string }>
 }) => {
+  console.log(data, 'dataaaaaaaaaaaaaaaaaaaaaaa')
+
   // Hooks
   const theme = useTheme()
   const searchParams = useSearchParams()
@@ -305,25 +307,21 @@ const CRMBarChart = ({
     if (isYearly) {
       const yearlyData = data as YearlyChartData
 
+      const monthLabels =
+        Array.isArray(yearlyData.months) && yearlyData.months.length === 12 ? yearlyData.months : [...MONTHS]
+
       const sorted = [...yearlyData.salesData].sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10))
 
       return sorted.map((yearData, yearIndex) => ({
         name: yearData.year,
-        data: yearlyData.salesData[0].data.map((_, i) => {
-          const item = yearData.data[i]
-          const months = [...MONTHS]
+        data: monthLabels.map(m => {
+          const found = (yearData.data || []).find(md => (md?.month || '').toString().toLowerCase() === m.toLowerCase())
+          const yVal = typeof found?.value === 'number' ? found.value : Number(found?.value as any) || 0
 
-          if (item) {
-            return {
-              x: `Month ${i + 1}`,
-              y: typeof item.value === 'number' ? item.value : Number(item.value) || 0,
-              fillColor: colors[yearIndex % colors.length]
-            }
-          } else {
-            return {
-              x: months[i],
-              y: 0
-            }
+          return {
+            x: m,
+            y: yVal,
+            fillColor: colors[yearIndex % colors.length]
           }
         })
       }))

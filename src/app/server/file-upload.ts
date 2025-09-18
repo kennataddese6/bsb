@@ -2,6 +2,7 @@
 
 // Next.js Imports
 import { getServerSession } from 'next-auth'
+import axios from 'axios'
 
 // Local Imports
 import { authOptions } from '@/libs/auth'
@@ -15,21 +16,18 @@ export const uploadFile = async (file: File): Promise<{ url: string }> => {
   formData.append('file', file)
 
   try {
-    const response = await fetch(`${process.env.BASE_URL}/users/profile/upload-picture`, {
-      method: 'POST',
+    const response = await axios.post(`${process.env.BASE_URL}/users/profile/upload-picture`, formData, {
       headers: {
-        Authorization: `Bearer ${token}`
-      },
-      body: formData
+        Authorization: `Bearer ${token}`,
+
+        // Let axios / browser set the correct multipart boundary
+        'Content-Type': 'multipart/form-data'
+      }
     })
 
-    if (!response.ok) {
-      throw new Error('Failed to upload file')
-    }
-
-    return response.json()
-  } catch (error) {
-    console.error('Error uploading file:', error)
+    return response.data
+  } catch (error: any) {
+    console.error('Error uploading file:', error?.response?.data || error.message || error)
     throw new Error('Failed to upload file')
   }
 }

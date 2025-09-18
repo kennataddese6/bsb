@@ -13,7 +13,5 @@ export function formatUSD(amount: number | string | null | undefined): string {
     return usdFormatter.format(0)
   }
 
-  console.log('Formatted USD:', usdFormatter.format(num))
-
   return usdFormatter.format(num)
 }

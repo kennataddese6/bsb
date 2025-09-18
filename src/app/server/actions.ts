@@ -57,6 +57,7 @@ export const getSalesPerson = async (searchParams: { page?: string; size?: strin
 
 export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined; sales?: string }) => {
   try {
+    console.log('called', searchParams.freq)
     const session = await getServerSession(authOptions)
 
     if (!session?.accessToken) {
@@ -85,14 +86,20 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
     const rawSalesData = Array.isArray(response.data?.salesData) ? response.data.salesData : []
 
     if (searchParams?.freq === 'quarterly') {
+      console.log('quarterly')
+
       // Normalize first to standardize month names and ensure missing months map to 0
       const normalizedMonthly = normalizeToFullMonthlyData(rawSalesData, months)
+
+      console.log('returning quarterly data')
 
       return { years: yearsStr, quarters, salesData: transformToQuarterlyData(normalizedMonthly) }
     }
 
     // Ensure each year's monthly data includes all 12 months in canonical order
     const normalizedMonthly = normalizeToFullMonthlyData(rawSalesData, months)
+
+    console.log('yearly')
 
     return { years: yearsStr, months, salesData: normalizedMonthly }
   } catch (error: any) {

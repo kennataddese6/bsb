@@ -7,7 +7,7 @@ export default function useChangeUrl() {
   const params = new URLSearchParams(searchParams)
 
   const createSalesFrequencyUrl = (query: 'yearly' | 'quarterly') => {
-    if (!query) {
+    if (!query || query === 'yearly') {
       params.delete('freq')
     } else {
       params.set('freq', query.toString())

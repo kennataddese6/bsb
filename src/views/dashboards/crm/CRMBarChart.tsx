@@ -75,8 +75,6 @@ const CRMBarChart = ({
   data: ChartData
   salesPersons?: Array<{ id: string; name: string }>
 }) => {
-  console.log(data, 'dataaaaaaaaaaaaaaaaaaaaaaa')
-
   // Hooks
   const theme = useTheme()
   const searchParams = useSearchParams()

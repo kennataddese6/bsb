@@ -488,16 +488,60 @@ const CRMBarChart = ({
               colors: ['transparent']
             },
             tooltip: {
+              shared: true,
+              intersect: false,
               y: {
-                formatter: (val: number) => `${val}$`,
-                title: {
-                  formatter: (seriesName: string) => `${seriesName}:`
-                }
+                formatter: (val: number) => `${val}$`
               },
               marker: {
                 show: true
               },
-              theme: theme.palette.mode
+              theme: theme.palette.mode,
+              custom: (opts: any) => {
+                try {
+                  const w = opts.w || {}
+                  const idx = typeof opts.dataPointIndex === 'number' ? opts.dataPointIndex : 0
+
+                  const seriesConfig = Array.isArray(w.config?.series) ? w.config.series : []
+                  const values = Array.isArray(opts.series) ? opts.series : (w.globals && w.globals.series) || []
+                  const hovered = typeof opts.seriesIndex === 'number' ? opts.seriesIndex : undefined
+
+                  const category =
+                    (w.globals && w.globals.categoryLabels && w.globals.categoryLabels[idx]) ||
+                    (w.config?.xaxis?.categories?.[idx] ?? '')
+
+                  let html = `\n                    <div style="padding:8px 12px; font-size:13px; background:#1f2937; color:#fff; border-radius:6px;">\n                      <div style=\"font-weight:700; margin-bottom:8px\">${category}</div>\n                  `
+
+                  for (let i = 0; i < seriesConfig.length; i++) {
+                    const s = seriesConfig[i]
+                    let val: any = 0
+
+                    if (Array.isArray(values) && Array.isArray(values[i])) {
+                      const raw = values[i][idx]
+
+                      val = typeof raw === 'number' ? raw : ((raw && (raw.y ?? raw.value)) ?? 0)
+                    } else if (s && Array.isArray(s.data)) {
+                      const d = s.data[idx]
+
+                      val = typeof d === 'number' ? d : (d && (d.y ?? d.value)) || 0
+                    }
+
+                    val = Number(val) || 0
+
+                    const isHovered = typeof hovered === 'number' && hovered === i
+                    const rowStyle = isHovered ? 'background:rgba(255,255,255,0.03);padding:6px;border-radius:4px' : ''
+                    const nameStyle = isHovered ? 'font-weight:700' : 'font-weight:600'
+
+                    html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        <div style=\"color:#fff;font-weight:700\">${val}$</div>\n                      </div>\n                    `
+                  }
+
+                  html += '\n                    </div>\n                  '
+
+                  return html
+                } catch (e) {
+                  return ''
+                }
+              }
             },
             dataLabels: {
               ...options.dataLabels,

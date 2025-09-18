@@ -510,6 +510,8 @@ const CRMBarChart = ({
                     (w.globals && w.globals.categoryLabels && w.globals.categoryLabels[idx]) ||
                     (w.config?.xaxis?.categories?.[idx] ?? '')
 
+                  const colors = Array.isArray(w.config?.colors) ? w.config.colors : options.colors || []
+
                   let html = `\n                    <div style="padding:8px 12px; font-size:13px; background:#1f2937; color:#fff; border-radius:6px;">\n                      <div style=\"font-weight:700; margin-bottom:8px\">${category}</div>\n                  `
 
                   for (let i = 0; i < seriesConfig.length; i++) {
@@ -531,8 +533,9 @@ const CRMBarChart = ({
                     const isHovered = typeof hovered === 'number' && hovered === i
                     const rowStyle = isHovered ? 'background:rgba(255,255,255,0.03);padding:6px;border-radius:4px' : ''
                     const nameStyle = isHovered ? 'font-weight:700' : 'font-weight:600'
+                    const bulletColor = colors[i] || '#ccc'
 
-                    html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        <div style=\"color:#fff;font-weight:700\">${val}$</div>\n                      </div>\n                    `
+                    html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"display:flex;align-items:center;gap:8px\">\n                          <span style=\"width:10px;height:10px;border-radius:50%;background:${bulletColor};display:inline-block\"></span>\n                          <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        </div>\n                        <div style=\"color:#fff;font-weight:700\">${val}$</div>\n                      </div>\n                    `
                   }
 
                   html += '\n                    </div>\n                  '

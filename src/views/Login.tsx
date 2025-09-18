@@ -90,10 +90,7 @@ const Login = () => {
     formState: { errors }
   } = useForm<FormData>({
     resolver: valibotResolver(schema),
-    defaultValues: {
-      email: 'johndoe@gmail.com',
-      password: 'password'
-    }
+    defaultValues: {}
   })
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)

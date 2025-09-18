@@ -16,7 +16,7 @@ export const uploadFile = async (file: File): Promise<{ url: string }> => {
   formData.append('file', file)
 
   try {
-    const response = await axios.post(`${process.env.BASE_URL}/users/profile/upload-picture`, formData, {
+    const response = await axios.post(`${process.env.BASE_URL}/users/upload-picture`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
 

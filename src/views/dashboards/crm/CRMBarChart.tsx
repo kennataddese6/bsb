@@ -64,6 +64,7 @@ import type { ApexOptions } from 'apexcharts'
 
 import useChangeUrl from '@/hooks/useChangeUrl'
 import { MONTHS, QUARTERS } from '@/utils/dateConstants'
+import { formatUSD } from '@/utils/formatters/formatUSD'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
@@ -248,12 +249,12 @@ const CRMBarChart = ({
           colors: disabledText,
           fontSize: '13px'
         },
-        formatter: (val: number) => `${val}$`
+        formatter: (val: number) => formatUSD(val)
       }
     },
     tooltip: {
       y: {
-        formatter: (val: number) => `${val}$`
+        formatter: (val: number) => formatUSD(val)
       }
     },
     responsive: [
@@ -491,7 +492,7 @@ const CRMBarChart = ({
               shared: true,
               intersect: false,
               y: {
-                formatter: (val: number) => `${val}$`
+                formatter: (val: number) => formatUSD(val)
               },
               marker: {
                 show: true
@@ -535,7 +536,7 @@ const CRMBarChart = ({
                     const nameStyle = isHovered ? 'font-weight:700' : 'font-weight:600'
                     const bulletColor = colors[i] || '#ccc'
 
-                    html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"display:flex;align-items:center;gap:8px\">\n                          <span style=\"width:10px;height:10px;border-radius:50%;background:${bulletColor};display:inline-block\"></span>\n                          <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        </div>\n                        <div style=\"color:#fff;font-weight:700\">${val}$</div>\n                      </div>\n                    `
+                    html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"display:flex;align-items:center;gap:8px\">\n                          <span style=\"width:10px;height:10px;border-radius:50%;background:${bulletColor};display:inline-block\"></span>\n                          <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        </div>\n                        <div style=\"color:#fff;font-weight:700\">${formatUSD(val)}</div>\n                      </div>\n                    `
                   }
 
                   html += '\n                    </div>\n                  '

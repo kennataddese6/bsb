@@ -1,7 +1,7 @@
 'use client'
 
 // ** React Imports
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import { useSearchParams } from 'next/navigation'
@@ -16,99 +16,26 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import TextField from '@mui/material/TextField'
 
+// ** Hook Imports
 import useChangeUrl from '@/hooks/useChangeUrl'
 
-// ** Types
-// type ChartData = YearlyChartData | QuarterlyChartData
-
-interface BaseChartData {
-  years: string[]
-  salesData: Array<{
-    year: string
-    data: Array<{
-      value: number
-      [key: string]: any
-    }>
-  }>
-  months?: string[]
-  quarters?: string[]
-}
-
-interface YearlyChartData extends BaseChartData {
-  months: string[]
-  salesData: Array<{
-    year: string
-    data: Array<{
-      month: string
-      value: number
-    }>
-  }>
-}
-
-interface QuarterlyChartData extends BaseChartData {
-  quarters: string[]
-  salesData: Array<{
-    year: string
-    data: Array<{
-      quarter: string
-      value: number
-    }>
-  }>
-}
-
-const CRMBarChartHeader = ({
-  // data,
-  salesPersons
-}: {
-  // data: ChartData
-
-  salesPersons?: Array<{ id: string; name: string }>
-}) => {
+const CRMBarChartHeader = ({ salesPersons }: { salesPersons?: Array<{ id: string; name: string }> }) => {
   const theme = useTheme()
   const searchParams = useSearchParams()
   const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
   const selectedSales = (searchParams.get('sales') as string) || 'all'
+
   const [salesFilter, setSalesFilter] = useState('')
 
   const [view, setView] = useState<'yearly' | 'quarterly'>(
     (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
   )
 
-  // ** Salesperson Options from server (prepend 'All Sales')
-  const salesOptions: Array<{ id: string; name: string }> = useMemo(() => {
-    const list = Array.isArray(salesPersons) ? salesPersons : []
-    const map = new Map<string, { id: string; name: string }>()
-
-    // Always include the "All Sales" option
-    map.set('all', { id: 'all', name: 'All Sales' })
-
-    for (const s of list) {
-      if (s && typeof s.id === 'string' && !map.has(s.id)) {
-        map.set(s.id, { id: s.id, name: s.name })
-      }
-    }
-
-    return Array.from(map.values())
-  }, [salesPersons])
-
-  const filteredOptions = useMemo(() => {
-    const lower = salesFilter.trim().toLowerCase()
-    const allItem = salesOptions.find(o => o.id === 'all')
-
-    const rest = salesOptions.filter(o => o.id !== 'all' && (!lower || o.name.toLowerCase().includes(lower)))
-
-    return allItem ? [allItem, ...rest] : rest
-  }, [salesOptions, salesFilter])
-
-  // const years = data.years || []
-  // const yearsSorted = [...years].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-
   return (
     <CardHeader
       title='Sales Performance'
       subheader={`Annual and quarterly sales data`}
       key={`${view}-${selectedSales}`}
-      // subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${yearsSorted[0] || ''}${yearsSorted.length > 1 ? `-${yearsSorted[yearsSorted.length - 1]}` : ''})`}
       action={
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <FormControl size='small' sx={{ minWidth: 240 }}>
@@ -176,7 +103,10 @@ const CRMBarChartHeader = ({
                   sx={{ width: '100%' }}
                 />
               </MenuItem>
-              {filteredOptions.map(opt => (
+              <MenuItem key={'all'} value={'all'}>
+                All Sales
+              </MenuItem>
+              {salesPersons?.map(opt => (
                 <MenuItem key={opt.id} value={opt.id}>
                   {opt.name}
                 </MenuItem>

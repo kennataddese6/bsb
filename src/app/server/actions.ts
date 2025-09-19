@@ -57,7 +57,6 @@ export const getSalesPerson = async (searchParams: { page?: string; size?: strin
 
 export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly' | undefined; sales?: string }) => {
   try {
-    console.log('called', searchParams.freq)
     const session = await getServerSession(authOptions)
 
     if (!session?.accessToken) {

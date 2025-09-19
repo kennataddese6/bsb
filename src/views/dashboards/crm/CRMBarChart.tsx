@@ -335,7 +335,8 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
 
                 const seriesConfig = Array.isArray(w.config?.series) ? w.config.series : []
                 const values = Array.isArray(opts.series) ? opts.series : (w.globals && w.globals.series) || []
-                const hovered = typeof opts.seriesIndex === 'number' ? opts.seriesIndex : undefined
+
+                // hovered index not used since tooltip rows are uniform
 
                 const category =
                   (w.globals && w.globals.categoryLabels && w.globals.categoryLabels[idx]) ||
@@ -361,9 +362,9 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
 
                   val = Number(val) || 0
 
-                  const isHovered = typeof hovered === 'number' && hovered === i
-                  const rowStyle = isHovered ? 'background:rgba(255,255,255,0.03);padding:6px;border-radius:4px' : ''
-                  const nameStyle = isHovered ? 'font-weight:700' : 'font-weight:600'
+                  // Do not apply special styling to the first (or any) item — keep all rows uniform
+                  const rowStyle = ''
+                  const nameStyle = 'font-weight:600'
                   const bulletColor = colors[i] || '#ccc'
 
                   html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"display:flex;align-items:center;gap:8px\">\n                          <span style=\"width:10px;height:10px;border-radius:50%;background:${bulletColor};display:inline-block\"></span>\n                          <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        </div>\n                        <div style=\"color:#fff;font-weight:700\">${formatUSD(val)}</div>\n                      </div>\n                    `

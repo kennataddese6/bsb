@@ -1,7 +1,8 @@
 // ** MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Skeleton from '@mui/material/Skeleton'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 
 interface ChartSkeletonProps {
   titleWidth?: number
@@ -13,7 +14,16 @@ const ChartSkeleton = ({ height = 450 }: ChartSkeletonProps) => {
   return (
     <Card sx={{ width: '100%' }}>
       <CardContent sx={{ p: 3 }}>
-        <Skeleton variant='rectangular' height={height as number} width='100%' />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height
+          }}
+        >
+          <CircularProgress />
+        </Box>
       </CardContent>
     </Card>
   )

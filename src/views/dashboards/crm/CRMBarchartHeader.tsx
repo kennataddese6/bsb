@@ -118,7 +118,7 @@ const CRMBarChartHeader = ({ salesPersons }: { salesPersons?: Array<{ id: string
 
           <ToggleButtonGroup
             color='primary'
-            value={searchParams.get('freq') || 'yearly'}
+            value={view || searchParams.get('freq') || 'yearly'}
             exclusive
             onChange={(_, newView) => {
               newView && setView(newView)

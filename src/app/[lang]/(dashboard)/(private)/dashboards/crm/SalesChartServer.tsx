@@ -1,5 +1,3 @@
-// Server Component: fetches sales data and renders the chart
-
 import CRMBarChart from '@views/dashboards/crm/CRMBarChart'
 import { getSalesData } from '@/app/server/actions'
 

@@ -13,7 +13,7 @@ interface ChartSkeletonProps {
 const ChartSkeleton = ({ titleWidth = 200, subtitleWidth = 150, height = 450 }: ChartSkeletonProps) => {
   return (
     <Card sx={{ width: '100%' }}>
-      <CardHeader
+      {/*       <CardHeader
         title={<Skeleton variant='text' width={titleWidth} height={32} />}
         subheader={<Skeleton variant='text' width={subtitleWidth} height={24} />}
         sx={{
@@ -23,7 +23,7 @@ const ChartSkeleton = ({ titleWidth = 200, subtitleWidth = 150, height = 450 }: 
           flexWrap: 'wrap',
           '& .MuiCardHeader-content': { mb: [2, 0] }
         }}
-      />
+      /> */}
       <CardContent sx={{ p: 3 }}>
         <Skeleton variant='rectangular' height={height as number} width='100%' />
       </CardContent>

@@ -26,6 +26,7 @@ import { db as pricingData } from '@/fake-db/pages/pricing'
 import { db as statisticsData } from '@/fake-db/pages/widgetExamples'
 import { transformToQuarterlyData, normalizeToFullMonthlyData } from '@/utils/transformSalesData'
 import { getYearRange, toYearStrings, MONTHS, QUARTERS } from '@/utils/dateConstants'
+import type { Employee } from '@/types/apps/employeeTypes'
 
 export const getSalesPerson = async (searchParams: { page?: string; size?: string }) => {
   try {
@@ -128,7 +129,7 @@ export const getEmployees = async (searchParams: { page?: string; size?: string 
   }
 }
 
-export const createEmployee = async (employee: any) => {
+export const createEmployee = async (employee: Omit<Employee, 'id' | 'accountStatus' | 'createdAt'>) => {
   try {
     const session = await getServerSession(authOptions)
 
@@ -145,9 +146,7 @@ export const createEmployee = async (employee: any) => {
 
     return response.data
   } catch (error: any) {
-    console.error('Error creating employee:', error)
-
-    throw new Error(error?.message || 'Failed to creating employee')
+    throw new Error(error?.response.data.error || 'Failed to creating employee')
   }
 }
 

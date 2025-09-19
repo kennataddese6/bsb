@@ -14,7 +14,7 @@ export type EmployeeFormData = {
   lastName: string
   email: string
   password: string
-  role: 'admin' | 'user'
+  role: 'admin' | 'user' | 'employee'
 }
 
 export type EditEmployeeFormData = {

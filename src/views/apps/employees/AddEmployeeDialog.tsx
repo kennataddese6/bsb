@@ -60,7 +60,7 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       lastName: '',
       email: '',
       password: '',
-      role: 'user' as const
+      role: 'employee' as const
     }
   })
 
@@ -71,20 +71,18 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
       // Use the already uploaded avatar or a default one
       const avatarUrl = currentAvatar || `/images/avatars/${Math.floor(Math.random() * 20) + 1}.png`
 
-      const newEmployee: Omit<Employee, 'id'> & { password: string } = {
+      const newEmployee: Omit<Employee, 'id' | 'accountStatus' | 'createdAt'> & { password: string } = {
         fname: data.firstName,
         lname: data.lastName,
         email: data.email,
-        password: data.password, // This is only needed for the API call
+        password: data.password,
         role: data.role,
-        avatar: avatarUrl,
-        createdAt: new Date().toISOString().split('T')[0],
-        accountStatus: 'active' as const
+        avatar: avatarUrl
       }
 
       const res = await createEmployee(newEmployee)
 
-      onAddEmployee({ ...newEmployee, id: res.user.id })
+      onAddEmployee(res.user)
 
       // Show success toast
       toast.success('Employee added successfully!', {
@@ -265,7 +263,7 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                 }}
                 {...(errors.role && { error: true, helperText: errors.role.message })}
               >
-                <MenuItem value='user'>
+                <MenuItem value='employee'>
                   <div className='flex items-center gap-2'>
                     <i className='bx-user text-lg text-success' />
                     <span>User</span>

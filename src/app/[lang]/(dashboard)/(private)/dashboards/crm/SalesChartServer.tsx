@@ -3,24 +3,19 @@
 import Grid from '@mui/material/Grid2'
 
 import CRMBarChart from '@views/dashboards/crm/CRMBarChart'
-import { getSalesData, getSalesPerson } from '@/app/server/actions'
+import { getSalesData } from '@/app/server/actions'
 
 const SalesChartServer = async ({
   searchParams
 }: {
   searchParams: { freq?: 'yearly' | 'quarterly'; sales?: string }
 }) => {
-  const resolvedSearchParams = await searchParams
-
-  const [data, sales] = await Promise.all([
-    getSalesData(resolvedSearchParams),
-    getSalesPerson({ page: '1', size: '100' })
-  ])
+  const sales = await getSalesData(searchParams)
 
   return (
     <Grid container spacing={6}>
       <Grid size={{ xs: 12 }}>
-        <CRMBarChart data={data} salesPersons={sales?.data || []} />
+        <CRMBarChart data={sales} />
       </Grid>
     </Grid>
   )

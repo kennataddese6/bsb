@@ -4,6 +4,8 @@ import { Suspense, use } from 'react'
 // ** MUI Imports
 import Card from '@mui/material/Card'
 
+import Grid from '@mui/material/Grid2'
+
 // ** Components Imports
 import ChartSkeleton from '@/views/dashboards/crm/components/ChartSkeleton'
 import SalesChartServer from './SalesChartServer'
@@ -16,11 +18,15 @@ const DashboardCRM = ({ searchParams }: { searchParams: Promise<{ freq?: 'yearly
   const resolvedSearchParams = use(searchParams)
 
   return (
-    <Card className='bs-full' sx={{ width: '100%' }}>
-      <SalesChartHeaderServer />
-      <Suspense key={suspenseKey} fallback={<ChartSkeleton />}>
-        <SalesChartServer searchParams={resolvedSearchParams} />
-      </Suspense>
+    <Card sx={{ width: '100%' }}>
+      <Grid container spacing={6}>
+        <Grid size={{ xs: 12 }}>
+          <SalesChartHeaderServer />
+          <Suspense key={suspenseKey} fallback={<ChartSkeleton />}>
+            <SalesChartServer searchParams={resolvedSearchParams} />
+          </Suspense>
+        </Grid>
+      </Grid>
     </Card>
   )
 }

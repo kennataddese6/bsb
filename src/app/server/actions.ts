@@ -50,8 +50,6 @@ export const getSalesPerson = async (searchParams?: { page?: string; size?: stri
 
     return response.data
   } catch (error: any) {
-    console.error('Error fetching employees:', error)
-
     throw new Error(error?.message || 'Failed to fetch employees')
   }
 }
@@ -123,8 +121,6 @@ export const getEmployees = async (searchParams: { page?: string; size?: string 
 
     return response.data
   } catch (error: any) {
-    console.error('Error fetching employees:', error)
-
     throw new Error(error?.message || 'Failed to fetch employees')
   }
 }

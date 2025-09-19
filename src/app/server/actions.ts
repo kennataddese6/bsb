@@ -85,21 +85,13 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
     // Normalize possibly null/undefined salesData from backend
     const rawSalesData = Array.isArray(response.data?.salesData) ? response.data.salesData : []
 
-    if (searchParams?.freq === 'quarterly') {
-      console.log('quarterly')
-
-      // Normalize first to standardize month names and ensure missing months map to 0
-      const normalizedMonthly = normalizeToFullMonthlyData(rawSalesData, months)
-
-      console.log('returning quarterly data')
-
-      return { years: yearsStr, quarters, salesData: transformToQuarterlyData(normalizedMonthly) }
-    }
-
+    // Normalize first to standardize month names and ensure missing months map to 0 and
     // Ensure each year's monthly data includes all 12 months in canonical order
     const normalizedMonthly = normalizeToFullMonthlyData(rawSalesData, months)
 
-    console.log('yearly')
+    if (searchParams?.freq === 'quarterly') {
+      return { years: yearsStr, quarters, salesData: transformToQuarterlyData(normalizedMonthly) }
+    }
 
     return { years: yearsStr, months, salesData: normalizedMonthly }
   } catch (error: any) {

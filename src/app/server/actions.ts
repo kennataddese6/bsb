@@ -28,7 +28,7 @@ import { transformToQuarterlyData, normalizeToFullMonthlyData } from '@/utils/tr
 import { getYearRange, toYearStrings, MONTHS, QUARTERS } from '@/utils/dateConstants'
 import type { Employee } from '@/types/apps/employeeTypes'
 
-export const getSalesPerson = async (searchParams: { page?: string; size?: string }) => {
+export const getSalesPerson = async (searchParams?: { page?: string; size?: string }) => {
   try {
     const session = await getServerSession(authOptions)
 
@@ -38,7 +38,7 @@ export const getSalesPerson = async (searchParams: { page?: string; size?: strin
 
     const response = await axios.get(`${process.env.BASE_URL}/salesperson`, {
       params: {
-        pageSize: searchParams?.size || 200,
+        pageSize: searchParams?.size || 10,
         page: searchParams?.page || 1,
         search: ''
       },

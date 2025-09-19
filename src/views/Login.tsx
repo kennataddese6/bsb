@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 // Next Imports
 import Link from 'next/link'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 
 // MUI Imports
 import Typography from '@mui/material/Typography'
@@ -23,7 +23,6 @@ import { signIn } from 'next-auth/react'
 import { Controller, useForm } from 'react-hook-form'
 import { valibotResolver } from '@hookform/resolvers/valibot'
 import { email, object, minLength, string, pipe, nonEmpty } from 'valibot'
-import type { SubmitHandler } from 'react-hook-form'
 import type { InferInput } from 'valibot'
 import classnames from 'classnames'
 
@@ -74,13 +73,14 @@ const schema = object({
 
 const Login = () => {
   // States
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [errorState, setErrorState] = useState<ErrorType | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Hooks
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { lang: locale } = useParams()
   const theme = useTheme()
 
@@ -95,63 +95,35 @@ const Login = () => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
-  const onSubmit: SubmitHandler<FormData> = async (data: FormData) => {
-    setIsSubmitting(true)
+  const onSubmit = async (values: { password: string; email: string }) => {
+    try {
+      setIsSubmitting(true)
 
-    const res = await signIn('credentials', {
-      email: data.email,
-      password: data.password,
-      redirect: false
-    })
+      const result = await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false
+      })
 
-    if (res && res.ok && res.error === null) {
-      // Get user data to determine role-based redirect
-      try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'}/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email: data.email, password: data.password })
-        })
+      if (result?.error) {
+        // Show error message on form
+        if (result.error === 'CredentialsSignin') {
+          toast.error('Invalid email or password')
+        } else {
+          toast.error('Authentication failed')
+        }
 
         setIsSubmitting(false)
 
-        const redirectURL = '/employees'
-
-        router.replace(getLocalizedUrl(redirectURL, locale as Locale))
-      } catch (error) {
-        setIsSubmitting(false)
-        toast.error('Error logging in. Please try again.', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        })
-
-        // Fallback to default redirect
-        const redirectURL = searchParams.get('redirectTo') ?? '/'
-
-        router.replace(getLocalizedUrl(redirectURL, locale as Locale))
+        return
       }
-    } else {
-      if (res?.error) {
-        setIsSubmitting(false)
-        toast.error('Error logging in. Please try again.', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true
-        })
 
-        // const error = JSON.parse(res.error)
-
-        // setErrorState(error)
+      if (result?.ok) {
+        router.push('/dashboards/crm')
       }
+    } catch (err) {
+      toast.error('An unexpected error occurred. Please try again.')
+      setIsSubmitting(false)
     }
   }
 
@@ -192,7 +164,9 @@ const Login = () => {
                   type='email'
                   label='Email'
                   placeholder='Enter your email'
+                  value={email}
                   onChange={e => {
+                    setEmail(e.target.value)
                     field.onChange(e.target.value)
                     errorState !== null && setErrorState(null)
                   }}
@@ -215,7 +189,9 @@ const Login = () => {
                   placeholder='············'
                   id='login-password'
                   type={isPasswordShown ? 'text' : 'password'}
+                  value={password}
                   onChange={e => {
+                    setPassword(e.target.value)
                     field.onChange(e.target.value)
                     errorState !== null && setErrorState(null)
                   }}

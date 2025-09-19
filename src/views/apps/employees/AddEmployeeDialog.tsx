@@ -266,7 +266,7 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
                 <MenuItem value='employee'>
                   <div className='flex items-center gap-2'>
                     <i className='bx-user text-lg text-success' />
-                    <span>User</span>
+                    <span>Employee</span>
                   </div>
                 </MenuItem>
                 <MenuItem value='admin'>

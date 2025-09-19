@@ -17,9 +17,7 @@ const DashboardCRM = ({ searchParams }: { searchParams: Promise<{ freq?: 'yearly
 
   return (
     <Card className='bs-full' sx={{ width: '100%' }}>
-      <Suspense key={suspenseKey}>
-        <SalesChartHeaderServer />
-      </Suspense>
+      <SalesChartHeaderServer />
       <Suspense key={suspenseKey} fallback={<ChartSkeleton />}>
         <SalesChartServer searchParams={resolvedSearchParams} />
       </Suspense>

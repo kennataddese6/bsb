@@ -65,7 +65,6 @@ import type { ApexOptions } from 'apexcharts'
 import useChangeUrl from '@/hooks/useChangeUrl'
 import { MONTHS, QUARTERS } from '@/utils/dateConstants'
 import { formatUSD } from '@/utils/formatters/formatUSD'
-import CRMBarChartHeader from './CRMBarchartHeader'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
@@ -339,7 +338,7 @@ const CRMBarChart = ({
   const yearsSorted = [...years].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
 
   return (
-    <CardContent sx={{ p: 3 }}>
+    <CardContent sx={{ p: 3 }} key={`${view}-${selectedSales}`}>
       <AppReactApexCharts
         key={`${view}-${selectedSales}`}
         type='bar'

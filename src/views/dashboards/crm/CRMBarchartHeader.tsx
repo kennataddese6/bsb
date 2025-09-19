@@ -64,7 +64,6 @@ const CRMBarChartHeader = ({
 
   salesPersons?: Array<{ id: string; name: string }>
 }) => {
-  console.log(salesPersons, 'sales persons in header')
   const theme = useTheme()
   const searchParams = useSearchParams()
   const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()

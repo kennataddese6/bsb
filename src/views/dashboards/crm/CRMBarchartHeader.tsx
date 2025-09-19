@@ -26,6 +26,7 @@ const CRMBarChartHeader = ({ salesPersons }: { salesPersons?: Array<{ id: string
   const selectedSales = (searchParams.get('sales') as string) || 'all'
 
   const [salesFilter, setSalesFilter] = useState('')
+  const [selectedSalesPerson, setSelectedSalesPerson] = useState('all')
 
   const [view, setView] = useState<'yearly' | 'quarterly'>(
     (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
@@ -40,10 +41,11 @@ const CRMBarChartHeader = ({ salesPersons }: { salesPersons?: Array<{ id: string
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <FormControl size='small' sx={{ minWidth: 240 }}>
             <Select
-              value={selectedSales}
+              value={selectedSalesPerson}
               onChange={e => {
                 const val = e.target.value as string
 
+                setSelectedSalesPerson(val)
                 createSalesFrequencyUrl(view)
                 createSalesPersonUrl(val === 'all' ? null : val)
               }}

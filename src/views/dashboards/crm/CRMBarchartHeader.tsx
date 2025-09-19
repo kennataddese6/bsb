@@ -19,7 +19,7 @@ import TextField from '@mui/material/TextField'
 import useChangeUrl from '@/hooks/useChangeUrl'
 
 // ** Types
-type ChartData = YearlyChartData | QuarterlyChartData
+// type ChartData = YearlyChartData | QuarterlyChartData
 
 interface BaseChartData {
   years: string[]
@@ -57,13 +57,14 @@ interface QuarterlyChartData extends BaseChartData {
 }
 
 const CRMBarChartHeader = ({
-  data,
-  salesPersons = []
+  // data,
+  salesPersons
 }: {
-  data: ChartData
+  // data: ChartData
 
   salesPersons?: Array<{ id: string; name: string }>
 }) => {
+  console.log(salesPersons, 'sales persons in header')
   const theme = useTheme()
   const searchParams = useSearchParams()
   const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
@@ -100,13 +101,15 @@ const CRMBarChartHeader = ({
     return allItem ? [allItem, ...rest] : rest
   }, [salesOptions, salesFilter])
 
-  const years = data.years || []
-  const yearsSorted = [...years].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+  // const years = data.years || []
+  // const yearsSorted = [...years].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
 
   return (
     <CardHeader
       title='Sales Performance'
-      subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${yearsSorted[0] || ''}${yearsSorted.length > 1 ? `-${yearsSorted[yearsSorted.length - 1]}` : ''})`}
+      subheader={`Annual and quarterly sales data`}
+      key={`${view}-${selectedSales}`}
+      // subheader={`${view === 'yearly' ? 'Annual' : 'Quarterly'} comparison (${yearsSorted[0] || ''}${yearsSorted.length > 1 ? `-${yearsSorted[yearsSorted.length - 1]}` : ''})`}
       action={
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <FormControl size='small' sx={{ minWidth: 240 }}>

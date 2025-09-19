@@ -1,7 +1,7 @@
 'use client'
 
 // ** React Imports
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 
 // ** Next Imports
 import dynamic from 'next/dynamic'
@@ -9,17 +9,8 @@ import dynamic from 'next/dynamic'
 // ** MUI Imports
 import { useSearchParams } from 'next/navigation'
 
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import TextField from '@mui/material/TextField'
 
 // ** Types
 type ChartData = YearlyChartData | QuarterlyChartData
@@ -62,62 +53,23 @@ interface QuarterlyChartData extends BaseChartData {
 // Third-party Imports
 import type { ApexOptions } from 'apexcharts'
 
-import useChangeUrl from '@/hooks/useChangeUrl'
 import { MONTHS, QUARTERS } from '@/utils/dateConstants'
 import { formatUSD } from '@/utils/formatters/formatUSD'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const CRMBarChart = ({
-  data,
-  salesPersons = []
-}: {
-  data: ChartData
-  salesPersons?: Array<{ id: string; name: string }>
-}) => {
+const CRMBarChart = ({ data }: { data: ChartData }) => {
   // Hooks
   const theme = useTheme()
   const searchParams = useSearchParams()
 
   // State
-  const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
-
-  const [view, setView] = useState<'yearly' | 'quarterly'>(
-    (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
-  )
-
-  // ** Salesperson Options from server (prepend 'All Sales')
-  const salesOptions: Array<{ id: string; name: string }> = useMemo(() => {
-    const list = Array.isArray(salesPersons) ? salesPersons : []
-    const map = new Map<string, { id: string; name: string }>()
-
-    // Always include the "All Sales" option
-    map.set('all', { id: 'all', name: 'All Sales' })
-
-    for (const s of list) {
-      if (s && typeof s.id === 'string' && !map.has(s.id)) {
-        map.set(s.id, { id: s.id, name: s.name })
-      }
-    }
-
-    return Array.from(map.values())
-  }, [salesPersons])
+  const frequency = (searchParams.get('freq') as string) || 'yearly'
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
-  const selectedSales = (searchParams.get('sales') as string) || 'all'
-  const [salesFilter, setSalesFilter] = useState('')
-
-  const filteredOptions = useMemo(() => {
-    const lower = salesFilter.trim().toLowerCase()
-    const allItem = salesOptions.find(o => o.id === 'all')
-
-    const rest = salesOptions.filter(o => o.id !== 'all' && (!lower || o.name.toLowerCase().includes(lower)))
-
-    return allItem ? [allItem, ...rest] : rest
-  }, [salesOptions, salesFilter])
 
   // Determine if the data is yearly or quarterly
   const isYearly = 'months' in data && Array.isArray(data.months)
@@ -220,7 +172,7 @@ const CRMBarChart = ({
     xaxis: {
       type: 'category',
       categories: (() => {
-        if (view === 'quarterly') {
+        if (frequency === 'quarterly') {
           if (isQuarterly) {
             return (data as QuarterlyChartData).quarters
           }
@@ -288,7 +240,7 @@ const CRMBarChart = ({
       '#9c27b0'
     ]
 
-    if (view === 'quarterly' && isQuarterly) {
+    if (frequency === 'quarterly' && isQuarterly) {
       const quarterlyData = data as QuarterlyChartData
 
       const sorted = [...quarterlyData.salesData].sort((a, b) => parseInt(a.year, 10) - parseInt(b.year, 10))
@@ -327,20 +279,15 @@ const CRMBarChart = ({
     }
 
     return []
-  }, [data, view, isYearly, isQuarterly])
+  }, [data, frequency, isYearly, isQuarterly])
 
   if (!data) {
     return <div>No data available</div>
   }
 
-  // Extract years from chart data and sort ascending for display
-  const years = data.years || []
-  const yearsSorted = [...years].sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
-
   return (
-    <CardContent sx={{ p: 3 }} key={`${view}-${selectedSales}`}>
+    <CardContent sx={{ p: 3 }}>
       <AppReactApexCharts
-        key={`${view}-${selectedSales}`}
         type='bar'
         width='100%'
         height={450}

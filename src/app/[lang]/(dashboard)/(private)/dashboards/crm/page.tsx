@@ -13,7 +13,6 @@ import SalesChartHeaderServer from './SalesChartHeaderServer'
 
 const DashboardCRM = ({ searchParams }: { searchParams: Promise<{ freq?: 'yearly' | 'quarterly' }> }) => {
   const sp = use(searchParams) as { freq?: 'yearly' | 'quarterly'; sales?: string }
-
   const suspenseKey = `freq=${sp?.freq ?? ''}&sales=${sp?.sales ?? ''}`
   const resolvedSearchParams = use(searchParams)
 

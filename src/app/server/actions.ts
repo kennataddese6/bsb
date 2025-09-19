@@ -146,7 +146,7 @@ export const createEmployee = async (employee: Omit<Employee, 'id' | 'accountSta
 
     return response.data
   } catch (error: any) {
-    throw new Error(error?.response.data.error || 'Failed to creating employee')
+    throw new Error(error?.response?.data?.error || 'Failed to creating employee')
   }
 }
 
@@ -169,7 +169,7 @@ export const updateEmployee = async (employee: any) => {
   } catch (error: any) {
     console.error('Error updating employee:', error)
 
-    throw new Error(error?.message || 'Error updating employee')
+    throw new Error(error?.response?.data?.error || error?.message || 'Error updating employee')
   }
 }
 
@@ -192,7 +192,7 @@ export const updateProfile = async (employee: any) => {
   } catch (error: any) {
     console.error('Error updating profile:', error)
 
-    throw new Error(error?.message || 'Error updating profile')
+    throw new Error(error?.response?.data?.error || error?.message || 'Error updating profile')
   }
 }
 
@@ -215,7 +215,7 @@ export const changePassword = async (employee: any) => {
   } catch (error: any) {
     console.error('Error changing password:', error)
 
-    throw new Error(error?.message || 'Error changing password')
+    throw new Error(error?.response?.data?.error || error?.message || 'Error changing password')
   }
 }
 
@@ -238,7 +238,7 @@ export const resetPassword = async (employee: any) => {
   } catch (error: any) {
     console.error('Error changing password:', error)
 
-    throw new Error(error?.message || 'Error changing password')
+    throw new Error(error?.response?.data?.error || error?.message || 'Error changing password')
   }
 }
 

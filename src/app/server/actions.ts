@@ -93,8 +93,6 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
 
     return { years: yearsStr, months, salesData: normalizedMonthly }
   } catch (error: any) {
-    console.error('Error Sales Data:', error)
-
     throw new Error(error?.message || 'Failed to fetch Sales Data')
   }
 }
@@ -163,8 +161,6 @@ export const updateEmployee = async (employee: any) => {
 
     return response.data
   } catch (error: any) {
-    console.error('Error updating employee:', error)
-
     throw new Error(error?.response?.data?.error || error?.message || 'Error updating employee')
   }
 }
@@ -186,8 +182,6 @@ export const updateProfile = async (employee: any) => {
 
     return response.data
   } catch (error: any) {
-    console.error('Error updating profile:', error)
-
     throw new Error(error?.response?.data?.error || error?.message || 'Error updating profile')
   }
 }
@@ -209,8 +203,6 @@ export const changePassword = async (employee: any) => {
 
     return response.data
   } catch (error: any) {
-    console.error('Error changing password:', error)
-
     throw new Error(error?.response?.data?.error || error?.message || 'Error changing password')
   }
 }
@@ -232,8 +224,6 @@ export const resetPassword = async (employee: any) => {
 
     return response.data
   } catch (error: any) {
-    console.error('Error changing password:', error)
-
     throw new Error(error?.response?.data?.error || error?.message || 'Error changing password')
   }
 }

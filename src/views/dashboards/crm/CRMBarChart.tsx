@@ -12,49 +12,16 @@ import { useSearchParams } from 'next/navigation'
 import CardContent from '@mui/material/CardContent'
 import { useTheme } from '@mui/material/styles'
 
+import type { ApexOptions } from 'apexcharts'
+
 // ** Types
-type ChartData = YearlyChartData | QuarterlyChartData
-
-interface BaseChartData {
-  years: string[]
-  salesData: Array<{
-    year: string
-    data: Array<{
-      value: number
-      [key: string]: any
-    }>
-  }>
-  months?: string[]
-  quarters?: string[]
-}
-
-interface YearlyChartData extends BaseChartData {
-  months: string[]
-  salesData: Array<{
-    year: string
-    data: Array<{
-      month: string
-      value: number
-    }>
-  }>
-}
-
-interface QuarterlyChartData extends BaseChartData {
-  quarters: string[]
-  salesData: Array<{
-    year: string
-    data: Array<{
-      quarter: string
-      value: number
-    }>
-  }>
-}
+import type { ChartData, QuarterlyChartData, YearlyChartData } from '@/types/apps/salesChartTypes'
 
 // Third-party Imports
-import type { ApexOptions } from 'apexcharts'
 
 import { MONTHS, QUARTERS } from '@/utils/dateConstants'
 import { formatUSD } from '@/utils/formatters/formatUSD'
+import { colors } from '@/data/colors'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
@@ -226,19 +193,6 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
   // Transform data for the chart
   const series = useMemo(() => {
     if (!data) return []
-
-    const colors = [
-      '#4f81bd',
-      '#c0504d',
-      '#9bbb59',
-      '#8064a2',
-      '#4bacc6',
-      '#f79646',
-      '#8c8c8c',
-      '#4aacc5',
-      '#d16b16',
-      '#9c27b0'
-    ]
 
     if (frequency === 'quarterly' && isQuarterly) {
       const quarterlyData = data as QuarterlyChartData

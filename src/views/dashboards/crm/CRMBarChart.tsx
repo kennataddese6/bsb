@@ -61,28 +61,7 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
       zoom: { enabled: true },
       foreColor: disabledText
     },
-    colors: [
-      '#4f81bd',
-      '#c0504d',
-      '#9bbb59',
-      '#8064a2',
-      '#4bacc6',
-      '#f79646',
-      '#8c8c8c',
-      '#4aacc5',
-      '#d16b16',
-      '#9c27b0',
-      '#5b9bd5',
-      '#ed7d31',
-      '#70ad47',
-      '#7030a0',
-      '#00b0f0',
-      '#ffc000',
-      '#7f7f7f',
-      '#5b9bd5',
-      '#ff0000',
-      '#00b050'
-    ],
+    colors: colors,
     dataLabels: {
       enabled: false, // Disable data labels by default
       formatter: (val: number) => `${val}%`,

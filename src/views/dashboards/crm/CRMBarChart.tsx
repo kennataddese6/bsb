@@ -58,7 +58,6 @@ const CRMBarChart = () => {
   const selectedSales = (searchParams.get('sales') as string) || ''
 
   const [salesFilter, setSalesFilter] = useState('')
-  const [selectedSalesPerson, setSelectedSalesPerson] = useState('')
 
   const [view, setView] = useState<'yearly' | 'quarterly'>(
     (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
@@ -281,11 +280,10 @@ const CRMBarChart = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <FormControl size='small' sx={{ minWidth: 240 }}>
                   <Select
-                    value={selectedSalesPerson}
+                    value={salesPerson}
                     onChange={e => {
                       const val = e.target.value as string
 
-                      setSelectedSalesPerson(val)
                       createSalesFrequencyUrl(view)
                       setSalesPerson(val)
                       createSalesPersonUrl(val === 'all' ? null : val)

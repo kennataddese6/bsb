@@ -43,8 +43,12 @@ const CRMBarChart = () => {
   const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
   // default years as Date objects (Jan 1 of start year, Dec 31 of end year)
-  const [startYearDate, setStartYearDate] = useState<Date>(new Date(2016, 0, 1))
-  const [endYearDate, setEndYearDate] = useState<Date>(new Date(2025, 11, 31))
+  const today = new Date()
+  const tenYearsAgo = new Date()
+
+  tenYearsAgo.setFullYear(today.getFullYear() - 10)
+  const [startYearDate, setStartYearDate] = useState<Date>(tenYearsAgo)
+  const [endYearDate, setEndYearDate] = useState<Date>(today)
 
   const { data, isLoading } = useQuery({
     queryKey: ['salesData', frequency, salesPerson, startYearDate, endYearDate],
@@ -257,7 +261,7 @@ const CRMBarChart = () => {
                 <Box sx={{ maxWidth: 85 }}>
                   <AppReactDatepicker
                     selected={startYearDate}
-                    onChange={(d: Date | null) => setStartYearDate(d)}
+                    onChange={(d: Date | null) => (d ? setStartYearDate(d) : tenYearsAgo)}
                     showYearPicker
                     dateFormat='yyyy'
                     customInput={<TextField size='small' label='From' />}
@@ -267,7 +271,7 @@ const CRMBarChart = () => {
                 <Box sx={{ maxWidth: 85 }}>
                   <AppReactDatepicker
                     selected={endYearDate}
-                    onChange={(d: Date | null) => setEndYearDate(d)}
+                    onChange={(d: Date | null) => (d ? setEndYearDate(d) : today)}
                     showYearPicker
                     dateFormat='yyyy'
                     customInput={<TextField size='small' label='To' />}

@@ -81,6 +81,49 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
   }
 }
 
+export const getSalesDataClient = async (freq: string, sales: string) => {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session?.accessToken) {
+      throw new Error('Authentication required')
+    }
+
+    const years = getYearRange(2016)
+    const yearsStr = toYearStrings(years)
+
+    const months = [...MONTHS]
+
+    const quarters = [...QUARTERS]
+
+    const response = await axios.post(
+      `${process.env.BASE_URL}/reports/sales`,
+      { years: years, salesPerson: sales || '' },
+      {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    // Normalize possibly null/undefined salesData from backend
+    const rawSalesData = Array.isArray(response.data?.salesData) ? response.data.salesData : []
+
+    // Normalize first to standardize month names and ensure missing months map to 0 and
+    // Ensure each year's monthly data includes all 12 months in canonical order
+    const normalizedMonthly = normalizeToFullMonthlyData(rawSalesData, months)
+
+    if (freq === 'quarterly') {
+      return { years: yearsStr, quarters, salesData: transformToQuarterlyData(normalizedMonthly) }
+    }
+
+    return { years: yearsStr, months, salesData: normalizedMonthly }
+  } catch (error: any) {
+    throw new Error(error?.message || 'Failed to fetch Sales Data')
+  }
+}
+
 export const getEmployees = async (searchParams: { page?: string; size?: string }) => {
   try {
     const session = await getServerSession(authOptions)

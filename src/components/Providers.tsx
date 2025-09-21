@@ -12,6 +12,7 @@ import AppReactToastify from '@/libs/styles/AppReactToastify'
 
 // Util Imports
 import { getMode, getSettingsFromCookie, getSystemMode } from '@core/utils/serverHelpers'
+import TanstackProvider from '@/contexts/tanstackProvider'
 
 type Props = ChildrenType & {
   direction: Direction
@@ -31,7 +32,7 @@ const Providers = async (props: Props) => {
       <VerticalNavProvider>
         <SettingsProvider settingsCookie={settingsCookie} mode={mode}>
           <ThemeProvider direction={direction} systemMode={systemMode}>
-            {children}
+            <TanstackProvider>{children}</TanstackProvider>
             <AppReactToastify direction={direction} hideProgressBar />
           </ThemeProvider>
         </SettingsProvider>

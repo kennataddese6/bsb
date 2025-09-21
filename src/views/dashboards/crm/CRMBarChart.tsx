@@ -1,46 +1,99 @@
 'use client'
+'use client'
 
 // ** React Imports
-import { useMemo } from 'react'
-
-// ** Next Imports
-import dynamic from 'next/dynamic'
+import { useMemo, useState } from 'react'
 
 // ** MUI Imports
+
 import { useSearchParams } from 'next/navigation'
 
-import CardContent from '@mui/material/CardContent'
+import dynamic from 'next/dynamic'
+
+import CardHeader from '@mui/material/CardHeader'
+import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import TextField from '@mui/material/TextField'
+
+// ** Hook Imports
+// ** React Imports
+
+// ** Next Imports
+
+// ** MUI Imports
+
+import CardContent from '@mui/material/CardContent'
 
 import type { ApexOptions } from 'apexcharts'
+import Card from '@mui/material/Card'
+import Grid from '@mui/material/Grid2'
 
 // ** Types
-import type { ChartData, QuarterlyChartData, YearlyChartData } from '@/types/apps/salesChartTypes'
+import { useQuery } from '@tanstack/react-query'
+
+import useChangeUrl from '@/hooks/useChangeUrl'
+
+import type { QuarterlyChartData, YearlyChartData } from '@/types/apps/salesChartTypes'
 
 // Third-party Imports
 
 import { MONTHS, QUARTERS } from '@/utils/dateConstants'
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { colors } from '@/data/colors'
+import { getSalesDataClient, getSalesPerson } from '@/app/server/actions'
+import ChartSkeleton from './components/ChartSkeleton'
 
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-const CRMBarChart = ({ data }: { data: ChartData }) => {
-  // Hooks
-  const theme = useTheme()
+const CRMBarChart = () => {
   const searchParams = useSearchParams()
 
-  // State
-  const frequency = (searchParams.get('freq') as string) || 'yearly'
+  const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
+  const selectedSales = (searchParams.get('sales') as string) || ''
+
+  const [salesFilter, setSalesFilter] = useState('')
+  const [selectedSalesPerson, setSelectedSalesPerson] = useState('')
+
+  const [view, setView] = useState<'yearly' | 'quarterly'>(
+    (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
+  )
+
+  // Hooks
+  const theme = useTheme()
+  const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
+  const [frequency, setFrequency] = useState((searchParams.get('freq') as string) || 'yearly')
+
+  const { data, isLoading } = useQuery(
+    /* <User, Error> */ {
+      queryKey: ['salesData', frequency, salesPerson],
+      queryFn: () => getSalesDataClient(frequency, salesPerson),
+      staleTime: 5000
+    }
+  )
+
+  const { data: salesPersons, isLoading: salesPersonDataLoading } = useQuery(
+    /* <User, Error> */ {
+      queryKey: ['salesPersonData'],
+      queryFn: () => getSalesPerson(),
+      staleTime: 5000
+    }
+  )
+
+  console.log(salesPersons, salesPersonDataLoading, 'salesPersonData')
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'
   const disabledText = 'var(--mui-palette-text-disabled)'
 
   // Determine if the data is yearly or quarterly
-  const isYearly = 'months' in data && Array.isArray(data.months)
-  const isQuarterly = 'quarters' in data && Array.isArray(data.quarters)
+  const isYearly = frequency === 'yearly'
+  const isQuarterly = frequency === 'quarterly'
 
   // ** Chart Options
   const options: ApexOptions = {
@@ -119,14 +172,14 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
       type: 'category',
       categories: (() => {
         if (frequency === 'quarterly') {
-          if (isQuarterly) {
+          if (isQuarterly && data) {
             return (data as QuarterlyChartData).quarters
           }
 
           return [...QUARTERS]
         }
 
-        if (isYearly) {
+        if (isYearly && data) {
           return (data as YearlyChartData).months
         }
 
@@ -214,117 +267,248 @@ const CRMBarChart = ({ data }: { data: ChartData }) => {
     return []
   }, [data, frequency, isYearly, isQuarterly])
 
-  if (!data) {
-    return <div>No data available</div>
-  }
+  if (salesPersonDataLoading) return <ChartSkeleton />
 
   return (
-    <CardContent sx={{ p: 3 }}>
-      <AppReactApexCharts
-        type='bar'
-        width='100%'
-        height={450}
-        options={{
-          ...options,
-          chart: {
-            ...options.chart,
-            type: 'bar',
-            stacked: false
-          },
-          plotOptions: {
-            ...options.plotOptions,
-            bar: {
-              ...options.plotOptions?.bar,
-              columnWidth: '60%',
-              barHeight: '90%',
-              distributed: true,
-              borderRadius: 6,
-              borderRadiusApplication: 'end',
-              dataLabels: {
-                ...options.plotOptions?.bar?.dataLabels,
-                hideOverflowingLabels: false
-              }
+    <Card sx={{ width: '100%' }}>
+      <Grid container spacing={6}>
+        <Grid size={{ xs: 12 }}>
+          <CardHeader
+            title='Sales Performance'
+            subheader={`Annual and quarterly sales data`}
+            key={`${view}-${selectedSales}`}
+            action={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <FormControl size='small' sx={{ minWidth: 240 }}>
+                  <Select
+                    value={selectedSalesPerson}
+                    onChange={e => {
+                      const val = e.target.value as string
+
+                      setSelectedSalesPerson(val)
+                      createSalesFrequencyUrl(view)
+                      setSalesPerson(val)
+                      createSalesPersonUrl(val === 'all' ? null : val)
+                    }}
+                    displayEmpty
+                    inputProps={{ 'aria-label': 'Select salesperson' }}
+                    sx={{
+                      height: 36,
+                      '& .MuiSelect-select': { py: 0, display: 'flex', alignItems: 'center' },
+                      borderRadius: 1
+                    }}
+                    MenuProps={{
+                      PaperProps: {
+                        sx: {
+                          mt: 1,
+                          borderRadius: 1,
+                          boxShadow: theme.shadows[3],
+                          '& .MuiList-root': {
+                            maxHeight: 320,
+                            overflowY: 'auto',
+                            scrollbarWidth: 'thin',
+                            '&::-webkit-scrollbar': { width: 6 },
+                            '&::-webkit-scrollbar-thumb': {
+                              backgroundColor: 'var(--mui-palette-divider)',
+                              borderRadius: 8
+                            }
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    <MenuItem
+                      disableRipple
+                      disableTouchRipple
+                      disableGutters
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        '&:hover': { backgroundColor: 'transparent' },
+                        '&.Mui-focusVisible': { backgroundColor: 'transparent' },
+                        '&.Mui-selected': { backgroundColor: 'transparent !important' }
+                      }}
+                    >
+                      <TextField
+                        autoFocus
+                        placeholder='Search salesperson'
+                        size='small'
+                        value={salesFilter}
+                        onChange={e => {
+                          e.stopPropagation()
+                          setSalesFilter(e.target.value)
+                        }}
+                        onKeyDown={e => {
+                          // Prevent Select's default type-to-select behavior while typing in the search field
+                          e.stopPropagation()
+                        }}
+                        onClick={e => e.stopPropagation()}
+                        sx={{ width: '100%' }}
+                      />
+                    </MenuItem>
+                    <MenuItem key={'all'} value={''}>
+                      All Sales
+                    </MenuItem>
+                    {salesPersons?.data.map((opt: { id: string; name: string }) => (
+                      <MenuItem key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <ToggleButtonGroup
+                  color='primary'
+                  value={view || searchParams.get('freq') || 'yearly'}
+                  exclusive
+                  onChange={(_, newView) => {
+                    newView && setView(newView)
+                    setFrequency(newView)
+                    createSalesFrequencyUrl(newView)
+                  }}
+                  aria-label='chart view type'
+                  size='small'
+                  sx={{
+                    '& .MuiToggleButton-root': {
+                      px: 3,
+                      height: 36,
+                      lineHeight: 1,
+                      '&.Mui-selected': {
+                        backgroundColor: 'primary.main',
+                        color: 'primary.contrastText',
+                        '&:hover': {
+                          backgroundColor: 'primary.dark'
+                        }
+                      }
+                    }
+                  }}
+                >
+                  <ToggleButton value='yearly'>Yearly</ToggleButton>
+                  <ToggleButton value='quarterly'>Quarterly</ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
             }
-          },
-          stroke: {
-            show: true,
-            width: 1,
-            colors: ['transparent']
-          },
-          tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-              formatter: (val: number) => formatUSD(val)
-            },
-            marker: {
-              show: true
-            },
-            theme: theme.palette.mode,
-            custom: (opts: any) => {
-              try {
-                const w = opts.w || {}
-                const idx = typeof opts.dataPointIndex === 'number' ? opts.dataPointIndex : 0
+            sx={{
+              flexDirection: ['column', 'row'],
+              alignItems: ['flex-start', 'center'],
+              '& .MuiCardHeader-action': { mt: [2, 0] },
+              flexWrap: 'wrap',
+              '& .MuiCardHeader-content': { mb: [2, 0] }
+            }}
+          />
+          {isLoading ? (
+            <ChartSkeleton />
+          ) : (
+            <CardContent sx={{ p: 3 }}>
+              <AppReactApexCharts
+                type='bar'
+                width='100%'
+                height={450}
+                options={{
+                  ...options,
+                  chart: {
+                    ...options.chart,
+                    type: 'bar',
+                    stacked: false
+                  },
+                  plotOptions: {
+                    ...options.plotOptions,
+                    bar: {
+                      ...options.plotOptions?.bar,
+                      columnWidth: '60%',
+                      barHeight: '90%',
+                      distributed: true,
+                      borderRadius: 6,
+                      borderRadiusApplication: 'end',
+                      dataLabels: {
+                        ...options.plotOptions?.bar?.dataLabels,
+                        hideOverflowingLabels: false
+                      }
+                    }
+                  },
+                  stroke: {
+                    show: true,
+                    width: 1,
+                    colors: ['transparent']
+                  },
+                  tooltip: {
+                    shared: true,
+                    intersect: false,
+                    y: {
+                      formatter: (val: number) => formatUSD(val)
+                    },
+                    marker: {
+                      show: true
+                    },
+                    theme: theme.palette.mode,
+                    custom: (opts: any) => {
+                      try {
+                        const w = opts.w || {}
+                        const idx = typeof opts.dataPointIndex === 'number' ? opts.dataPointIndex : 0
 
-                const seriesConfig = Array.isArray(w.config?.series) ? w.config.series : []
-                const values = Array.isArray(opts.series) ? opts.series : (w.globals && w.globals.series) || []
+                        const seriesConfig = Array.isArray(w.config?.series) ? w.config.series : []
+                        const values = Array.isArray(opts.series) ? opts.series : (w.globals && w.globals.series) || []
 
-                // hovered index not used since tooltip rows are uniform
+                        // hovered index not used since tooltip rows are uniform
 
-                const category =
-                  (w.globals && w.globals.categoryLabels && w.globals.categoryLabels[idx]) ||
-                  (w.config?.xaxis?.categories?.[idx] ?? '')
+                        const category =
+                          (w.globals && w.globals.categoryLabels && w.globals.categoryLabels[idx]) ||
+                          (w.config?.xaxis?.categories?.[idx] ?? '')
 
-                const colors = Array.isArray(w.config?.colors) ? w.config.colors : options.colors || []
+                        const colors = Array.isArray(w.config?.colors) ? w.config.colors : options.colors || []
 
-                let html = `\n                    <div style="padding:8px 12px; font-size:13px; background:#1f2937; color:#fff; border-radius:6px;">\n                      <div style=\"font-weight:700; margin-bottom:8px\">${category}</div>\n                  `
+                        let html = `\n                    <div style="padding:8px 12px; font-size:13px; background:#1f2937; color:#fff; border-radius:6px;">\n                      <div style=\"font-weight:700; margin-bottom:8px\">${category}</div>\n                  `
 
-                for (let i = 0; i < seriesConfig.length; i++) {
-                  const s = seriesConfig[i]
-                  let val: any = 0
+                        for (let i = 0; i < seriesConfig.length; i++) {
+                          const s = seriesConfig[i]
+                          let val: any = 0
 
-                  if (Array.isArray(values) && Array.isArray(values[i])) {
-                    const raw = values[i][idx]
+                          if (Array.isArray(values) && Array.isArray(values[i])) {
+                            const raw = values[i][idx]
 
-                    val = typeof raw === 'number' ? raw : ((raw && (raw.y ?? raw.value)) ?? 0)
-                  } else if (s && Array.isArray(s.data)) {
-                    const d = s.data[idx]
+                            val = typeof raw === 'number' ? raw : ((raw && (raw.y ?? raw.value)) ?? 0)
+                          } else if (s && Array.isArray(s.data)) {
+                            const d = s.data[idx]
 
-                    val = typeof d === 'number' ? d : (d && (d.y ?? d.value)) || 0
+                            val = typeof d === 'number' ? d : (d && (d.y ?? d.value)) || 0
+                          }
+
+                          val = Number(val) || 0
+
+                          // Do not apply special styling to the first (or any) item — keep all rows uniform
+                          const rowStyle = ''
+                          const nameStyle = 'font-weight:600'
+                          const bulletColor = colors[i] || '#ccc'
+
+                          html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"display:flex;align-items:center;gap:8px\">\n                          <span style=\"width:10px;height:10px;border-radius:50%;background:${bulletColor};display:inline-block\"></span>\n                          <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        </div>\n                        <div style=\"color:#fff;font-weight:700\">${formatUSD(val)}</div>\n                      </div>\n                    `
+                        }
+
+                        html += '\n                    </div>\n                  '
+
+                        return html
+                      } catch (e) {
+                        return ''
+                      }
+                    }
+                  },
+                  dataLabels: {
+                    ...options.dataLabels,
+                    enabled: false, // Ensure data labels are disabled in the chart options
+                    offsetY: -20,
+                    style: {
+                      ...options.dataLabels?.style,
+                      fontSize: '11px',
+                      colors: ['#fff']
+                    }
                   }
-
-                  val = Number(val) || 0
-
-                  // Do not apply special styling to the first (or any) item — keep all rows uniform
-                  const rowStyle = ''
-                  const nameStyle = 'font-weight:600'
-                  const bulletColor = colors[i] || '#ccc'
-
-                  html += `\n                      <div style=\"display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;${rowStyle}\">\n                        <div style=\"display:flex;align-items:center;gap:8px\">\n                          <span style=\"width:10px;height:10px;border-radius:50%;background:${bulletColor};display:inline-block\"></span>\n                          <div style=\"color:#fff; ${nameStyle}\">${s?.name}</div>\n                        </div>\n                        <div style=\"color:#fff;font-weight:700\">${formatUSD(val)}</div>\n                      </div>\n                    `
-                }
-
-                html += '\n                    </div>\n                  '
-
-                return html
-              } catch (e) {
-                return ''
-              }
-            }
-          },
-          dataLabels: {
-            ...options.dataLabels,
-            enabled: false, // Ensure data labels are disabled in the chart options
-            offsetY: -20,
-            style: {
-              ...options.dataLabels?.style,
-              fontSize: '11px',
-              colors: ['#fff']
-            }
-          }
-        }}
-        series={series}
-      />
-    </CardContent>
+                }}
+                series={series}
+              />
+            </CardContent>
+          )}
+        </Grid>
+      </Grid>
+    </Card>
   )
 }
 

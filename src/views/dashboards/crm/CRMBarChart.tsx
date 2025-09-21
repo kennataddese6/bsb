@@ -59,14 +59,10 @@ const CRMBarChart = () => {
 
   const [salesFilter, setSalesFilter] = useState('')
 
-  const [view, setView] = useState<'yearly' | 'quarterly'>(
-    (searchParams.get('freq') as 'yearly' | 'quarterly') || 'yearly'
-  )
-
   // Hooks
   const theme = useTheme()
   const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
-  const [frequency, setFrequency] = useState((searchParams.get('freq') as string) || 'yearly')
+  const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
   const { data, isLoading } = useQuery(
     /* <User, Error> */ {
@@ -275,7 +271,7 @@ const CRMBarChart = () => {
           <CardHeader
             title='Sales Performance'
             subheader={`Annual and quarterly sales data`}
-            key={`${view}-${selectedSales}`}
+            key={`${frequency}-${selectedSales}`}
             action={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <FormControl size='small' sx={{ minWidth: 240 }}>
@@ -284,7 +280,7 @@ const CRMBarChart = () => {
                     onChange={e => {
                       const val = e.target.value as string
 
-                      createSalesFrequencyUrl(view)
+                      createSalesFrequencyUrl(frequency)
                       setSalesPerson(val)
                       createSalesPersonUrl(val === 'all' ? null : val)
                     }}
@@ -357,10 +353,9 @@ const CRMBarChart = () => {
 
                 <ToggleButtonGroup
                   color='primary'
-                  value={view || searchParams.get('freq') || 'yearly'}
+                  value={frequency}
                   exclusive
                   onChange={(_, newView) => {
-                    newView && setView(newView)
                     setFrequency(newView)
                     createSalesFrequencyUrl(newView)
                   }}

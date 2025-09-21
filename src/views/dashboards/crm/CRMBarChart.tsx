@@ -42,7 +42,6 @@ const CRMBarChart = () => {
   const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
   const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
-  // default years as Date objects (Jan 1 of start year, Dec 31 of end year)
   const today = new Date()
   const tenYearsAgo = new Date()
 

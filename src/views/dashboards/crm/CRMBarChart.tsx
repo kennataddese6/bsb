@@ -28,6 +28,7 @@ import { formatUSD } from '@/utils/formatters/formatUSD'
 import { colors } from '@/data/colors'
 import { getSalesDataClient, getSalesPerson } from '@/app/server/actions'
 import ChartSkeleton from './components/ChartSkeleton'
+import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
@@ -40,6 +41,10 @@ const CRMBarChart = () => {
   const [salesFilter, setSalesFilter] = useState('')
   const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
   const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
+
+  // default years as Date objects (Jan 1 of start year, Dec 31 of end year)
+  const [startYearDate, setStartYearDate] = useState<Date | null>(new Date(2016, 0, 1))
+  const [endYearDate, setEndYearDate] = useState<Date | null>(new Date(2025, 11, 31))
 
   const { data, isLoading } = useQuery({
     queryKey: ['salesData', frequency, salesPerson],
@@ -233,6 +238,10 @@ const CRMBarChart = () => {
     return []
   }, [data, frequency, isYearly, isQuarterly])
 
+  // startDate/endDate are intentionally not applied to chart filtering here.
+  // These inputs are provided for the user to pick date-year ranges and will be
+  // consumed by your query logic externally. Chart rendering remains unaffected.
+
   if (salesPersonDataLoading) return <ChartSkeleton />
 
   return (
@@ -244,7 +253,26 @@ const CRMBarChart = () => {
             subheader={`Annual and quarterly sales data`}
             key={`${frequency}-${salesPerson}`}
             action={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                <Box sx={{ maxWidth: 85 }}>
+                  <AppReactDatepicker
+                    selected={startYearDate}
+                    onChange={(d: Date | null) => setStartYearDate(d)}
+                    showYearPicker
+                    dateFormat='yyyy'
+                    customInput={<TextField size='small' label='From' />}
+                  />
+                </Box>
+
+                <Box sx={{ maxWidth: 85 }}>
+                  <AppReactDatepicker
+                    selected={endYearDate}
+                    onChange={(d: Date | null) => setEndYearDate(d)}
+                    showYearPicker
+                    dateFormat='yyyy'
+                    customInput={<TextField size='small' label='To' />}
+                  />
+                </Box>
                 <FormControl size='small' sx={{ minWidth: 240 }}>
                   <Select
                     value={salesPerson}

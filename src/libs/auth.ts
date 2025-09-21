@@ -1,54 +1,8 @@
 // Third-party Imports
 import CredentialProvider from 'next-auth/providers/credentials'
 import type { DefaultSession, NextAuthOptions } from 'next-auth'
-import type { DefaultJWT as BaseJWT } from 'next-auth/jwt'
 
-// Type definitions for the external API responses
-interface ApiAuthResponse {
-  token: string
-  userId: string
-  role: string
-  avatar: string
-}
-
-interface ApiUserProfile {
-  id: string
-  fname: string
-  lname: string
-  email: string
-  role: string
-  avatar: string
-  accountStatus: string
-  emailVerified: boolean
-  verifiedAt: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-// Define base user type without extending NextAuth's User to avoid circular references
-interface BaseUser {
-  id: string
-  role: string
-  accessToken: string
-  name?: string | null
-  email?: string | null
-  avatar?: string | null
-}
-
-// Define JWT type by extending the base JWT type
-type AuthJWT = BaseJWT & {
-  accessToken: string
-  accessTokenExpires: number
-  refreshToken?: string
-  user: {
-    id: string
-    name: string | null
-    email: string | null
-    role: string
-    avatar: string | null
-  }
-  error?: string
-}
+import type { ApiAuthResponse, ApiUserProfile, AuthJWT, BaseUser } from '@/types/apps/authTypes'
 
 // Extend NextAuth types
 declare module 'next-auth' {

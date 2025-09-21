@@ -1,10 +1,6 @@
 'use client'
-'use client'
 
-// ** React Imports
 import { useMemo, useState } from 'react'
-
-// ** MUI Imports
 
 import { useSearchParams } from 'next/navigation'
 
@@ -19,36 +15,20 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import TextField from '@mui/material/TextField'
-
-// ** Hook Imports
-// ** React Imports
-
-// ** Next Imports
-
-// ** MUI Imports
-
 import CardContent from '@mui/material/CardContent'
-
 import type { ApexOptions } from 'apexcharts'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid2'
-
-// ** Types
 import { useQuery } from '@tanstack/react-query'
 
 import useChangeUrl from '@/hooks/useChangeUrl'
-
 import type { QuarterlyChartData, YearlyChartData } from '@/types/apps/salesChartTypes'
-
-// Third-party Imports
-
 import { MONTHS, QUARTERS } from '@/utils/dateConstants'
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { colors } from '@/data/colors'
 import { getSalesDataClient, getSalesPerson } from '@/app/server/actions'
 import ChartSkeleton from './components/ChartSkeleton'
 
-// Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
 const CRMBarChart = () => {
@@ -64,23 +44,17 @@ const CRMBarChart = () => {
   const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
   const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
-  const { data, isLoading } = useQuery(
-    /* <User, Error> */ {
-      queryKey: ['salesData', frequency, salesPerson],
-      queryFn: () => getSalesDataClient(frequency, salesPerson),
-      staleTime: 5000
-    }
-  )
+  const { data, isLoading } = useQuery({
+    queryKey: ['salesData', frequency, salesPerson],
+    queryFn: () => getSalesDataClient(frequency, salesPerson),
+    staleTime: 5000
+  })
 
-  const { data: salesPersons, isLoading: salesPersonDataLoading } = useQuery(
-    /* <User, Error> */ {
-      queryKey: ['salesPersonData'],
-      queryFn: () => getSalesPerson(),
-      staleTime: 5000
-    }
-  )
-
-  console.log(salesPersons, salesPersonDataLoading, 'salesPersonData')
+  const { data: salesPersons, isLoading: salesPersonDataLoading } = useQuery({
+    queryKey: ['salesPersonData'],
+    queryFn: () => getSalesPerson(),
+    staleTime: 5000
+  })
 
   // ** Vars
   const divider = 'var(--mui-palette-divider)'

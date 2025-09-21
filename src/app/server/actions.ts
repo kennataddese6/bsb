@@ -11,6 +11,7 @@ import { authOptions } from '@/libs/auth'
 import { transformToQuarterlyData, normalizeToFullMonthlyData } from '@/utils/transformSalesData'
 import { getYearRange, toYearStrings, MONTHS, QUARTERS } from '@/utils/dateConstants'
 import type { Employee } from '@/types/apps/employeeTypes'
+import { getYearsInRange } from '@/utils/get-years-in-range'
 
 export const getSalesPerson = async (searchParams?: { page?: string; size?: string }) => {
   try {
@@ -81,7 +82,7 @@ export const getSalesData = async (searchParams: { freq?: 'yearly' | 'quarterly'
   }
 }
 
-export const getSalesDataClient = async (freq: string, sales: string) => {
+export const getSalesDataClient = async (freq: string, sales: string, startDate: Date, endDate: Date) => {
   try {
     const session = await getServerSession(authOptions)
 
@@ -89,8 +90,9 @@ export const getSalesDataClient = async (freq: string, sales: string) => {
       throw new Error('Authentication required')
     }
 
-    const years = getYearRange(2016)
-    const yearsStr = toYearStrings(years)
+    const yearInRange = getYearsInRange(startDate.getFullYear(), endDate.getFullYear())
+
+    const yearsStr = toYearStrings(yearInRange)
 
     const months = [...MONTHS]
 
@@ -98,7 +100,7 @@ export const getSalesDataClient = async (freq: string, sales: string) => {
 
     const response = await axios.post(
       `${process.env.BASE_URL}/reports/sales`,
-      { years: years, salesPerson: sales || '' },
+      { years: yearInRange, salesPerson: sales || '' },
       {
         headers: {
           Authorization: `Bearer ${session.accessToken}`,

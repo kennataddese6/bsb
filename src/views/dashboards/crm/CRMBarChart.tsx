@@ -43,12 +43,12 @@ const CRMBarChart = () => {
   const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
   // default years as Date objects (Jan 1 of start year, Dec 31 of end year)
-  const [startYearDate, setStartYearDate] = useState<Date | null>(new Date(2016, 0, 1))
-  const [endYearDate, setEndYearDate] = useState<Date | null>(new Date(2025, 11, 31))
+  const [startYearDate, setStartYearDate] = useState<Date>(new Date(2016, 0, 1))
+  const [endYearDate, setEndYearDate] = useState<Date>(new Date(2025, 11, 31))
 
   const { data, isLoading } = useQuery({
-    queryKey: ['salesData', frequency, salesPerson],
-    queryFn: () => getSalesDataClient(frequency, salesPerson),
+    queryKey: ['salesData', frequency, salesPerson, startYearDate, endYearDate],
+    queryFn: () => getSalesDataClient(frequency, salesPerson, startYearDate, endYearDate),
     staleTime: 5000
   })
 

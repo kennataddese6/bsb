@@ -1,8 +1,8 @@
 // ** Components Imports
-import SalesChartServer from './SalesChartServer'
+import CRMBarChart from '@/views/dashboards/crm/CRMBarChart'
 
 const DashboardCRM = () => {
-  return <SalesChartServer />
+  return <CRMBarChart />
 }
 
 export default DashboardCRM

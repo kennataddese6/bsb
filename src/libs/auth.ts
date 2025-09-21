@@ -69,7 +69,6 @@ export type { AuthJWT as JWT }
 } */
 
 export const authOptions: NextAuthOptions = {
-  // ** Configure one or more authentication providers
   providers: [
     CredentialProvider({
       id: 'credentials',
@@ -92,7 +91,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Call the external login API
           const res = await fetch(`${process.env.BASE_URL}/auth/signin`, {
             method: 'POST',
             headers: {
@@ -144,29 +142,13 @@ export const authOptions: NextAuthOptions = {
         }
       }
     })
-
-    // ** ...add more providers here
   ],
 
-  // ** Please refer to https://next-auth.js.org/configuration/options#session for more `session` options
   session: {
-    /*
-     * Choose how you want to save the user session.
-     * The default is `jwt`, an encrypted JWT (JWE) stored in the session cookie.
-     * If you use an `adapter` however, NextAuth default it to `database` instead.
-     * You can still force a JWT session by explicitly defining `jwt`.
-     * When using `database`, the session cookie will only contain a `sessionToken` value,
-     * which is used to look up the session in the database.
-     * If you use a custom credentials provider, user accounts will not be persisted in a database by NextAuth.js (even if one is configured).
-     * The option to use JSON Web Tokens for session tokens must be enabled to use a custom credentials provider.
-     */
     strategy: 'jwt',
-
-    // ** Seconds - How long until an idle session expires and is no longer valid
     maxAge: 30 * 24 * 60 * 60 // ** 30 days
   },
 
-  // ** Please refer to https://next-auth.js.org/configuration/options#pages for more `pages` options
   pages: {
     signIn: '/login'
   },

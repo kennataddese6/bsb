@@ -34,20 +34,27 @@ const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexChart
 
 const CRMBarChart = () => {
   const searchParams = useSearchParams()
-  const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
+  const { createSalesFrequencyUrl, createSalesPersonUrl, createDateUrl } = useChangeUrl()
 
   // Hooks
   const theme = useTheme()
-  const [salesFilter, setSalesFilter] = useState('')
-  const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
-  const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
-
   const today = new Date()
   const tenYearsAgo = new Date()
 
   tenYearsAgo.setFullYear(today.getFullYear() - 10)
-  const [startYearDate, setStartYearDate] = useState<Date>(tenYearsAgo)
-  const [endYearDate, setEndYearDate] = useState<Date>(today)
+  const startYearDateString = searchParams.get('startDate')
+
+  const [startYearDate, setStartYearDate] = useState<Date>(
+    startYearDateString ? new Date(startYearDateString) : tenYearsAgo
+  )
+
+  const endYearDateString = searchParams.get('endDate')
+
+  const [endYearDate, setEndYearDate] = useState<Date>(endYearDateString ? new Date(endYearDateString) : new Date())
+
+  const [salesFilter, setSalesFilter] = useState('')
+  const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
+  const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
   const { data, isLoading } = useQuery({
     queryKey: ['salesData', frequency, salesPerson, startYearDate, endYearDate],
@@ -260,7 +267,10 @@ const CRMBarChart = () => {
                 <Box sx={{ maxWidth: 85 }}>
                   <AppReactDatepicker
                     selected={startYearDate}
-                    onChange={(d: Date | null) => (d ? setStartYearDate(d) : tenYearsAgo)}
+                    onChange={(d: Date | null) => {
+                      d ? setStartYearDate(d) : tenYearsAgo
+                      createDateUrl(d || tenYearsAgo, endYearDate)
+                    }}
                     showYearPicker
                     dateFormat='yyyy'
                     customInput={<TextField size='small' label='From' />}
@@ -270,7 +280,10 @@ const CRMBarChart = () => {
                 <Box sx={{ maxWidth: 85 }}>
                   <AppReactDatepicker
                     selected={endYearDate}
-                    onChange={(d: Date | null) => (d ? setEndYearDate(d) : today)}
+                    onChange={(d: Date | null) => {
+                      d ? setEndYearDate(d) : today
+                      createDateUrl(startYearDate, d || today)
+                    }}
                     showYearPicker
                     dateFormat='yyyy'
                     customInput={<TextField size='small' label='To' />}

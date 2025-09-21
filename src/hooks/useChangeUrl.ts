@@ -6,6 +6,22 @@ export default function useChangeUrl() {
   const searchParams = useSearchParams()
   const params = new URLSearchParams(searchParams)
 
+  const createDateUrl = (startDate?: Date, endDate?: Date) => {
+    if (startDate) {
+      params.set('startDate', startDate.toISOString()) // better format than toString
+    } else {
+      params.delete('startDate')
+    }
+
+    if (endDate) {
+      params.set('endDate', endDate.toISOString())
+    } else {
+      params.delete('endDate')
+    }
+
+    replace(`${pathname}?${params.toString()}`)
+  }
+
   const createSalesFrequencyUrl = (query: 'yearly' | 'quarterly') => {
     if (!query || query === 'yearly') {
       params.delete('freq')
@@ -61,6 +77,7 @@ export default function useChangeUrl() {
     createPageSizeURL,
     createSearchUrl,
     createSalesFrequencyUrl,
-    createSalesPersonUrl
+    createSalesPersonUrl,
+    createDateUrl
   }
 }

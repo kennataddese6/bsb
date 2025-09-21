@@ -33,14 +33,11 @@ const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexChart
 
 const CRMBarChart = () => {
   const searchParams = useSearchParams()
-
   const { createSalesFrequencyUrl, createSalesPersonUrl } = useChangeUrl()
-  const selectedSales = (searchParams.get('sales') as string) || ''
-
-  const [salesFilter, setSalesFilter] = useState('')
 
   // Hooks
   const theme = useTheme()
+  const [salesFilter, setSalesFilter] = useState('')
   const [salesPerson, setSalesPerson] = useState((searchParams.get('sales') as string) || '')
   const [frequency, setFrequency] = useState<'yearly' | 'quarterly'>((searchParams.get('freq') as 'yearly') || 'yearly')
 
@@ -245,7 +242,7 @@ const CRMBarChart = () => {
           <CardHeader
             title='Sales Performance'
             subheader={`Annual and quarterly sales data`}
-            key={`${frequency}-${selectedSales}`}
+            key={`${frequency}-${salesPerson}`}
             action={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <FormControl size='small' sx={{ minWidth: 240 }}>

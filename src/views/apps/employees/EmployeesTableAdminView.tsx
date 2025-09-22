@@ -14,7 +14,6 @@ import Switch from '@mui/material/Switch'
 
 // Third-party Imports
 import classnames from 'classnames'
-import { rankItem } from '@tanstack/match-sorter-utils'
 import {
   createColumnHelper,
   flexRender,
@@ -51,6 +50,7 @@ import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginati
 import { updateEmployee as serverUpdateEmployee } from '@/app/server/actions'
 import { DebouncedInput } from '@/components/DebouncedInput'
 import { getAvatar } from '@/components/getAvatar'
+import { fuzzyFilter } from '@/utils/fuzzyFilter'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -72,19 +72,6 @@ export const roleChipColor: { [key: string]: RoleChipColorType } = {
 
 type EmployeeTypeWithAction = Employee & {
   action?: string
-}
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value)
-
-  // Store the itemRank info
-  addMeta({
-    itemRank
-  })
-
-  // Return if the item should be filtered in/out
-  return itemRank.passed
 }
 
 // Column Definitions

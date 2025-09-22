@@ -34,9 +34,6 @@ import type { ThemeColor } from '@core/types'
 import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
 
 // Component Imports
-import AddEmployeeDialog from './AddEmployeeDialog'
-import EditEmployeeDialog from './EditEmployeeDialog'
-import ChangePasswordDialog from './ChangePasswordDialog'
 import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTextField from '@core/components/mui/TextField'
 
@@ -118,10 +115,6 @@ const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
 const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
   // States
-  const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState<Employee[]>(employees)
   const [globalFilter, setGlobalFilter] = useState('')
@@ -233,20 +226,6 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
         </CustomAvatar>
       )
     }
-  }
-
-  const handleAddEmployee = (newEmployee: Employee) => {
-    setData(prev => [...prev, newEmployee])
-  }
-
-  const handleUpdateEmployee = (employeeId: number, updatedData: Partial<Employee>) => {
-    setData(prev => prev.map(emp => (emp.id === employeeId ? { ...emp, ...updatedData } : emp)))
-  }
-
-  const handleChangePassword = (employeeId: number, newPassword: string) => {
-    // In a real app, you would make an API call to update the password
-    // For now, we'll just show a success message
-    console.log(`Password changed for employee ${employeeId}`, newPassword)
   }
 
   return (
@@ -374,29 +353,6 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
           }}
         />
       </Card>
-      <AddEmployeeDialog
-        open={employeeDialogOpen}
-        handleClose={() => setEmployeeDialogOpen(false)}
-        onAddEmployee={handleAddEmployee}
-      />
-      <EditEmployeeDialog
-        open={editDialogOpen}
-        handleClose={() => {
-          setEditDialogOpen(false)
-          setSelectedEmployee(null)
-        }}
-        employee={selectedEmployee}
-        onUpdateEmployee={handleUpdateEmployee}
-      />
-      <ChangePasswordDialog
-        open={changePasswordDialogOpen}
-        handleClose={() => {
-          setChangePasswordDialogOpen(false)
-          setSelectedEmployee(null)
-        }}
-        employee={selectedEmployee}
-        onChangePassword={handleChangePassword}
-      />
     </>
   )
 }

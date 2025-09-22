@@ -125,6 +125,15 @@ const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
   const { createPageSizeURL } = useChangeUrl()
 
+  // States
+  const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
+  const [rowSelection, setRowSelection] = useState({})
+  const [data, setData] = useState<Employee[]>(employees)
+  const [globalFilter, setGlobalFilter] = useState('')
+
   // State to track which employee is being updated
   const [updatingEmployeeId, setUpdatingEmployeeId] = useState<number | null>(null)
 
@@ -156,15 +165,6 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
       setUpdatingEmployeeId(null)
     }
   }
-
-  // States
-  const [employeeDialogOpen, setEmployeeDialogOpen] = useState(false)
-  const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [changePasswordDialogOpen, setChangePasswordDialogOpen] = useState(false)
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null)
-  const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState<Employee[]>(employees)
-  const [globalFilter, setGlobalFilter] = useState('')
 
   useEffect(() => {
     setData(employees)

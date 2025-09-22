@@ -1,8 +1,5 @@
 'use client'
 
-// React Imports
-import { useState, useEffect, useMemo } from 'react'
-
 // MUI Imports
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -12,24 +9,13 @@ import TablePagination from '@mui/material/TablePagination'
 
 // Third-party Imports
 import classnames from 'classnames'
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getFilteredRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFacetedMinMaxValues,
-  getPaginationRowModel,
-  getSortedRowModel
-} from '@tanstack/react-table'
-import type { ColumnDef, FilterFn } from '@tanstack/react-table'
+
+import { flexRender, type FilterFn } from '@tanstack/react-table'
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
 // Type Imports
 import type { ThemeColor } from '@core/types'
-import type { Employee, EmployeeTypeWithAction, PaginationData } from '@/types/apps/employeeTypes'
+import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
 
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
@@ -37,11 +23,9 @@ import CustomTextField from '@core/components/mui/TextField'
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
 import modernTableStyles from './EmployeesTable.module.css'
-import { toUSADate } from '@/utils/toUSADate'
 import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginationComponent'
 import { DebouncedInput } from '@/components/DebouncedInput'
-import { getAvatar } from '@/components/getAvatar'
-import { fuzzyFilter } from '@/utils/fuzzyFilter'
+import { useEmployeeTable } from '@/hooks/useEmployeeTable'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -62,108 +46,11 @@ export const roleChipColor: { [key: string]: RoleChipColorType } = {
 }
 
 // Column Definitions
-const columnHelper = createColumnHelper<EmployeeTypeWithAction>()
 
 const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: PaginationData }) => {
   // States
-  const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState<Employee[]>(employees)
-  const [globalFilter, setGlobalFilter] = useState('')
 
-  useEffect(() => {
-    setData(employees)
-  }, [employees])
-
-  const columns = useMemo<ColumnDef<EmployeeTypeWithAction, any>[]>(
-    () => [
-      columnHelper.accessor('fname', {
-        header: 'Employee',
-        cell: ({ row }) => (
-          <div className='flex items-center gap-4'>
-            <div className={`relative ${modernTableStyles['avatar-container']}`}>
-              {getAvatar({
-                avatar: row.original.avatar,
-                fname: row.original.fname,
-                lname: row.original.lname
-              })}
-              {/*               <div
-                className={classnames(
-                  'absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-backgroundPaper',
-                  modernTableStyles['status-indicator'],
-                  {
-                    'bg-error': row.original.role === 'admin',
-                    'bg-success': row.original.role === 'employee'
-                  }
-                )}
-              /> */}
-            </div>
-            <div className='flex flex-col items-start'>
-              <Typography variant='h6' className='hover:text-primary transition-colors duration-200 font-semibold'>
-                {`${row.original.fname} ${row.original.lname}`}
-              </Typography>
-              <Typography variant='body2' className='text-textSecondary'>
-                {row.original.email}
-              </Typography>
-            </div>
-          </div>
-        )
-      }),
-      columnHelper.accessor('email', {
-        header: 'Email',
-        cell: ({ row }) => <Typography color='text.primary'>{row.original.email}</Typography>
-      }),
-      columnHelper.accessor('role', {
-        header: 'Role',
-        cell: ({ row }) => (
-          <Typography
-            variant='caption'
-            className='px-2 py-0.5 rounded-md bg-action-hover/50 text-primary font-medium'
-            sx={{
-              backgroundColor: 'var(--mui-palette-primary-lightOpacity)',
-              color: 'var(--mui-palette-primary-main)'
-            }}
-          >
-            {row.original.role.charAt(0).toUpperCase() + row.original.role.slice(1)}
-          </Typography>
-        )
-      }),
-
-      columnHelper.accessor('createdAt', {
-        header: 'Created At',
-        cell: ({ row }) => <Typography color='text.primary'>{toUSADate(row.original.createdAt)}</Typography>
-      })
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  )
-
-  const table = useReactTable({
-    data: data as Employee[],
-    columns,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
-    state: {
-      rowSelection,
-      globalFilter
-    },
-    initialState: {
-      pagination: {
-        pageSize: 10
-      }
-    },
-    enableRowSelection: true,
-    globalFilterFn: fuzzyFilter,
-    onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues()
-  })
+  const { table, globalFilter, setGlobalFilter } = useEmployeeTable(employees)
 
   return (
     <>

@@ -54,7 +54,7 @@ export type Config = {
 }
 
 const themeConfig: Config = {
-  templateName: 'sneat',
+  templateName: 'BsB',
   homePageUrl: '/dashboards/crm',
   settingsCookieName: 'sneat-mui-next-demo-1',
   mode: 'light', // 'system', 'light', 'dark'

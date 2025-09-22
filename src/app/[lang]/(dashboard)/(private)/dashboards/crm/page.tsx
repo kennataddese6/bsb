@@ -1,8 +1,13 @@
 // ** Components Imports
-import CRMBarChart from '@/views/dashboards/crm/CRMBarChart'
+
+import { Typography } from '@mui/material'
 
 const DashboardCRM = () => {
-  return <CRMBarChart />
+  return (
+    <Typography variant='h6' color='text.secondary' className='mb-1'>
+      BSB Dashboard
+    </Typography>
+  )
 }
 
 export default DashboardCRM

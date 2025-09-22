@@ -82,6 +82,10 @@ const AddEmployeeDialog = ({ open, handleClose, onAddEmployee }: Props) => {
 
       const res = await createEmployee(newEmployee)
 
+      if (res.errorMessage) {
+        throw new Error(res.errorMessage)
+      }
+
       onAddEmployee(res.user)
 
       // Show success toast

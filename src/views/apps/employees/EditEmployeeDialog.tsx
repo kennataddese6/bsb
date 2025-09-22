@@ -90,7 +90,11 @@ const EditEmployeeDialog = ({ open, handleClose, employee, onUpdateEmployee }: P
         accountStatus: 'active' as const
       }
 
-      await updateEmployee(updatedEmployee)
+      const result = await updateEmployee(updatedEmployee)
+
+      if (result.errorMessage) {
+        throw new Error(result.errorMessage)
+      }
 
       onUpdateEmployee(employee.id, updatedEmployee)
 

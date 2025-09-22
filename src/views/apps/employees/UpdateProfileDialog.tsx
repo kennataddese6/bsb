@@ -137,6 +137,10 @@ const UpdateProfileDialog = ({ open, handleClose /* onUpdateProfile */ }: Props)
 
         const profile = await updateProfile(updatedProfile)
 
+        if (profile.errorMessage) {
+          throw new Error(profile.errorMessage)
+        }
+
         update({
           name: `${profile.user.fname} ${profile.user.lname}`,
           email: profile.user.email,

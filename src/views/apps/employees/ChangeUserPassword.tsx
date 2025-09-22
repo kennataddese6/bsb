@@ -67,7 +67,11 @@ const ChangeUserPasswordDialog = ({ open, handleClose, employee, onChangePasswor
         userId: employee.id
       }
 
-      await resetPassword(newData)
+      const result = await resetPassword(newData)
+
+      if (result.errorMessage) {
+        throw new Error(result.errorMessage)
+      }
 
       onChangePassword(employee.id, data.newPassword)
 

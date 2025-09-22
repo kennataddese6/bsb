@@ -47,10 +47,10 @@ import modernTableStyles from './EmployeesTable.module.css'
 import useChangeUrl from '@/hooks/useChangeUrl'
 import { toUSADate } from '@/utils/toUSADate'
 import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginationComponent'
-import { updateEmployee as serverUpdateEmployee } from '@/app/server/actions'
 import { DebouncedInput } from '@/components/DebouncedInput'
 import { getAvatar } from '@/components/getAvatar'
 import { fuzzyFilter } from '@/utils/fuzzyFilter'
+import { useUpdateEmployeeStatus } from '@/hooks/useUpdateEmployeeStatus'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -89,33 +89,7 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
   const [updatingEmployeeId, setUpdatingEmployeeId] = useState<number | null>(null)
 
   // Function to update employee account status
-  const updateEmployeeStatus = async (employee: Employee) => {
-    const newStatus = employee.accountStatus === 'active' ? 'suspended' : 'active'
-
-    setUpdatingEmployeeId(employee.id)
-
-    try {
-      const response = await serverUpdateEmployee({
-        id: employee.id,
-        account_status: newStatus
-      })
-
-      if (response) {
-        // Update local state with the new status from response
-        setData(prevData => prevData.map(emp => (emp.id === employee.id ? { ...emp, accountStatus: newStatus } : emp)))
-      }
-
-      return response
-    } catch (error) {
-      console.error('Error updating employee status:', error)
-
-      // Revert the toggle if the API call fails
-      setData(prevData => [...prevData])
-      throw error
-    } finally {
-      setUpdatingEmployeeId(null)
-    }
-  }
+  const { updateEmployeeStatus } = useUpdateEmployeeStatus(setUpdatingEmployeeId, setData)
 
   useEffect(() => {
     setData(employees)

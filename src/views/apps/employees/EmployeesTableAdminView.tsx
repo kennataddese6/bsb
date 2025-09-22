@@ -274,12 +274,6 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
     setData(prev => prev.map(emp => (emp.id === employeeId ? { ...emp, ...updatedData } : emp)))
   }
 
-  const handleChangePassword = (employeeId: number, newPassword: string) => {
-    // In a real app, you would make an API call to update the password
-    // For now, we'll just show a success message
-    console.log(`Password changed for employee ${employeeId}`, newPassword)
-  }
-
   return (
     <>
       <Card className='shadow-lg border-0'>
@@ -438,7 +432,6 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
           setSelectedEmployee(null)
         }}
         employee={selectedEmployee}
-        onChangePassword={handleChangePassword}
       />
     </>
   )

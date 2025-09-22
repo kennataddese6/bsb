@@ -31,10 +31,9 @@ type Props = {
   open: boolean
   handleClose: () => void
   employee: Employee | null
-  onChangePassword: (employeeId: number, newPassword: string) => void
 }
 
-const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }: Props) => {
+const ChangePasswordDialog = ({ open, handleClose, employee }: Props) => {
   // States
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isPasswordShown, setIsPasswordShown] = useState(false)
@@ -72,8 +71,6 @@ const ChangePasswordDialog = ({ open, handleClose, employee, onChangePassword }:
       if (result.errorMessage) {
         throw new Error(result.errorMessage)
       }
-
-      onChangePassword(employee.id, data.newPassword)
 
       // Show success toast
       toast.success('Password changed successfully!', {

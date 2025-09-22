@@ -40,11 +40,7 @@ import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
 import AddEmployeeDialog from './AddEmployeeDialog'
 import EditEmployeeDialog from './EditEmployeeDialog'
 import ChangePasswordDialog from './ChangePasswordDialog'
-import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTextField from '@core/components/mui/TextField'
-
-// Util Imports
-import { getInitials } from '@/utils/getInitials'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
@@ -54,6 +50,7 @@ import { toUSADate } from '@/utils/toUSADate'
 import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginationComponent'
 import { updateEmployee as serverUpdateEmployee } from '@/app/server/actions'
 import { DebouncedInput } from '@/components/DebouncedInput'
+import { getAvatar } from '@/components/getAvatar'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -285,20 +282,6 @@ const EmployeesTableAdminView = ({ employees, meta }: { employees: Employee[]; m
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
-
-  const getAvatar = (params: Pick<Employee, 'avatar' | 'fname' | 'lname'>) => {
-    const { avatar, fname, lname } = params
-
-    if (avatar) {
-      return <CustomAvatar src={avatar} skin='light' size={34} />
-    } else {
-      return (
-        <CustomAvatar skin='light' size={34}>
-          {getInitials(`${fname} ${lname}`)}
-        </CustomAvatar>
-      )
-    }
-  }
 
   const handleAddEmployee = (newEmployee: Employee) => {
     setData(prev => [newEmployee, ...prev])

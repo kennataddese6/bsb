@@ -33,11 +33,7 @@ import type { ThemeColor } from '@core/types'
 import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
 
 // Component Imports
-import CustomAvatar from '@core/components/mui/Avatar'
 import CustomTextField from '@core/components/mui/TextField'
-
-// Util Imports
-import { getInitials } from '@/utils/getInitials'
 
 // Style Imports
 import tableStyles from '@core/styles/table.module.css'
@@ -45,6 +41,7 @@ import modernTableStyles from './EmployeesTable.module.css'
 import { toUSADate } from '@/utils/toUSADate'
 import EmployeeTablePaginationComponent from '@/components/EmployeeTablePaginationComponent'
 import { DebouncedInput } from '@/components/DebouncedInput'
+import { getAvatar } from '@/components/getAvatar'
 
 declare module '@tanstack/table-core' {
   interface FilterFns {
@@ -184,20 +181,6 @@ const EmployeesTable = ({ employees, meta }: { employees: Employee[]; meta: Pagi
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues()
   })
-
-  const getAvatar = (params: Pick<Employee, 'avatar' | 'fname' | 'lname'>) => {
-    const { avatar, fname, lname } = params
-
-    if (avatar) {
-      return <CustomAvatar src={avatar} skin='light' size={34} />
-    } else {
-      return (
-        <CustomAvatar skin='light' size={34}>
-          {getInitials(`${fname} ${lname}`)}
-        </CustomAvatar>
-      )
-    }
-  }
 
   return (
     <>

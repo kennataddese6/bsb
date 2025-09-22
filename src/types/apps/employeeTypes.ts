@@ -17,6 +17,10 @@ export type EmployeeFormData = {
   role: 'admin' | 'user' | 'employee'
 }
 
+export type EmployeeTypeWithAction = Employee & {
+  action?: string
+}
+
 export type EditEmployeeFormData = {
   firstName: string
   lastName: string

@@ -33,7 +33,7 @@ import type { RankingInfo } from '@tanstack/match-sorter-utils'
 import { toast } from 'react-toastify'
 
 import type { ThemeColor } from '@core/types'
-import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
+import type { Employee, EmployeeTypeWithAction, PaginationData } from '@/types/apps/employeeTypes'
 
 // Component Imports
 import AddEmployeeDialog from './AddEmployeeDialog'
@@ -68,10 +68,6 @@ type RoleChipColorType = {
 export const roleChipColor: { [key: string]: RoleChipColorType } = {
   admin: { color: 'error' },
   employee: { color: 'success' }
-}
-
-type EmployeeTypeWithAction = Employee & {
-  action?: string
 }
 
 // Column Definitions

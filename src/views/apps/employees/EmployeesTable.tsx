@@ -29,7 +29,7 @@ import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
 // Type Imports
 import type { ThemeColor } from '@core/types'
-import type { Employee, PaginationData } from '@/types/apps/employeeTypes'
+import type { Employee, EmployeeTypeWithAction, PaginationData } from '@/types/apps/employeeTypes'
 
 // Component Imports
 import CustomTextField from '@core/components/mui/TextField'
@@ -59,10 +59,6 @@ type RoleChipColorType = {
 export const roleChipColor: { [key: string]: RoleChipColorType } = {
   admin: { color: 'error' },
   employee: { color: 'success' }
-}
-
-type EmployeeTypeWithAction = Employee & {
-  action?: string
 }
 
 // Column Definitions

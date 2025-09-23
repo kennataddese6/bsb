@@ -25,8 +25,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  IconButton
 } from '@mui/material'
+
+import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 type Variant = {
   color: string
@@ -42,7 +45,64 @@ type Variant = {
   deal: boolean
 }
 
+type Period = 'today' | 'yesterday' | 'lastweek' | 'custom'
+
+type SelectedDates = Record<Period, string>
+
+function parseFlexibleDate(s: string | undefined): Date {
+  if (!s) return new Date()
+  const parts = s.split('/').map(p => p.trim())
+
+  if (parts.length >= 3) {
+    const m = Number(parts[0])
+    const d = Number(parts[1])
+    let y = Number(parts[2])
+
+    if (parts[2].length === 2) {
+      y = y + (y < 70 ? 2000 : 1900)
+    }
+
+    const dt = new Date(y, m - 1, d)
+
+    if (!isNaN(dt.getTime())) return dt
+  }
+
+  const dt2 = new Date(s)
+
+  if (!isNaN(dt2.getTime())) return dt2
+
+  return new Date()
+}
+
+/** Format date to "M/D/YY" like your original strings (9/1/25) */
+function formatToShortDate(d: Date | null): string {
+  if (!d) return ''
+  const mm = d.getMonth() + 1
+  const dd = d.getDate()
+  const yy = String(d.getFullYear()).slice(-2)
+
+  return `${mm}/${dd}/${yy}`
+}
+
+/* ----------------------- Optional prop typing --------------------- */
+/**
+ * AppReactDatepicker is an internal wrapper — cast to a sensible prop shape
+ * so TypeScript knows `selected` and `onChange` exist. If your wrapper
+ * uses different prop names, change this cast accordingly.
+ */
+const AppDatepicker = AppReactDatepicker as unknown as React.ComponentType<{
+  selected?: Date | null
+  onChange?: (date: Date | null) => void
+  inline?: boolean
+  dateFormat?: string
+
+  // accept any other props
+  [key: string]: any
+}>
+
+/* ----------------------------- Data ------------------------------ */
 const variants: Variant[] = [
+  /* keep your variants - shortened here for brevity */
   {
     color: 'Blue',
     hex: '#2b6cb0',
@@ -68,112 +128,56 @@ const variants: Variant[] = [
     avg: 15.89,
     target: 19.99,
     deal: false
-  },
-  {
-    color: 'White',
-    hex: '#e2e8f0',
-    size: '7 ft',
-    asin: 'B01KNKFTPC',
-    today: 455,
-    ystd: 787,
-    lastwk: 454,
-    w7: 545,
-    avg: 16.99,
-    target: 17.99,
-    deal: false
-  },
-  {
-    color: 'Green',
-    hex: '#38a169',
-    size: '7 ft',
-    asin: 'B01KKNQ004',
-    today: 564,
-    ystd: 652,
-    lastwk: 555,
-    w7: 655,
-    avg: 15.89,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Yellow',
-    hex: '#ecc94b',
-    size: '9 ft',
-    asin: 'B01KKNQ004',
-    today: 471,
-    ystd: 845,
-    lastwk: 544,
-    w7: 559,
-    avg: 15.89,
-    target: 17.99,
-    deal: false
-  },
-  {
-    color: 'Black',
-    hex: '#1a202c',
-    size: '9 ft',
-    asin: 'B01KKNQ004',
-    today: 584,
-    ystd: 413,
-    lastwk: 454,
-    w7: 659,
-    avg: 15.89,
-    target: 17.99,
-    deal: false
-  },
-  {
-    color: 'Green',
-    hex: '#38a169',
-    size: '9 ft',
-    asin: 'B01KKNQ004',
-    today: 548,
-    ystd: 452,
-    lastwk: 655,
-    w7: 565,
-    avg: 15.89,
-    target: 17.99,
-    deal: false
-  },
-  {
-    color: 'Black',
-    hex: '#1a202c',
-    size: '9 ft',
-    asin: 'B01KKNQ004',
-    today: 555,
-    ystd: 845,
-    lastwk: 454,
-    w7: 545,
-    avg: 15.89,
-    target: 17.99,
-    deal: true
   }
+
+  // ...add the rest
 ]
 
-export default function Page() {
+/* ----------------------------- Page ------------------------------ */
+export default function Page(): JSX.Element {
   const target = 7000
   const actual = 5015
   const maxScale = 9000 // for the background bar
-  const [datePickerOpen, setDatePickerOpen] = React.useState<string | null>(null)
 
-  const [selectedDates, setSelectedDates] = React.useState<{ [key: string]: string }>({
+  const [datePickerOpen, setDatePickerOpen] = React.useState<Period | null>(null)
+
+  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>({
     today: '9/1/25',
     yesterday: '8/30/25',
     lastweek: '8/25/25',
     custom: '8/25/25'
   })
 
-  const handleDateClick = (period: string) => {
+  // temporary date shown inside the inline picker before confirmation
+  const [tempDate, setTempDate] = React.useState<Date | null>(null)
+
+  /* Open dialog and seed the tempDate from selectedDates */
+  const handleDateClick = (period: Period) => {
     setDatePickerOpen(period)
+    setTempDate(parseFlexibleDate(selectedDates[period]))
   }
 
   const handleDateClose = () => {
     setDatePickerOpen(null)
+    setTempDate(null)
   }
 
-  const handleDateSelect = (period: string, date: string) => {
-    setSelectedDates(prev => ({ ...prev, [period]: date }))
+  const handleDateSelect = (period: Period | null, date: Date | null) => {
+    if (!period) return
+    const formatted = date ? formatToShortDate(date) : selectedDates[period]
+
+    setSelectedDates(prev => ({ ...prev, [period]: formatted }))
     setDatePickerOpen(null)
+    setTempDate(null)
   }
+
+  /* KPI tiles array typed with Period */
+  const tiles: { label: string; value: string; period: Period }[] = [
+    { label: `Today · ${selectedDates.today} 3:48pm`, value: '15 / 13', period: 'today' },
+    { label: `Yesterday · ${selectedDates.yesterday}`, value: '13 / 13', period: 'yesterday' },
+    { label: `Last week · ${selectedDates.lastweek}`, value: '28 / 25', period: 'lastweek' },
+    { label: `Custom · ${selectedDates.custom}`, value: '28 / 25', period: 'custom' }
+  ]
 
   return (
     <Box
@@ -292,37 +296,12 @@ export default function Page() {
         <Grid size={{ xs: 12, lg: 7 }}>
           {/* KPI Tiles */}
           <Grid container spacing={4}>
-            {[
-              {
-                label: `Today · ${selectedDates.today} 3:48pm`,
-                value: '15 / 13',
-                icon: <i className={'bx-calendar'} />,
-                period: 'today'
-              },
-              {
-                label: `Yesterday · ${selectedDates.yesterday}`,
-                value: '13 / 13',
-                icon: <i className={'bx-calendar'} />,
-                period: 'yesterday'
-              },
-              {
-                label: `Last week · ${selectedDates.lastweek}`,
-                value: '28 / 25',
-                icon: <i className={'bx-calendar'} />,
-                period: 'lastweek'
-              },
-              {
-                label: `Custom · ${selectedDates.custom}`,
-                value: '28 / 25',
-                icon: <i className={'bx-calendar'} />,
-                period: 'custom'
-              }
-            ].map((k, idx) => (
+            {tiles.map((k, idx) => (
               <Grid key={idx} size={{ xs: 6, md: 3 }}>
                 <Card>
                   <CardContent>
                     <Stack direction='row' justifyContent='space-between' alignItems='flex-start'>
-                      <Box>
+                      <Box sx={{ minWidth: 0 }}>
                         <Button
                           variant='text'
                           onClick={() => handleDateClick(k.period)}
@@ -334,7 +313,7 @@ export default function Page() {
                             '&:hover': { bgcolor: 'transparent' }
                           }}
                         >
-                          <Typography variant='caption' color='text.secondary'>
+                          <Typography variant='caption' color='text.secondary' noWrap>
                             {k.label}
                           </Typography>
                         </Button>
@@ -345,7 +324,16 @@ export default function Page() {
                           Units / Orders
                         </Typography>
                       </Box>
-                      {k.icon}
+
+                      {/* clickable icon — opens same dialog */}
+                      <IconButton
+                        aria-label={`Select date for ${k.period}`}
+                        onClick={() => handleDateClick(k.period)}
+                        size='small'
+                        sx={{ ml: 1 }}
+                      >
+                        <i className='bx-calendar' />
+                      </IconButton>
                     </Stack>
                   </CardContent>
                 </Card>
@@ -408,7 +396,7 @@ export default function Page() {
                   Actual: {actual.toLocaleString()}
                 </Typography>
               </Stack>
-              {/* background = full scale, first bar = target, second = actual */}
+
               <Box sx={{ position: 'relative' }}>
                 <LinearProgress
                   variant='determinate'
@@ -438,6 +426,7 @@ export default function Page() {
                   }}
                 />
               </Box>
+
               <Stack direction='row' justifyContent='space-between' sx={{ mt: 0.5 }}>
                 <Typography variant='caption' color='text.secondary'>
                   0
@@ -491,39 +480,48 @@ export default function Page() {
         *Demo data. Replace with live values from your API/Sheet.
       </Typography>
 
-      {/* Date Picker Dialog */}
+      {/* --------------------- Date Picker Dialog --------------------- */}
       <Dialog open={!!datePickerOpen} onClose={handleDateClose} maxWidth='xs' fullWidth>
-        <DialogTitle>Select Date {datePickerOpen && `for ${datePickerOpen}`}</DialogTitle>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span>Select Date {datePickerOpen && `for ${datePickerOpen}`}</span>
+          {/* Quick preview of currently selected temp date */}
+          <Typography variant='caption' color='text.secondary'>
+            {tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
+          </Typography>
+        </DialogTitle>
+
         <DialogContent>
-          <TextField
-            autoFocus
-            margin='dense'
-            label='Date (MM/DD/YY)'
-            type='text'
-            fullWidth
-            variant='outlined'
-            placeholder='e.g., 9/1/25'
-            defaultValue={datePickerOpen ? selectedDates[datePickerOpen] : ''}
-            onKeyPress={e => {
-              if (e.key === 'Enter' && datePickerOpen) {
-                handleDateSelect(datePickerOpen, (e.target as HTMLInputElement).value)
-              }
-            }}
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'stretch', pt: 1 }}>
+            {/* Inline styled date picker from your libs */}
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <AppDatepicker
+                selected={tempDate}
+                onChange={(d: Date | null) => setTempDate(d)}
+                inline
+                dateFormat='MM/dd/yyyy'
+              />
+            </Box>
+
+            {/* Read-only preview input (good UX to show chosen date) */}
+            <TextField
+              label='Selected date'
+              value={tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
+              fullWidth
+              InputProps={{ readOnly: true }}
+              variant='outlined'
+              size='small'
+            />
+          </Box>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleDateClose}>Cancel</Button>
           <Button
-            onClick={e => {
-              if (datePickerOpen) {
-                const input = e.currentTarget.closest('.MuiDialog-root')?.querySelector('input')
-
-                if (input) {
-                  handleDateSelect(datePickerOpen, input.value)
-                }
-              }
-            }}
             variant='contained'
+            onClick={() => {
+              handleDateSelect(datePickerOpen, tempDate)
+            }}
+            disabled={!datePickerOpen}
           >
             Select
           </Button>

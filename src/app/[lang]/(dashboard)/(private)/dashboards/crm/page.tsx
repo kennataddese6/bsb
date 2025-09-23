@@ -20,7 +20,12 @@ import {
   TableCell,
   TableBody,
   Stack,
-  Divider
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField
 } from '@mui/material'
 
 type Variant = {
@@ -148,6 +153,27 @@ export default function Page() {
   const target = 7000
   const actual = 5015
   const maxScale = 9000 // for the background bar
+  const [datePickerOpen, setDatePickerOpen] = React.useState<string | null>(null)
+
+  const [selectedDates, setSelectedDates] = React.useState<{ [key: string]: string }>({
+    today: '9/1/25',
+    yesterday: '8/30/25',
+    lastweek: '8/25/25',
+    custom: '8/25/25'
+  })
+
+  const handleDateClick = (period: string) => {
+    setDatePickerOpen(period)
+  }
+
+  const handleDateClose = () => {
+    setDatePickerOpen(null)
+  }
+
+  const handleDateSelect = (period: string, date: string) => {
+    setSelectedDates(prev => ({ ...prev, [period]: date }))
+    setDatePickerOpen(null)
+  }
 
   return (
     <Box
@@ -267,19 +293,51 @@ export default function Page() {
           {/* KPI Tiles */}
           <Grid container spacing={4}>
             {[
-              { label: 'Today · 9/1/25 3:48pm', value: '15 / 13', icon: <i className={'bx-package'} /> },
-              { label: 'Yesterday · 8/30/25', value: '13 / 13', icon: <i className={'bx-shopping-bag'} /> },
-              { label: 'Last week · 8/25/25', value: '28 / 25', icon: <i className={'bx-trending-up'} /> },
-              { label: 'Custom · 8/25/25', value: '28 / 25', icon: <i className={'bx-chart-line'} /> }
+              {
+                label: `Today · ${selectedDates.today} 3:48pm`,
+                value: '15 / 13',
+                icon: <i className={'bx-calendar'} />,
+                period: 'today'
+              },
+              {
+                label: `Yesterday · ${selectedDates.yesterday}`,
+                value: '13 / 13',
+                icon: <i className={'bx-calendar'} />,
+                period: 'yesterday'
+              },
+              {
+                label: `Last week · ${selectedDates.lastweek}`,
+                value: '28 / 25',
+                icon: <i className={'bx-calendar'} />,
+                period: 'lastweek'
+              },
+              {
+                label: `Custom · ${selectedDates.custom}`,
+                value: '28 / 25',
+                icon: <i className={'bx-calendar'} />,
+                period: 'custom'
+              }
             ].map((k, idx) => (
               <Grid key={idx} size={{ xs: 6, md: 3 }}>
                 <Card>
                   <CardContent>
                     <Stack direction='row' justifyContent='space-between' alignItems='flex-start'>
                       <Box>
-                        <Typography variant='caption' color='text.secondary'>
-                          {k.label}
-                        </Typography>
+                        <Button
+                          variant='text'
+                          onClick={() => handleDateClick(k.period)}
+                          sx={{
+                            p: 0,
+                            minHeight: 'auto',
+                            textAlign: 'left',
+                            justifyContent: 'flex-start',
+                            '&:hover': { bgcolor: 'transparent' }
+                          }}
+                        >
+                          <Typography variant='caption' color='text.secondary'>
+                            {k.label}
+                          </Typography>
+                        </Button>
                         <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
                           {k.value}
                         </Typography>
@@ -432,6 +490,45 @@ export default function Page() {
       <Typography variant='caption' color='text.disabled'>
         *Demo data. Replace with live values from your API/Sheet.
       </Typography>
+
+      {/* Date Picker Dialog */}
+      <Dialog open={!!datePickerOpen} onClose={handleDateClose} maxWidth='xs' fullWidth>
+        <DialogTitle>Select Date {datePickerOpen && `for ${datePickerOpen}`}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin='dense'
+            label='Date (MM/DD/YY)'
+            type='text'
+            fullWidth
+            variant='outlined'
+            placeholder='e.g., 9/1/25'
+            defaultValue={datePickerOpen ? selectedDates[datePickerOpen] : ''}
+            onKeyPress={e => {
+              if (e.key === 'Enter' && datePickerOpen) {
+                handleDateSelect(datePickerOpen, (e.target as HTMLInputElement).value)
+              }
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDateClose}>Cancel</Button>
+          <Button
+            onClick={e => {
+              if (datePickerOpen) {
+                const input = e.currentTarget.closest('.MuiDialog-root')?.querySelector('input')
+
+                if (input) {
+                  handleDateSelect(datePickerOpen, input.value)
+                }
+              }
+            }}
+            variant='contained'
+          >
+            Select
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

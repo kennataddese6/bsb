@@ -220,11 +220,25 @@ export default function Page(): JSX.Element {
 
   const [datePickerOpen, setDatePickerOpen] = React.useState<Period | null>(null)
 
-  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>({
-    today: '9/1/25',
-    yesterday: '8/30/25',
-    lastweek: '8/25/25',
-    custom: '8/25/25'
+  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(() => {
+    const today = new Date()
+
+    // Yesterday
+    const yesterday = new Date(today)
+
+    yesterday.setDate(today.getDate() - 1)
+
+    // Last week (7 days ago)
+    const lastWeek = new Date(today)
+
+    lastWeek.setDate(today.getDate() - 7)
+
+    return {
+      today: today.toLocaleDateString(),
+      yesterday: yesterday.toLocaleDateString(),
+      lastweek: lastWeek.toLocaleDateString(),
+      custom: lastWeek.toLocaleDateString() // example, you can set however you want
+    }
   })
 
   // temporary date shown inside the inline picker before confirmation

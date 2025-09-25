@@ -398,8 +398,8 @@ export default function Page(): JSX.Element {
               <Grid key={idx} size={{ xs: 6, md: 3 }}>
                 <Card>
                   <CardContent>
-                    <Stack direction='row' justifyContent='space-between' alignItems='flex-start'>
-                      <Box sx={{ minWidth: 0 }}>
+                    <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
                         <Button
                           variant='text'
                           onClick={() => handleDateClick(k.period)}
@@ -423,12 +423,11 @@ export default function Page(): JSX.Element {
                         </Typography>
                       </Box>
 
-                      {/* clickable icon — opens same dialog */}
                       <IconButton
                         aria-label={`Select date for ${k.period}`}
                         onClick={() => handleDateClick(k.period)}
                         size='small'
-                        sx={{ ml: 1 }}
+                        sx={{ ml: 1, flexShrink: 0 }}
                       >
                         <i className='bx-calendar' />
                       </IconButton>

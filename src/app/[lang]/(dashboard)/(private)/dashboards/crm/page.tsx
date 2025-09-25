@@ -646,6 +646,7 @@ export default function Page(): JSX.Element {
                 timeIntervals={15}
                 timeCaption='Time'
                 dateFormat='MM/dd/yyyy h:mm aa'
+                timeFormat='h:mm aa'
               />
             </Box>
 

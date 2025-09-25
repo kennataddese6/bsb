@@ -587,7 +587,10 @@ export default function Page(): JSX.Element {
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <AppDatepicker
                 selected={tempDate}
-                onChange={(d: Date | null) => setTempDate(d)}
+                onChange={(d: Date | null) => {
+                  setTempDate(d)
+                  setSelectedDates(prev => ({ ...prev, custom: d ? formatToShortDate(d) : prev.custom }))
+                }}
                 inline
                 dateFormat='MM/dd/yyyy'
               />

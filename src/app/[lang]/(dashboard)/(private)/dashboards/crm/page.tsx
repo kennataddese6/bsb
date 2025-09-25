@@ -334,9 +334,9 @@ export default function Page(): JSX.Element {
             </Box>
             <Autocomplete
               disablePortal
-              options={['Parent Asin 1', 'Parent Asin 2', 'Parent Asin 3']}
+              options={['All Family', 'Family Asin 1', 'Family Asin 2', 'Family Asin 3']}
               sx={{ width: 300 }}
-              renderInput={params => <TextField {...params} label='Select Parent Asin' />}
+              renderInput={params => <TextField {...params} label='Select Family' />}
             />
           </Stack>
         </Grid>

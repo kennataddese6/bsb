@@ -251,6 +251,15 @@ export default function Page(): JSX.Element {
     }
   })
 
+  const setDefaultDates = () => {
+    setSelectedDates({
+      today: today.toLocaleDateString(),
+      yesterday: yesterday.toLocaleDateString(),
+      lastweek: lastWeek.toLocaleDateString(),
+      custom: lastWeek.toLocaleDateString()
+    })
+  }
+
   // temporary date shown inside the inline picker before confirmation
   const [tempDate, setTempDate] = React.useState<Date | null>(null)
 
@@ -342,7 +351,7 @@ export default function Page(): JSX.Element {
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack direction='row' spacing={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
-            <Button variant='text' startIcon={<i className={'bx-calendar'} />}>
+            <Button variant='text' startIcon={<i className={'bx-calendar'} />} onClick={() => setDefaultDates()}>
               Default Dates
             </Button>
           </Stack>

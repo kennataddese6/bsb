@@ -20,7 +20,6 @@ import {
   TableCell,
   TableBody,
   Stack,
-  Divider,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -571,11 +570,6 @@ export default function Page(): JSX.Element {
           </Grid>
         </Grid>
       </Grid>
-
-      <Divider sx={{ my: 6 }} />
-      <Typography variant='caption' color='text.disabled'>
-        *Demo data. Replace with live values from your API/Sheet.
-      </Typography>
 
       {/* --------------------- Date Picker Dialog --------------------- */}
       <Dialog open={!!datePickerOpen} onClose={handleDateClose} maxWidth='xs' fullWidth>

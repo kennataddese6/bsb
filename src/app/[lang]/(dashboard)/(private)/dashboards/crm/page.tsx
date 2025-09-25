@@ -30,7 +30,8 @@ import {
   IconButton,
   Autocomplete,
   ToggleButton,
-  ToggleButtonGroup
+  ToggleButtonGroup,
+  Switch
 } from '@mui/material'
 
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
@@ -273,6 +274,7 @@ export default function Page(): JSX.Element {
   const [tempDate, setTempDate] = React.useState<Date | null>(null)
   const [timezone, setTimezone] = React.useState('PST')
   const [currentTime, setCurrentTime] = useState('')
+  const [allFamilySelected, selectAllFamily] = useState(false)
 
   /* Open dialog and seed the tempDate from selectedDates */
   const handleDateClick = (period: Period) => {
@@ -376,10 +378,20 @@ export default function Page(): JSX.Element {
             </Box>
             <Autocomplete
               disablePortal
-              options={['All Family', 'Family Asin 1', 'Family Asin 2', 'Family Asin 3']}
+              options={['Family Asin 1', 'Family Asin 2', 'Family Asin 3']}
               sx={{ width: 300 }}
               renderInput={params => <TextField {...params} label='Select Family' />}
             />
+            <div className='flex items-center justify-between ml-12'>
+              <label className='font-medium cursor-pointer' htmlFor='customizer-semi-dark'>
+                All Family
+              </label>
+              <Switch
+                id='customizer-semi-dark'
+                onChange={() => selectAllFamily(!allFamilySelected)}
+                checked={allFamilySelected}
+              />
+            </div>
           </Stack>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>

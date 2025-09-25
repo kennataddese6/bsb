@@ -74,14 +74,18 @@ function parseFlexibleDate(s: string | undefined): Date {
   return new Date()
 }
 
-/** Format date to "M/D/YY" like your original strings (9/1/25) */
+/** Format date to "M/D/YY" like your original strings (9/1/25)  hh and mm*/
 function formatToShortDate(d: Date | null): string {
   if (!d) return ''
+
   const mm = d.getMonth() + 1
   const dd = d.getDate()
-  const yy = String(d.getFullYear())
+  const yy = d.getFullYear()
 
-  return `${mm}/${dd}/${yy}`
+  const hours = d.getHours().toString().padStart(2, '0')
+  const minutes = d.getMinutes().toString().padStart(2, '0')
+
+  return `${mm}/${dd}/${yy} ${hours}:${minutes}`
 }
 
 /* ----------------------- Optional prop typing --------------------- */
@@ -95,8 +99,9 @@ const AppDatepicker = AppReactDatepicker as unknown as React.ComponentType<{
   onChange?: (date: Date | null) => void
   inline?: boolean
   dateFormat?: string
-
-  // accept any other props
+  showTimeSelect?: boolean
+  timeIntervals?: number
+  timeCaption?: string
   [key: string]: any
 }>
 
@@ -631,10 +636,16 @@ export default function Page(): JSX.Element {
                 selected={tempDate}
                 onChange={(d: Date | null) => {
                   setTempDate(d)
-                  setSelectedDates(prev => ({ ...prev, custom: d ? formatToShortDate(d) : prev.custom }))
+                  setSelectedDates(prev => ({
+                    ...prev,
+                    custom: d ? formatToShortDate(d) : prev.custom
+                  }))
                 }}
                 inline
-                dateFormat='MM/dd/yyyy'
+                showTimeSelect
+                timeIntervals={15}
+                timeCaption='Time'
+                dateFormat='MM/dd/yyyy h:mm aa'
               />
             </Box>
 

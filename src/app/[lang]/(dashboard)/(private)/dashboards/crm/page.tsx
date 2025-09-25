@@ -310,7 +310,7 @@ export default function Page(): JSX.Element {
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack direction='row' spacing={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
-            <Button variant='outlined' startIcon={<i className={'bx-calendar'} />}>
+            <Button variant='text' startIcon={<i className={'bx-calendar'} />}>
               Default Dates
             </Button>
           </Stack>

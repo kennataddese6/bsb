@@ -79,7 +79,7 @@ function formatToShortDate(d: Date | null): string {
   if (!d) return ''
   const mm = d.getMonth() + 1
   const dd = d.getDate()
-  const yy = String(d.getFullYear()).slice(-2)
+  const yy = String(d.getFullYear())
 
   return `${mm}/${dd}/${yy}`
 }
@@ -219,19 +219,17 @@ export default function Page(): JSX.Element {
 
   const [datePickerOpen, setDatePickerOpen] = React.useState<Period | null>(null)
 
+  const today = new Date()
+
+  const yesterday = new Date(today)
+
+  yesterday.setDate(today.getDate() - 1)
+
+  const lastWeek = new Date(today)
+
+  lastWeek.setDate(today.getDate() - 7)
+
   const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(() => {
-    const today = new Date()
-
-    // Yesterday
-    const yesterday = new Date(today)
-
-    yesterday.setDate(today.getDate() - 1)
-
-    // Last week (7 days ago)
-    const lastWeek = new Date(today)
-
-    lastWeek.setDate(today.getDate() - 7)
-
     return {
       today: today.toLocaleDateString(),
       yesterday: yesterday.toLocaleDateString(),
@@ -265,9 +263,21 @@ export default function Page(): JSX.Element {
 
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
-    { label: `Today · ${selectedDates.today} 3:48pm`, value: '15 / 13', period: 'today' },
-    { label: `Yesterday · ${selectedDates.yesterday}`, value: '13 / 13', period: 'yesterday' },
-    { label: `Last week · ${selectedDates.lastweek}`, value: '28 / 25', period: 'lastweek' },
+    {
+      label: `${selectedDates.today == today.toLocaleDateString() ? 'Today' : ''} · ${selectedDates.today} 3:48pm`,
+      value: '15 / 13',
+      period: 'today'
+    },
+    {
+      label: `${selectedDates.yesterday == yesterday.toLocaleDateString() ? 'Yesterday' : ''} · ${selectedDates.yesterday}`,
+      value: '13 / 13',
+      period: 'yesterday'
+    },
+    {
+      label: `${selectedDates.lastweek == lastWeek.toLocaleDateString() ? 'Last week' : ''} · ${selectedDates.lastweek}`,
+      value: '28 / 25',
+      period: 'lastweek'
+    },
     { label: `Custom · ${selectedDates.custom}`, value: '28 / 25', period: 'custom' }
   ]
 

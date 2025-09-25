@@ -261,20 +261,30 @@ export default function Page(): JSX.Element {
     setTempDate(null)
   }
 
+  const getRelativeDayLabel = (date: string): 'Today' | 'Yesterday' | 'Last week' | '' => {
+    return date == today.toLocaleDateString()
+      ? 'Today'
+      : date == yesterday.toLocaleDateString()
+        ? 'Yesterday'
+        : date == lastWeek.toLocaleDateString()
+          ? 'Last week'
+          : ''
+  }
+
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
-      label: `${selectedDates.today == today.toLocaleDateString() ? 'Today' : ''} · ${selectedDates.today} 3:48pm`,
+      label: `${getRelativeDayLabel(selectedDates.today)} · ${selectedDates.today} 3:48pm`,
       value: '15 / 13',
       period: 'today'
     },
     {
-      label: `${selectedDates.yesterday == yesterday.toLocaleDateString() ? 'Yesterday' : ''} · ${selectedDates.yesterday}`,
+      label: `${getRelativeDayLabel(selectedDates.yesterday)} · ${selectedDates.yesterday}`,
       value: '13 / 13',
       period: 'yesterday'
     },
     {
-      label: `${selectedDates.lastweek == lastWeek.toLocaleDateString() ? 'Last week' : ''} · ${selectedDates.lastweek}`,
+      label: `${getRelativeDayLabel(selectedDates.lastweek)} · ${selectedDates.lastweek}`,
       value: '28 / 25',
       period: 'lastweek'
     },

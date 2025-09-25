@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 import * as React from 'react'
 
 import Image from 'next/image'
@@ -26,7 +28,9 @@ import {
   DialogActions,
   TextField,
   IconButton,
-  Autocomplete
+  Autocomplete,
+  ToggleButton,
+  ToggleButtonGroup
 } from '@mui/material'
 
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
@@ -267,6 +271,8 @@ export default function Page(): JSX.Element {
 
   // temporary date shown inside the inline picker before confirmation
   const [tempDate, setTempDate] = React.useState<Date | null>(null)
+  const [timezone, setTimezone] = React.useState('PST')
+  const [currentTime, setCurrentTime] = useState('')
 
   /* Open dialog and seed the tempDate from selectedDates */
   const handleDateClick = (period: Period) => {
@@ -301,7 +307,7 @@ export default function Page(): JSX.Element {
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
-      label: `${getRelativeDayLabel(selectedDates.today)} · ${selectedDates.today} 3:48pm`,
+      label: `${getRelativeDayLabel(selectedDates.today)} · ${selectedDates.today}`,
       value: '15 / 13',
       period: 'today'
     },
@@ -317,6 +323,28 @@ export default function Page(): JSX.Element {
     },
     { label: `Custom · ${selectedDates.custom}`, value: '28 / 25', period: 'custom' }
   ]
+
+  useEffect(() => {
+    const updateTime = () => {
+      const tz = timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
+      const now = new Date()
+
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        hour12: true,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        timeZone: tz
+      })
+
+      setCurrentTime(formatter.format(now))
+    }
+
+    updateTime() // initialize immediately
+    const interval = setInterval(updateTime, 1000)
+
+    return () => clearInterval(interval)
+  }, [timezone])
 
   return (
     <Box
@@ -356,6 +384,44 @@ export default function Page(): JSX.Element {
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <Stack direction='row' spacing={2} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+            <Stack direction='row' spacing={2} alignItems='center'>
+              <ToggleButtonGroup
+                value={timezone}
+                exclusive
+                onChange={(e, newTimezone) => {
+                  if (newTimezone) setTimezone(newTimezone)
+                }}
+              >
+                <ToggleButton
+                  value='PST'
+                  sx={{
+                    bgcolor: '#E3F2FD',
+                    color: 'black',
+                    '&.Mui-selected': { bgcolor: '#1E88E5', color: 'white', '&:hover': { bgcolor: '#1565C0' } },
+                    '&:hover': { bgcolor: '#BBDEFB' }
+                  }}
+                >
+                  PST
+                </ToggleButton>
+
+                <ToggleButton
+                  value='EST'
+                  sx={{
+                    bgcolor: '#E8F5E9',
+                    color: 'black',
+                    '&.Mui-selected': { bgcolor: '#43A047', color: 'white', '&:hover': { bgcolor: '#2E7D32' } },
+                    '&:hover': { bgcolor: '#C8E6C9' }
+                  }}
+                >
+                  EST
+                </ToggleButton>
+              </ToggleButtonGroup>
+
+              {/* Live time display */}
+              <Typography variant='body1' sx={{ fontFamily: 'monospace', minWidth: '80px' }}>
+                {currentTime}
+              </Typography>
+            </Stack>
             <Button variant='text' startIcon={<i className={'bx-calendar'} />} onClick={() => setDefaultDates()}>
               Default Dates
             </Button>

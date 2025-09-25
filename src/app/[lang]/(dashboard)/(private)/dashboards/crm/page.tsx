@@ -26,7 +26,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  IconButton
+  IconButton,
+  Autocomplete
 } from '@mui/material'
 
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
@@ -286,6 +287,12 @@ export default function Page(): JSX.Element {
                 Tree Bag · Plastic
               </Typography>
             </Box>
+            <Autocomplete
+              disablePortal
+              options={['Parent Asin 1', 'Parent Asin 2', 'Parent Asin 3']}
+              sx={{ width: 300 }}
+              renderInput={params => <TextField {...params} label='Select Parent Asin' />}
+            />
           </Stack>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>

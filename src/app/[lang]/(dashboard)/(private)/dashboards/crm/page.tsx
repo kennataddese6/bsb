@@ -274,10 +274,14 @@ export default function Page(): JSX.Element {
   const [tempDate, setTempDate] = React.useState<Date | null>(null)
   const [timezone, setTimezone] = React.useState('PST')
   const [currentTime, setCurrentTime] = useState('')
+  const [period, setPeriod] = useState('today')
   const [allFamilySelected, selectAllFamily] = useState(false)
+  const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
+  const [tempToDate, setTempToDate] = useState<Date | null>(null)
 
   /* Open dialog and seed the tempDate from selectedDates */
   const handleDateClick = (period: Period) => {
+    setPeriod(period)
     setDatePickerOpen(period)
     setTempDate(parseFlexibleDate(selectedDates[period]))
   }
@@ -706,39 +710,101 @@ export default function Page(): JSX.Element {
           </Typography>
         </DialogTitle>
 
-        <DialogContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'stretch', pt: 1 }}>
-            {/* Inline styled date picker from your libs */}
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-              <AppDatepicker
-                selected={tempDate}
-                onChange={(d: Date | null) => {
-                  setTempDate(d)
-                  setSelectedDates(prev => ({
-                    ...prev,
-                    custom: d ? formatToShortDate(d) : prev.custom
-                  }))
-                }}
-                inline
-                showTimeSelect
-                timeIntervals={15}
-                timeCaption='Time'
-                dateFormat='MM/dd/yyyy h:mm aa'
-                timeFormat='h:mm aa'
+        {period === 'lastweek' ? (
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'stretch', pt: 1 }}>
+              {/* From date-time picker */}
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <AppDatepicker
+                  selected={tempFromDate}
+                  onChange={(d: Date | null) => {
+                    setTempFromDate(d)
+                    setSelectedDates(prev => ({
+                      ...prev,
+                      from: d ? formatToShortDate(d) : prev.from
+                    }))
+                  }}
+                  inline
+                  showTimeSelect
+                  timeIntervals={15}
+                  timeCaption='Time'
+                  dateFormat='MM/dd/yyyy h:mm aa'
+                  timeFormat='h:mm aa'
+                />
+              </Box>
+
+              <TextField
+                label='From'
+                value={tempFromDate ? formatToShortDate(tempFromDate) : ''}
+                fullWidth
+                InputProps={{ readOnly: true }}
+                variant='outlined'
+                size='small'
+              />
+
+              {/* To date-time picker */}
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <AppDatepicker
+                  selected={tempToDate}
+                  onChange={(d: Date | null) => {
+                    setTempToDate(d)
+                    setSelectedDates(prev => ({
+                      ...prev,
+                      to: d ? formatToShortDate(d) : prev.to
+                    }))
+                  }}
+                  inline
+                  showTimeSelect
+                  timeIntervals={15}
+                  timeCaption='Time'
+                  dateFormat='MM/dd/yyyy h:mm aa'
+                  timeFormat='h:mm aa'
+                />
+              </Box>
+
+              <TextField
+                label='To'
+                value={tempToDate ? formatToShortDate(tempToDate) : ''}
+                fullWidth
+                InputProps={{ readOnly: true }}
+                variant='outlined'
+                size='small'
               />
             </Box>
+          </DialogContent>
+        ) : (
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'stretch', pt: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <AppDatepicker
+                  selected={tempDate}
+                  onChange={(d: Date | null) => {
+                    setTempDate(d)
+                    setSelectedDates(prev => ({
+                      ...prev,
+                      custom: d ? formatToShortDate(d) : prev.custom
+                    }))
+                  }}
+                  inline
+                  showTimeSelect
+                  timeIntervals={15}
+                  timeCaption='Time'
+                  dateFormat='MM/dd/yyyy h:mm aa'
+                  timeFormat='h:mm aa'
+                />
+              </Box>
 
-            {/* Read-only preview input (good UX to show chosen date) */}
-            <TextField
-              label='Selected date'
-              value={tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
-              fullWidth
-              InputProps={{ readOnly: true }}
-              variant='outlined'
-              size='small'
-            />
-          </Box>
-        </DialogContent>
+              <TextField
+                label='Selected date'
+                value={tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
+                fullWidth
+                InputProps={{ readOnly: true }}
+                variant='outlined'
+                size='small'
+              />
+            </Box>
+          </DialogContent>
+        )}
 
         <DialogActions>
           <Button onClick={handleDateClose}>Cancel</Button>

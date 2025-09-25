@@ -34,7 +34,7 @@ import {
   Switch
 } from '@mui/material'
 
-import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
+import { formatUSD } from '@/utils/formatters/formatUSD'
 
 type Variant = {
   color: string
@@ -52,7 +52,15 @@ type Variant = {
 
 type Period = 'today' | 'yesterday' | 'lastweek' | 'custom'
 
-type SelectedDates = Record<Period, string>
+type SelectedDates = {
+  today: string
+  yesterday: string
+  lastweek: {
+    from: string
+    to: string
+  }
+  custom: string
+}
 
 function parseFlexibleDate(s: string | undefined): Date {
   if (!s) return new Date()
@@ -93,22 +101,17 @@ function formatToShortDate(d: Date | null): string {
   return `${mm}/${dd}/${yy} ${hours}:${minutes}`
 }
 
-/* ----------------------- Optional prop typing --------------------- */
-/**
- * AppReactDatepicker is an internal wrapper — cast to a sensible prop shape
- * so TypeScript knows `selected` and `onChange` exist. If your wrapper
- * uses different prop names, change this cast accordingly.
- */
-const AppDatepicker = AppReactDatepicker as unknown as React.ComponentType<{
-  selected?: Date | null
-  onChange?: (date: Date | null) => void
-  inline?: boolean
-  dateFormat?: string
-  showTimeSelect?: boolean
-  timeIntervals?: number
-  timeCaption?: string
-  [key: string]: any
-}>
+function formatForDatetimeLocal(d: Date | null): string {
+  if (!d) return ''
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  const yyyy = d.getFullYear()
+  const mm = pad(d.getMonth() + 1)
+  const dd = pad(d.getDate())
+  const hh = pad(d.getHours())
+  const min = pad(d.getMinutes())
+
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`
+}
 
 /* ----------------------------- Data ------------------------------ */
 const variants: Variant[] = [
@@ -122,7 +125,7 @@ const variants: Variant[] = [
     ystd: 413,
     lastwk: 544,
     w7: 845,
-    avg: 16.99,
+    avg: 1600.99,
     target: 17.99,
     deal: true
   },
@@ -252,11 +255,20 @@ export default function Page(): JSX.Element {
 
   lastWeek.setDate(today.getDate() - 7)
 
+  const now = new Date()
+  const lastWeekStart = new Date()
+
+  lastWeekStart.setDate(now.getDate() - 7)
+  const lastWeekEnd = now
+
   const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(() => {
     return {
-      today: today.toLocaleDateString(),
+      today: today.toLocaleTimeString(),
       yesterday: yesterday.toLocaleDateString(),
-      lastweek: lastWeek.toLocaleDateString(),
+      lastweek: {
+        from: lastWeekStart.toLocaleDateString(),
+        to: lastWeekEnd.toLocaleDateString()
+      },
       custom: lastWeek.toLocaleDateString() // example, you can set however you want
     }
   })
@@ -265,7 +277,10 @@ export default function Page(): JSX.Element {
     setSelectedDates({
       today: today.toLocaleDateString(),
       yesterday: yesterday.toLocaleDateString(),
-      lastweek: lastWeek.toLocaleDateString(),
+      lastweek: {
+        from: lastWeekStart.toLocaleDateString(),
+        to: lastWeekEnd.toLocaleDateString()
+      },
       custom: lastWeek.toLocaleDateString()
     })
   }
@@ -277,7 +292,6 @@ export default function Page(): JSX.Element {
   const [period, setPeriod] = useState('today')
   const [allFamilySelected, selectAllFamily] = useState(false)
   const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
-  const [tempToDate, setTempToDate] = useState<Date | null>(null)
 
   /* Open dialog and seed the tempDate from selectedDates */
   const handleDateClick = (period: Period) => {
@@ -300,34 +314,53 @@ export default function Page(): JSX.Element {
     setTempDate(null)
   }
 
-  const getRelativeDayLabel = (date: string): 'Today' | 'Yesterday' | 'Last week' | '' => {
+  const getRelativeDayLabel = (date: string): 'Today ·' | 'Yesterday ·' | 'Last week ·' | '' => {
     return date == today.toLocaleDateString()
-      ? 'Today'
+      ? 'Today ·'
       : date == yesterday.toLocaleDateString()
-        ? 'Yesterday'
+        ? 'Yesterday ·'
         : date == lastWeek.toLocaleDateString()
-          ? 'Last week'
+          ? 'Last week ·'
           : ''
   }
 
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
-      label: `${getRelativeDayLabel(selectedDates.today)} · ${selectedDates.today}`,
+      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
+      })}`,
       value: '15 / 13',
       period: 'today'
     },
     {
-      label: `${getRelativeDayLabel(selectedDates.yesterday)} · ${selectedDates.yesterday}`,
+      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday} ${now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
+      })}`,
       value: '13 / 13',
       period: 'yesterday'
     },
     {
-      label: `${getRelativeDayLabel(selectedDates.lastweek)} · ${selectedDates.lastweek}`,
+      label: `${getRelativeDayLabel(selectedDates.lastweek.from)}  ${selectedDates.lastweek.from} `,
       value: '28 / 25',
       period: 'lastweek'
     },
-    { label: `Custom · ${selectedDates.custom}`, value: '28 / 25', period: 'custom' }
+    {
+      label: `Custom · ${selectedDates.custom} ${now.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
+      })}`,
+      value: '28 / 25',
+      period: 'custom'
+    }
   ]
 
   useEffect(() => {
@@ -499,8 +532,8 @@ export default function Page(): JSX.Element {
                           <TableCell align='right'>{v.ystd.toLocaleString()}</TableCell>
                           <TableCell align='right'>{v.lastwk.toLocaleString()}</TableCell>
                           <TableCell align='right'>{v.w7.toLocaleString()}</TableCell>
-                          <TableCell align='right'>${v.avg.toFixed(2)}</TableCell>
-                          <TableCell align='right'>${v.target.toFixed(2)}</TableCell>
+                          <TableCell align='right'>{formatUSD(v.avg)}</TableCell>
+                          <TableCell align='right'>{formatUSD(v.target)}</TableCell>
                           <TableCell align='center'>
                             {v.deal ? (
                               <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />
@@ -705,9 +738,6 @@ export default function Page(): JSX.Element {
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span>Select Date {datePickerOpen && `for ${datePickerOpen}`}</span>
           {/* Quick preview of currently selected temp date */}
-          <Typography variant='caption' color='text.secondary'>
-            {tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
-          </Typography>
         </DialogTitle>
 
         {period === 'lastweek' ? (
@@ -737,11 +767,10 @@ export default function Page(): JSX.Element {
                 sx={{ mt: 6 }}
                 label='To'
                 type='datetime-local'
-                value={tempToDate ? tempToDate.toISOString().slice(0, 16) : ''}
+                value={formatForDatetimeLocal(tempFromDate)}
                 onChange={e => {
                   const d = e.target.value ? new Date(e.target.value) : null
 
-                  setTempToDate(d)
                   setSelectedDates(prev => ({
                     ...prev,
                     to: d ? formatToShortDate(d) : prev.to
@@ -757,7 +786,29 @@ export default function Page(): JSX.Element {
           <DialogContent>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'stretch', pt: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <AppDatepicker
+                <TextField
+                  label='Select date and time'
+                  type='datetime-local'
+                  value={formatForDatetimeLocal(tempFromDate)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = e.target.value
+
+                    if (value) {
+                      const date = new Date(value)
+
+                      setTempFromDate(date)
+                      setSelectedDates(prev => ({
+                        ...prev,
+                        custom: formatToShortDate(date) // keep your display format for state
+                      }))
+                    }
+                  }}
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                  size='small'
+                />
+
+                {/*                 <AppDatepicker
                   selected={tempDate}
                   onChange={(d: Date | null) => {
                     setTempDate(d)
@@ -772,17 +823,17 @@ export default function Page(): JSX.Element {
                   timeCaption='Time'
                   dateFormat='MM/dd/yyyy h:mm aa'
                   timeFormat='h:mm aa'
-                />
+                /> */}
               </Box>
 
-              <TextField
+              {/*               <TextField
                 label='Selected date'
                 value={tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
                 fullWidth
                 InputProps={{ readOnly: true }}
                 variant='outlined'
                 size='small'
-              />
+              /> */}
             </Box>
           </DialogContent>
         )}

@@ -276,9 +276,8 @@ export default function Page(): JSX.Element {
     <Box
       sx={{
         p: { xs: 4, md: 6 },
-        bgcolor: 'background.default',
-        minHeight: '100vh',
-        backgroundImage: 'linear-gradient(145deg, #f8f9ff 0%, #ffffff 40%, #f8f9ff 100%)'
+        bgcolor: 'white',
+        minHeight: '100vh'
       }}
     >
       {/* Header */}

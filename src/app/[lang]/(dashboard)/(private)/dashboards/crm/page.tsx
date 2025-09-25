@@ -712,62 +712,43 @@ export default function Page(): JSX.Element {
 
         {period === 'lastweek' ? (
           <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'stretch', pt: 1 }}>
-              {/* From date-time picker */}
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <AppDatepicker
-                  selected={tempFromDate}
-                  onChange={(d: Date | null) => {
-                    setTempFromDate(d)
-                    setSelectedDates(prev => ({
-                      ...prev,
-                      from: d ? formatToShortDate(d) : prev.from
-                    }))
-                  }}
-                  inline
-                  showTimeSelect
-                  timeIntervals={15}
-                  timeCaption='Time'
-                  dateFormat='MM/dd/yyyy h:mm aa'
-                  timeFormat='h:mm aa'
-                />
-              </Box>
-
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+              {/* From date-time input */}
               <TextField
                 label='From'
-                value={tempFromDate ? formatToShortDate(tempFromDate) : ''}
+                type='datetime-local'
+                value={tempFromDate ? tempFromDate.toISOString().slice(0, 16) : ''}
+                onChange={e => {
+                  const d = e.target.value ? new Date(e.target.value) : null
+
+                  setTempFromDate(d)
+                  setSelectedDates(prev => ({
+                    ...prev,
+                    from: d ? formatToShortDate(d) : prev.from
+                  }))
+                }}
                 fullWidth
-                InputProps={{ readOnly: true }}
-                variant='outlined'
+                InputLabelProps={{ shrink: true }} // keeps label above field
                 size='small'
               />
 
-              {/* To date-time picker */}
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <AppDatepicker
-                  selected={tempToDate}
-                  onChange={(d: Date | null) => {
-                    setTempToDate(d)
-                    setSelectedDates(prev => ({
-                      ...prev,
-                      to: d ? formatToShortDate(d) : prev.to
-                    }))
-                  }}
-                  inline
-                  showTimeSelect
-                  timeIntervals={15}
-                  timeCaption='Time'
-                  dateFormat='MM/dd/yyyy h:mm aa'
-                  timeFormat='h:mm aa'
-                />
-              </Box>
-
+              {/* To date-time input */}
               <TextField
+                sx={{ mt: 6 }}
                 label='To'
-                value={tempToDate ? formatToShortDate(tempToDate) : ''}
+                type='datetime-local'
+                value={tempToDate ? tempToDate.toISOString().slice(0, 16) : ''}
+                onChange={e => {
+                  const d = e.target.value ? new Date(e.target.value) : null
+
+                  setTempToDate(d)
+                  setSelectedDates(prev => ({
+                    ...prev,
+                    to: d ? formatToShortDate(d) : prev.to
+                  }))
+                }}
                 fullWidth
-                InputProps={{ readOnly: true }}
-                variant='outlined'
+                InputLabelProps={{ shrink: true }}
                 size='small'
               />
             </Box>

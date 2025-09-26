@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import Image from 'next/image'
+
 import {
   Box,
   Card,
@@ -14,20 +16,7 @@ import {
 } from '@mui/material'
 
 import { formatUSD } from '@/utils/formatters/formatUSD'
-
-export type Item = {
-  Asin: string
-  ParentAsin: string
-  GroupName: string
-  Variation: string
-  TargetPrice: number
-  TodayOrders: number
-  YesterdayOrders: number
-  Last7DaysOrders: number
-  LastWeekOrders: number
-  TodayAveragePrice: number
-  deal?: boolean
-}
+import type { Item } from '@/types/apps/salesChartTypes'
 
 type VariantsTableProps = {
   itemsData?: Item[]
@@ -47,6 +36,7 @@ export function VariantsTable(props: VariantsTableProps): JSX.Element {
             <Table stickyHeader size='small'>
               <TableHead>
                 <TableRow>
+                  <TableCell>Image</TableCell>
                   <TableCell>Asin</TableCell>
                   <TableCell>Parent Asin</TableCell>
                   <TableCell>Variation</TableCell>
@@ -61,6 +51,14 @@ export function VariantsTable(props: VariantsTableProps): JSX.Element {
                   itemsData &&
                   itemsData.map(v => (
                     <TableRow hover key={v.Asin} onClick={() => onSelect(v)}>
+                      <TableCell align='right'>
+                        <Image
+                          src={`${v.Image || '/images/apps/ecommerce/product-1.png'}`}
+                          width={50}
+                          height={50}
+                          alt=''
+                        />
+                      </TableCell>
                       <TableCell>{v.Asin}</TableCell>
                       <TableCell>
                         <Typography

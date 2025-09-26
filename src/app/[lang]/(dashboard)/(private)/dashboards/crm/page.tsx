@@ -202,7 +202,12 @@ export default function Page(): JSX.Element {
                     boxShadow: 1
                   }}
                 >
-                  <Image src='/images/cards/5.png' alt='Tree Bag' fill style={{ objectFit: 'cover' }} />
+                  <Image
+                    src={parentItem.Image || '/images/apps/ecommerce/product-1.png'}
+                    alt='Tree Bag'
+                    fill
+                    style={{ objectFit: 'cover' }}
+                  />
                 </Box>
                 <Box>
                   <Typography variant='caption' color='text.secondary'>

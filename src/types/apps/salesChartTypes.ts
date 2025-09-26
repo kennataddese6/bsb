@@ -36,6 +36,7 @@ export interface QuarterlyChartData extends BaseChartData {
 }
 
 export type Item = {
+  Image: string
   Asin: string
   ParentAsin: string
   GroupName: string

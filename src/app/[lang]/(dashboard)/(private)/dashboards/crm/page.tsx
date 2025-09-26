@@ -34,6 +34,8 @@ import {
   Switch
 } from '@mui/material'
 
+import { set } from 'react-hook-form'
+
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
 import { defaultDate } from '@/utils/defaultDate'
@@ -58,6 +60,7 @@ export default function Page(): JSX.Element {
   const [period, setPeriod] = useState('today')
   const [allFamilySelected, selectAllFamily] = useState(false)
   const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
+  const [tempToDate, setTempToDate] = useState<Date | null>(null)
 
   const currentTime = useCurrentTime(timezone)
   const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
@@ -78,10 +81,25 @@ export default function Page(): JSX.Element {
   const handleDateClose = () => {
     setDatePickerOpen(null)
     setTempDate(null)
+    setTempFromDate(null)
+    setTempToDate(null)
   }
 
   const handleDateSelect = (period: Period | null, date: Date | null) => {
     if (!period) return
+
+    if (period === 'lastweek') {
+      if (!tempFromDate || !tempToDate) return
+
+      const from = formatToShortDate(tempFromDate)
+      const to = formatToShortDate(tempToDate)
+
+      setSelectedDates(prev => ({ ...prev, lastweek: { from, to } }))
+
+      setDatePickerOpen(null)
+      setTempDate(null)
+    }
+
     const formatted = date ? formatToShortDate(date) : selectedDates[period]
 
     setSelectedDates(prev => ({ ...prev, [period]: formatted }))
@@ -103,7 +121,7 @@ export default function Page(): JSX.Element {
       period: 'yesterday'
     },
     {
-      label: `${getRelativeDayLabel(selectedDates.lastweek.from)}  ${selectedDates.lastweek.from} `,
+      label: `${getRelativeDayLabel(selectedDates.lastweek.from)}  ${selectedDates.lastweek.from} - ${selectedDates.lastweek.to} `,
       value: '28 / 25',
       period: 'lastweek'
     },
@@ -466,15 +484,11 @@ export default function Page(): JSX.Element {
               <TextField
                 label='From'
                 type='datetime-local'
-                value={tempFromDate ? tempFromDate.toISOString().slice(0, 16) : ''}
+                value={formatForDatetimeLocal(tempFromDate)}
                 onChange={e => {
                   const d = e.target.value ? new Date(e.target.value) : null
 
                   setTempFromDate(d)
-                  setSelectedDates(prev => ({
-                    ...prev,
-                    from: d ? formatToShortDate(d) : prev.from
-                  }))
                 }}
                 fullWidth
                 InputLabelProps={{ shrink: true }} // keeps label above field
@@ -485,14 +499,11 @@ export default function Page(): JSX.Element {
                 sx={{ mt: 6 }}
                 label='To'
                 type='datetime-local'
-                value={formatForDatetimeLocal(tempFromDate)}
+                value={formatForDatetimeLocal(tempToDate)}
                 onChange={e => {
                   const d = e.target.value ? new Date(e.target.value) : null
 
-                  setSelectedDates(prev => ({
-                    ...prev,
-                    to: d ? formatToShortDate(d) : prev.to
-                  }))
+                  setTempToDate(d)
                 }}
                 fullWidth
                 InputLabelProps={{ shrink: true }}

@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -55,7 +54,6 @@ export function VariantsTable(props: VariantsTableProps): JSX.Element {
                   <TableCell align='right'>Total Orders</TableCell>
                   <TableCell align='right'>Yesterday Orders</TableCell>
                   <TableCell align='right'>Last7DaysOrders</TableCell>
-                  <TableCell align='right'>TodayAveragePrice</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -81,15 +79,6 @@ export function VariantsTable(props: VariantsTableProps): JSX.Element {
                       <TableCell align='right'>{v.TodayOrders}</TableCell>
                       <TableCell align='right'>{v.YesterdayOrders}</TableCell>
                       <TableCell align='right'>{v.Last7DaysOrders}</TableCell>
-                      <TableCell align='right'>{v.LastWeekOrders}</TableCell>
-                      <TableCell align='right'>{formatUSD(v.TodayAveragePrice)}</TableCell>
-                      <TableCell align='center'>
-                        {v.deal ? (
-                          <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />
-                        ) : (
-                          <Typography color='text.disabled'>—</Typography>
-                        )}
-                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>

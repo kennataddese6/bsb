@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import * as React from 'react'
 
@@ -37,32 +37,9 @@ import {
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
 import { defaultDate } from '@/utils/defaultDate'
-
-type Variant = {
-  color: string
-  hex: string
-  size: string
-  asin: string
-  today: number
-  ystd: number
-  lastwk: number
-  w7: number
-  avg: number
-  target: number
-  deal: boolean
-}
-
-type Period = 'today' | 'yesterday' | 'lastweek' | 'custom'
-
-type SelectedDates = {
-  today: string
-  yesterday: string
-  lastweek: {
-    from: string
-    to: string
-  }
-  custom: string
-}
+import { variants } from '@/data/variantsData'
+import type { Period, SelectedDates } from '@/types/apps/variants'
+import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
 
 function parseFlexibleDate(s: string | undefined): Date {
   if (!s) return new Date()
@@ -115,130 +92,6 @@ function formatForDatetimeLocal(d: Date | null): string {
   return `${yyyy}-${mm}-${dd}T${hh}:${min}`
 }
 
-/* ----------------------------- Data ------------------------------ */
-const variants: Variant[] = [
-  /* keep your variants - shortened here for brevity */
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 1600.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Blue',
-    hex: '#2b6cb0',
-    size: '9 ft',
-    asin: 'B01KNKFTPC',
-    today: 905,
-    ystd: 413,
-    lastwk: 544,
-    w7: 845,
-    avg: 16.99,
-    target: 17.99,
-    deal: true
-  },
-  {
-    color: 'Red',
-    hex: '#e53e3e',
-    size: '9 ft',
-    asin: 'B01KKNQ004',
-    today: 520,
-    ystd: 455,
-    lastwk: 652,
-    w7: 555,
-    avg: 15.89,
-    target: 19.99,
-    deal: false
-  }
-
-  // ...add the rest
-]
-
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
   const target = 7000
@@ -256,14 +109,6 @@ export default function Page(): JSX.Element {
 
   const currentTime = useCurrentTime(timezone)
   const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
-
-  const today = new Date()
-
-  const yesterday = new Date(today)
-
-  yesterday.setDate(today.getDate() - 1)
-
-  const lastWeek = new Date(today)
 
   const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(defaultDate(timezone))
 
@@ -290,16 +135,6 @@ export default function Page(): JSX.Element {
     setSelectedDates(prev => ({ ...prev, [period]: formatted }))
     setDatePickerOpen(null)
     setTempDate(null)
-  }
-
-  const getRelativeDayLabel = (date: string): 'Today ·' | 'Yesterday ·' | 'Last week ·' | '' => {
-    return date == today.toLocaleDateString()
-      ? 'Today ·'
-      : date == yesterday.toLocaleDateString()
-        ? 'Yesterday ·'
-        : date == lastWeek.toLocaleDateString()
-          ? 'Last week ·'
-          : ''
   }
 
   const defaultDates = defaultDate(timezone)
@@ -336,7 +171,6 @@ export default function Page(): JSX.Element {
         minHeight: '100vh'
       }}
     >
-      {/* Header */}
       <Grid container spacing={4} alignItems='center' sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack direction='row' spacing={3} alignItems='center'>
@@ -409,7 +243,6 @@ export default function Page(): JSX.Element {
                 </ToggleButton>
               </ToggleButtonGroup>
 
-              {/* Live time display */}
               <Typography variant='body1' sx={{ fontFamily: 'monospace', minWidth: '80px' }}>
                 {currentTime}
               </Typography>
@@ -421,9 +254,7 @@ export default function Page(): JSX.Element {
         </Grid>
       </Grid>
 
-      {/* Main Grid */}
       <Grid container spacing={4}>
-        {/* LEFT: Variants & Performance */}
         <Grid size={{ xs: 12, lg: 5 }}>
           <Card>
             <CardHeader title='Variants & Performance' sx={{ pb: 2 }} />
@@ -494,7 +325,6 @@ export default function Page(): JSX.Element {
           </Card>
         </Grid>
 
-        {/* RIGHT: KPIs & Progress */}
         <Grid size={{ xs: 12, lg: 7 }}>
           {/* KPI Tiles */}
           <Grid container spacing={4}>
@@ -565,7 +395,6 @@ export default function Page(): JSX.Element {
             ))}
           </Grid>
 
-          {/* Totals */}
           <Grid container spacing={4} sx={{ mt: 4 }}>
             {[
               { label: 'Total ordered', value: '20,000' },
@@ -585,7 +414,6 @@ export default function Page(): JSX.Element {
             ))}
           </Grid>
 
-          {/* Target vs Actual */}
           <Card sx={{ mt: 0 }}>
             <CardHeader title='Target vs Actual' sx={{ pb: 2 }} />
             <CardContent>
@@ -645,7 +473,6 @@ export default function Page(): JSX.Element {
             </CardContent>
           </Card>
 
-          {/* PPC + Deal */}
           <Grid container spacing={4} sx={{ mt: 4 }}>
             <Grid size={{ xs: 12, md: 8 }}>
               <Card>
@@ -676,11 +503,9 @@ export default function Page(): JSX.Element {
         </Grid>
       </Grid>
 
-      {/* --------------------- Date Picker Dialog --------------------- */}
       <Dialog open={!!datePickerOpen} onClose={handleDateClose} maxWidth='xs' fullWidth>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span>Select Date {datePickerOpen && `for ${datePickerOpen}`}</span>
-          {/* Quick preview of currently selected temp date */}
         </DialogTitle>
 
         {period === 'lastweek' ? (
@@ -705,7 +530,6 @@ export default function Page(): JSX.Element {
                 size='small'
               />
 
-              {/* To date-time input */}
               <TextField
                 sx={{ mt: 6 }}
                 label='To'
@@ -750,33 +574,7 @@ export default function Page(): JSX.Element {
                   InputLabelProps={{ shrink: true }}
                   size='small'
                 />
-
-                {/*                 <AppDatepicker
-                  selected={tempDate}
-                  onChange={(d: Date | null) => {
-                    setTempDate(d)
-                    setSelectedDates(prev => ({
-                      ...prev,
-                      custom: d ? formatToShortDate(d) : prev.custom
-                    }))
-                  }}
-                  inline
-                  showTimeSelect
-                  timeIntervals={15}
-                  timeCaption='Time'
-                  dateFormat='MM/dd/yyyy h:mm aa'
-                  timeFormat='h:mm aa'
-                /> */}
               </Box>
-
-              {/*               <TextField
-                label='Selected date'
-                value={tempDate ? formatToShortDate(tempDate) : datePickerOpen ? selectedDates[datePickerOpen] : ''}
-                fullWidth
-                InputProps={{ readOnly: true }}
-                variant='outlined'
-                size='small'
-              /> */}
             </Box>
           </DialogContent>
         )}

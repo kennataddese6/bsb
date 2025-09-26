@@ -150,6 +150,17 @@ export default function Page(): JSX.Element {
     return `${year}-${month}-${day}T${hours}:${minutes}:00`
   }
 
+  const buildApiDateMidnight = (value: string): string => {
+    const d = parseFlexibleDate(value)
+    if (!d) return ''
+    d.setHours(0, 0, 0, 0)
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
+    const year = d.getFullYear()
+    const month = pad(d.getMonth() + 1)
+    const day = pad(d.getDate())
+    return `${year}-${month}-${day}T00:00:00`
+  }
+
   const todayLabel = selectedDates.today ? selectedDates.today : `${defaultDates.today} ${currentTimeWithoutSeconds}`
 
   const yesterdayLabel = selectedDates.yesterday
@@ -169,6 +180,14 @@ export default function Page(): JSX.Element {
 
   const lastweekToISO = buildApiDate(
     selectedDates.lastweek.to || `${defaultDates.lastweek.to} ${currentTimeWithoutSeconds}`
+  )
+
+  // For today and yesterday, startDate should be that date at 00:00:00
+  const todayStartISO = buildApiDateMidnight(
+    selectedDates.today || `${defaultDates.today} ${currentTimeWithoutSeconds}`
+  )
+  const yesterdayStartISO = buildApiDateMidnight(
+    selectedDates.yesterday || `${defaultDates.yesterday} ${currentTimeWithoutSeconds}`
   )
 
   const { data, isLoading } = useQuery<FamilyOption[]>({
@@ -327,7 +346,7 @@ export default function Page(): JSX.Element {
               <KpiDateCard
                 period={'today'}
                 labelText={todayLabel}
-                fromISO={todayISO}
+                fromISO={todayStartISO}
                 toISO={todayISO}
                 timezone={timezone as 'PST' | 'EST'}
                 family={family}
@@ -339,7 +358,7 @@ export default function Page(): JSX.Element {
               <KpiDateCard
                 period={'yesterday'}
                 labelText={yesterdayLabel}
-                fromISO={yesterdayISO}
+                fromISO={yesterdayStartISO}
                 toISO={yesterdayISO}
                 timezone={timezone as 'PST' | 'EST'}
                 family={family}

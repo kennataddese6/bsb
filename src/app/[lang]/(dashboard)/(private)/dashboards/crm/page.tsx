@@ -40,6 +40,8 @@ import { TargetActual } from './components/TargetActual'
 import { PpcAndDeal } from './components/PpcAndDeal'
 import { KpiDateCard } from './components/KpiDateCard'
 import type { Item } from '@/types/apps/salesChartTypes'
+import { buildApiDate } from '@/utils/buildApiDate'
+import { buildApiDateMidnight } from '@/utils/buildApiDateMidnight'
 
 // Local types for stronger safety in this file
 type FamilyOption = { asin: string; groupName: string }
@@ -122,34 +124,6 @@ export default function Page(): JSX.Element {
   }
 
   const defaultDates = defaultDate(timezone)
-
-  // Helpers to build labels and API date strings for KPI cards (no timezone suffix)
-  const buildApiDate = (value: string): string => {
-    const d = parseFlexibleDate(value)
-
-    if (!d) return ''
-    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
-    const year = d.getFullYear()
-    const month = pad(d.getMonth() + 1)
-    const day = pad(d.getDate())
-    const hours = pad(d.getHours())
-    const minutes = pad(d.getMinutes())
-
-    return `${year}-${month}-${day}T${hours}:${minutes}:00`
-  }
-
-  const buildApiDateMidnight = (value: string): string => {
-    const d = parseFlexibleDate(value)
-
-    if (!d) return ''
-    d.setHours(0, 0, 0, 0)
-    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
-    const year = d.getFullYear()
-    const month = pad(d.getMonth() + 1)
-    const day = pad(d.getDate())
-
-    return `${year}-${month}-${day}T00:00:00`
-  }
 
   const todayLabel = selectedDates.today ? selectedDates.today : `${defaultDates.today} ${currentTimeWithoutSeconds}`
 

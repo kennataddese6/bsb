@@ -146,10 +146,6 @@ export default function Page(): JSX.Element {
     staleTime: 5000
   })
 
-  React.useEffect(() => {
-    console.log('Parent item changed:', parentItem)
-  }, [parentItem])
-
   return (
     <Box
       sx={{

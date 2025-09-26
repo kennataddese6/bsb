@@ -1,12 +1,15 @@
-export function formatToShortDate(d: Date | null): string {
+export function formatToShortDate(d: Date | null, timezone: 'PST' | 'EST' | string): string {
   if (!d) return ''
 
-  const mm = d.getMonth() + 1
-  const dd = d.getDate()
-  const yy = d.getFullYear()
+  const tz = timezone === 'PST' ? 'America/Los_Angeles' : timezone === 'EST' ? 'America/New_York' : timezone // allow passing any valid IANA string
 
-  const hours = d.getHours().toString().padStart(2, '0')
-  const minutes = d.getMinutes().toString().padStart(2, '0')
-
-  return `${mm}/${dd}/${yy} ${hours}:${minutes}`
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // ensures AM/PM
+    timeZone: tz
+  }).format(d)
 }

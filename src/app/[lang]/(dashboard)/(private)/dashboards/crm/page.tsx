@@ -203,7 +203,7 @@ export default function Page(): JSX.Element {
                   }}
                 >
                   <Image
-                    src={parentItem.Image || '/images/apps/ecommerce/product-1.png'}
+                    src={parentItem.ImageUrl || '/images/apps/ecommerce/product-1.png'}
                     alt='Tree Bag'
                     fill
                     style={{ objectFit: 'cover' }}
@@ -308,6 +308,7 @@ export default function Page(): JSX.Element {
                 timezone={timezone as 'PST' | 'EST'}
                 family={family}
                 parentItemAsin={parentItem?.Asin || null}
+                isParent={allFamilySelected}
                 onOpenDate={() => handleDateClick('today')}
               />
             </Grid>
@@ -320,6 +321,7 @@ export default function Page(): JSX.Element {
                 timezone={timezone as 'PST' | 'EST'}
                 family={family}
                 parentItemAsin={parentItem?.Asin || null}
+                isParent={allFamilySelected}
                 onOpenDate={() => handleDateClick('yesterday')}
               />
             </Grid>
@@ -332,6 +334,7 @@ export default function Page(): JSX.Element {
                 timezone={timezone as 'PST' | 'EST'}
                 family={family}
                 parentItemAsin={parentItem?.Asin || null}
+                isParent={allFamilySelected}
                 onOpenDate={() => handleDateClick('lastweek')}
               />
             </Grid>

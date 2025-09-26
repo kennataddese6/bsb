@@ -16,17 +16,18 @@ type KpiDateCardProps = {
   timezone: 'PST' | 'EST'
   family: string | null
   parentItemAsin?: string | null
+  isParent: boolean
   onOpenDate: () => void
 }
 
 export function KpiDateCard(props: KpiDateCardProps): JSX.Element {
-  const { period, labelText, fromISO, toISO, timezone, family, parentItemAsin, onOpenDate } = props
+  const { period, labelText, fromISO, toISO, timezone, family, parentItemAsin, isParent, onOpenDate } = props
 
   const tz = timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
 
   const { data, isLoading } = useQuery<ItemMetrics | null>({
-    queryKey: ['kpi', period, family, parentItemAsin ?? null, tz, fromISO, toISO],
-    queryFn: () => getItemData(family as string, tz, fromISO, toISO),
+    queryKey: ['kpi', period, family, parentItemAsin ?? null, tz, fromISO, toISO, isParent],
+    queryFn: () => getItemData(family as string, tz, fromISO, toISO, isParent),
     enabled: Boolean(family),
     staleTime: 5000
   })

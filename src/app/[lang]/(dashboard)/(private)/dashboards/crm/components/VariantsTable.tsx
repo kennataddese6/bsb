@@ -53,7 +53,7 @@ export function VariantsTable(props: VariantsTableProps): JSX.Element {
                     <TableRow hover key={v.Asin} onClick={() => onSelect(v)}>
                       <TableCell align='right'>
                         <Image
-                          src={`${v.Image || '/images/apps/ecommerce/product-1.png'}`}
+                          src={`${v.ImageUrl || '/images/apps/ecommerce/product-1.png'}`}
                           width={50}
                           height={50}
                           alt=''

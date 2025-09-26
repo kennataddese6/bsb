@@ -2,6 +2,9 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   basePath: process.env.BASEPATH,
+  images: {
+    domains: ['m.media-amazon.com']
+  },
   redirects: async () => {
     return [
       {

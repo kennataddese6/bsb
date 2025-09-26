@@ -23,7 +23,13 @@ export const getItems = async (asin: string, timezone: string) => {
   }
 }
 
-export const getItemData = async (asin: string, timezone: string, startDate: Date | string, endDate: Date | string) => {
+export const getItemData = async (
+  asin: string,
+  timezone: string,
+  startDate: Date | string,
+  endDate: Date | string,
+  isParent: boolean
+) => {
   try {
     const formatApiDate = (d: Date | string): string => {
       if (typeof d === 'string') return d
@@ -41,7 +47,8 @@ export const getItemData = async (asin: string, timezone: string, startDate: Dat
       params: {
         timeZone: timezone,
         startDate: formatApiDate(startDate),
-        endDate: formatApiDate(endDate)
+        endDate: formatApiDate(endDate),
+        isParent: isParent ? 'true' : 'false'
       }
     })
 

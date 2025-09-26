@@ -61,7 +61,7 @@ export default function Page(): JSX.Element {
   const [allFamilySelected, selectAllFamily] = useState(false)
   const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
   const [tempToDate, setTempToDate] = useState<Date | null>(null)
-  const [family, setFamily] = useState<string>('B08BT5HW4P')
+  const [family, setFamily] = useState<string>('')
   const [parentItem, setParentItem] = useState<string>('')
 
   const currentTime = useCurrentTime(timezone)
@@ -279,6 +279,7 @@ export default function Page(): JSX.Element {
                     </TableHead>
                     <TableBody>
                       {!itemsLoading &&
+                        itemsData &&
                         itemsData.map((v, i) => (
                           <TableRow hover key={i} onClick={() => setParentItem(v)}>
                             <TableCell>{v.Asin}</TableCell>

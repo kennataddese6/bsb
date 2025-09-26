@@ -307,12 +307,12 @@ export default function Page(): JSX.Element {
                               </Typography>
                             </TableCell>
                             <TableCell align='right'>{v.Variation}</TableCell>
-                            <TableCell align='right'>{v.TargetPrice}</TableCell>
+                            <TableCell align='right'>{formatUSD(v.TargetPrice)}</TableCell>
                             <TableCell align='right'>{v.TodayOrders}</TableCell>
                             <TableCell align='right'>{v.YesterdayOrders}</TableCell>
                             <TableCell align='right'>{v.Last7DaysOrders}</TableCell>
                             <TableCell align='right'>{v.LastWeekOrders}</TableCell>
-                            <TableCell align='right'>{v.TodayAveragePrice}</TableCell>
+                            <TableCell align='right'>{formatUSD(v.TodayAveragePrice)}</TableCell>
                             <TableCell align='center'>
                               {v.deal ? (
                                 <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />

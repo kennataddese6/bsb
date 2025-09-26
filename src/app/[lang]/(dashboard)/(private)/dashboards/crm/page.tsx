@@ -36,6 +36,7 @@ import {
 
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
+import { defaultDate } from '@/utils/defaultDate'
 
 type Variant = {
   color: string
@@ -264,28 +265,10 @@ export default function Page(): JSX.Element {
 
   const lastWeek = new Date(today)
 
-  lastWeek.setDate(today.getDate() - 7)
-
-  const now = new Date()
-  const lastWeekStart = new Date()
-
-  lastWeekStart.setDate(now.getDate() - 7)
-  const lastWeekEnd = now
-
-  const defaultDate = {
-    today: today.toLocaleDateString(),
-    yesterday: yesterday.toLocaleDateString(),
-    lastweek: {
-      from: lastWeekStart.toLocaleDateString(),
-      to: lastWeekEnd.toLocaleDateString()
-    },
-    custom: lastWeek.toLocaleDateString()
-  }
-
-  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(defaultDate)
+  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(defaultDate(timezone))
 
   const setDefaultDates = () => {
-    setSelectedDates(defaultDate)
+    setSelectedDates(defaultDate(timezone))
   }
 
   /* Open dialog and seed the tempDate from selectedDates */
@@ -319,15 +302,17 @@ export default function Page(): JSX.Element {
           : ''
   }
 
+  const defaultDates = defaultDate(timezone)
+
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
-      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${defaultDate.today === selectedDates.today ? currentTimeWithoutSeconds : ''}`,
+      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${defaultDates.today === selectedDates.today ? currentTimeWithoutSeconds : ''}`,
       value: '15 / 13',
       period: 'today'
     },
     {
-      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday}  ${defaultDate.yesterday === selectedDates.yesterday ? currentTimeWithoutSeconds : ''}`,
+      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday}  ${defaultDates.yesterday === selectedDates.yesterday ? currentTimeWithoutSeconds : ''}`,
       value: '13 / 13',
       period: 'yesterday'
     },

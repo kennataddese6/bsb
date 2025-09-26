@@ -168,22 +168,33 @@ export default function Page(): JSX.Element {
       <Grid container spacing={4} alignItems='center' sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, md: 8 }}>
           <Stack direction='row' spacing={3} alignItems='center'>
-            <Box
-              sx={{ position: 'relative', width: 112, height: 112, borderRadius: 2, overflow: 'hidden', boxShadow: 1 }}
-            >
-              <Image src='/images/cards/5.png' alt='Tree Bag' fill style={{ objectFit: 'cover' }} />
-            </Box>
-            <Box>
-              <Typography variant='caption' color='text.secondary'>
-                ASIN
-              </Typography>
-              <Typography variant='h5' sx={{ fontWeight: 600, lineHeight: 1.2, mb: 0.5 }}>
-                {parentItem.Asin}
-              </Typography>
-              <Typography variant='body2' color='text.secondary' sx={{ fontWeight: 500 }}>
-                {parentItem.GroupName}
-              </Typography>
-            </Box>
+            {parentItem && (
+              <>
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: 112,
+                    height: 112,
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    boxShadow: 1
+                  }}
+                >
+                  <Image src='/images/cards/5.png' alt='Tree Bag' fill style={{ objectFit: 'cover' }} />
+                </Box>
+                <Box>
+                  <Typography variant='caption' color='text.secondary'>
+                    ASIN
+                  </Typography>
+                  <Typography variant='h5' sx={{ fontWeight: 600, lineHeight: 1.2, mb: 0.5 }}>
+                    {parentItem.Asin}
+                  </Typography>
+                  <Typography variant='body2' color='text.secondary' sx={{ fontWeight: 500 }}>
+                    {parentItem.GroupName}
+                  </Typography>
+                </Box>
+              </>
+            )}
             <Autocomplete
               disablePortal
               options={!isLoading ? data : []} // pass full objects

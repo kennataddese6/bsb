@@ -62,6 +62,7 @@ export default function Page(): JSX.Element {
   const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
   const [tempToDate, setTempToDate] = useState<Date | null>(null)
   const [family, setFamily] = useState<string>('B08BT5HW4P')
+  const [parentItem, setParentItem] = useState<string>('')
 
   const currentTime = useCurrentTime(timezone)
   const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
@@ -145,6 +146,10 @@ export default function Page(): JSX.Element {
     staleTime: 5000
   })
 
+  React.useEffect(() => {
+    console.log('Parent item changed:', parentItem)
+  }, [parentItem])
+
   return (
     <Box
       sx={{
@@ -166,10 +171,10 @@ export default function Page(): JSX.Element {
                 ASIN
               </Typography>
               <Typography variant='h5' sx={{ fontWeight: 600, lineHeight: 1.2, mb: 0.5 }}>
-                SJD FHO DFD
+                {parentItem.Asin}
               </Typography>
               <Typography variant='body2' color='text.secondary' sx={{ fontWeight: 500 }}>
-                Tree Bag · Plastic
+                {parentItem.GroupName}
               </Typography>
             </Box>
             <Autocomplete
@@ -268,7 +273,7 @@ export default function Page(): JSX.Element {
                     <TableBody>
                       {!itemsLoading &&
                         itemsData.map((v, i) => (
-                          <TableRow hover key={i}>
+                          <TableRow hover key={i} onClick={() => setParentItem(v)}>
                             <TableCell>{v.Asin}</TableCell>
                             <TableCell>
                               <Typography

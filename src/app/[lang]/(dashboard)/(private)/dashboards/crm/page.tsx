@@ -36,6 +36,8 @@ import {
 
 import { set } from 'react-hook-form'
 
+import { useQuery } from '@tanstack/react-query'
+
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
 import { defaultDate } from '@/utils/defaultDate'
@@ -45,9 +47,16 @@ import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
 import { formatToShortDate } from '@/utils/formatToShortDate'
 import { formatForDatetimeLocal } from '@/utils/formatForDatetimeLocal'
 import { parseFlexibleDate } from '@/utils/parseFlexibleDate'
+import { getFamilies } from '@/hooks/fetches'
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
+  const { data, isLoading } = useQuery({
+    queryKey: ['families'],
+    queryFn: getFamilies,
+    staleTime: 5000
+  })
+
   const target = 7000
   const actual = 5015
   const maxScale = 9000 // for the background bar
@@ -161,7 +170,7 @@ export default function Page(): JSX.Element {
             </Box>
             <Autocomplete
               disablePortal
-              options={['Family Asin 1', 'Family Asin 2', 'Family Asin 3']}
+              options={!isLoading && data.map(f => f.groupName)}
               sx={{ width: 300 }}
               renderInput={params => <TextField {...params} label='Select Family' />}
             />

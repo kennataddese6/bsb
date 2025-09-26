@@ -81,12 +81,9 @@ export default function Page(): JSX.Element {
   }
 
   const handleDateSelect = (period: Period | null, date: Date | null) => {
-    console.log(period, date)
     if (!period) return
     const formatted = date ? formatToShortDate(date) : selectedDates[period]
 
-    console.log('formatted', formatted)
-    console.log('period', period)
     setSelectedDates(prev => ({ ...prev, [period]: formatted }))
     setDatePickerOpen(null)
     setTempDate(null)

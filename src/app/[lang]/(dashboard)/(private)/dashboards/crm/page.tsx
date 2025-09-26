@@ -254,6 +254,7 @@ export default function Page(): JSX.Element {
   const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
 
   const currentTime = useCurrentTime(timezone)
+  const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
 
   const today = new Date()
 
@@ -271,28 +272,20 @@ export default function Page(): JSX.Element {
   lastWeekStart.setDate(now.getDate() - 7)
   const lastWeekEnd = now
 
-  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(() => {
-    return {
-      today: today.toLocaleTimeString(),
-      yesterday: yesterday.toLocaleDateString(),
-      lastweek: {
-        from: lastWeekStart.toLocaleDateString(),
-        to: lastWeekEnd.toLocaleDateString()
-      },
-      custom: lastWeek.toLocaleDateString() // example, you can set however you want
-    }
-  })
+  const defaultDate = {
+    today: today.toLocaleDateString(),
+    yesterday: yesterday.toLocaleDateString(),
+    lastweek: {
+      from: lastWeekStart.toLocaleDateString(),
+      to: lastWeekEnd.toLocaleDateString()
+    },
+    custom: lastWeek.toLocaleDateString()
+  }
+
+  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(defaultDate)
 
   const setDefaultDates = () => {
-    setSelectedDates({
-      today: today.toLocaleDateString(),
-      yesterday: yesterday.toLocaleDateString(),
-      lastweek: {
-        from: lastWeekStart.toLocaleDateString(),
-        to: lastWeekEnd.toLocaleDateString()
-      },
-      custom: lastWeek.toLocaleDateString()
-    })
+    setSelectedDates(defaultDate)
   }
 
   /* Open dialog and seed the tempDate from selectedDates */
@@ -329,12 +322,12 @@ export default function Page(): JSX.Element {
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
-      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} `,
+      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${defaultDate.today === selectedDates.today ? currentTimeWithoutSeconds : ''}`,
       value: '15 / 13',
       period: 'today'
     },
     {
-      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday} `,
+      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday}  ${defaultDate.yesterday === selectedDates.yesterday ? currentTimeWithoutSeconds : ''}`,
       value: '13 / 13',
       period: 'yesterday'
     },

@@ -329,22 +329,12 @@ export default function Page(): JSX.Element {
   /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
-      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${now.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
-      })}`,
+      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} `,
       value: '15 / 13',
       period: 'today'
     },
     {
-      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday} ${now.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
-      })}`,
+      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday} `,
       value: '13 / 13',
       period: 'yesterday'
     },
@@ -354,38 +344,11 @@ export default function Page(): JSX.Element {
       period: 'lastweek'
     },
     {
-      label: `Custom · ${selectedDates.custom} ${now.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
-      })}`,
+      label: `Custom · ${selectedDates.custom} `,
       value: '28 / 25',
       period: 'custom'
     }
   ]
-
-  /*   useEffect(() => {
-    const updateTime = () => {
-      const tz = timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
-      const now = new Date()
-
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        hour12: true,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        timeZone: tz
-      })
-
-      setCurrentTime(formatter.format(now))
-    }
-
-    updateTime() // initialize immediately
-    const interval = setInterval(updateTime, 1000)
-
-    return () => clearInterval(interval)
-  }, [timezone]) */
 
   return (
     <Box

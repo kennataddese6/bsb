@@ -146,6 +146,17 @@ export default function Page(): JSX.Element {
     staleTime: 5000
   })
 
+  React.useEffect(() => {
+    if (!itemsData) return
+
+    for (const item of itemsData) {
+      if (item.Asin === item.ParentAsin) {
+        setParentItem(item)
+        break
+      }
+    }
+  }, [itemsData])
+
   return (
     <Box
       sx={{

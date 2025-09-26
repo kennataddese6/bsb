@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-
 import * as React from 'react'
 
 import Image from 'next/image'
@@ -11,16 +9,8 @@ import {
   Grid2 as Grid,
   Card,
   CardContent,
-  CardHeader,
   Typography,
   Button,
-  Chip,
-  LinearProgress,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Stack,
   Dialog,
   DialogTitle,
@@ -40,11 +30,33 @@ import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
 import { defaultDate } from '@/utils/defaultDate'
 import type { Period, SelectedDates } from '@/types/apps/variants'
-import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
+
+// import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
 import { formatToShortDate } from '@/utils/formatToShortDate'
 import { formatForDatetimeLocal } from '@/utils/formatForDatetimeLocal'
 import { parseFlexibleDate } from '@/utils/parseFlexibleDate'
 import { getFamilies, getItemData, getItems } from '@/hooks/fetches'
+import { VariantsTable } from './components/VariantsTable'
+import { TargetActual } from './components/TargetActual'
+import { PpcAndDeal } from './components/PpcAndDeal'
+import { KpiDateCard } from './components/KpiDateCard'
+
+// Local types for stronger safety in this file
+type FamilyOption = { asin: string; groupName: string }
+type Item = {
+  Asin: string
+  ParentAsin: string
+  GroupName: string
+  Variation: string
+  TargetPrice: number
+  TodayOrders: number
+  YesterdayOrders: number
+  Last7DaysOrders: number
+  LastWeekOrders: number
+  TodayAveragePrice: number
+  deal?: boolean
+}
+type ItemMetrics = { TotalUnits: number; TotalOrders: number }
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
@@ -57,12 +69,12 @@ export default function Page(): JSX.Element {
   // temporary date shown inside the inline picker before confirmation
   const [tempDate, setTempDate] = React.useState<Date | null>(null)
   const [timezone, setTimezone] = React.useState('PST')
-  const [period, setPeriod] = useState('today')
-  const [allFamilySelected, selectAllFamily] = useState(false)
-  const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
-  const [tempToDate, setTempToDate] = useState<Date | null>(null)
-  const [family, setFamily] = useState<string>('')
-  const [parentItem, setParentItem] = useState<string>('')
+  const [period, setPeriod] = React.useState<Period>('today')
+  const [allFamilySelected, selectAllFamily] = React.useState<boolean>(false)
+  const [tempFromDate, setTempFromDate] = React.useState<Date | null>(null)
+  const [tempToDate, setTempToDate] = React.useState<Date | null>(null)
+  const [family, setFamily] = React.useState<string | null>(null)
+  const [parentItem, setParentItem] = React.useState<Item | null>(null)
 
   const currentTime = useCurrentTime(timezone)
   const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
@@ -79,10 +91,17 @@ export default function Page(): JSX.Element {
   }
 
   /* Open dialog and seed the tempDate from selectedDates */
-  const handleDateClick = (period: Period) => {
-    setPeriod(period)
-    setDatePickerOpen(period)
-    setTempDate(parseFlexibleDate(selectedDates[period]))
+  const handleDateClick = (p: Period) => {
+    setPeriod(p)
+    setDatePickerOpen(p)
+
+    if (p === 'lastweek') {
+      setTempDate(null)
+    } else {
+      const value = selectedDates[p] as string
+
+      setTempDate(parseFlexibleDate(value))
+    }
   }
 
   const handleDateClose = () => {
@@ -118,32 +137,68 @@ export default function Page(): JSX.Element {
 
   const defaultDates = defaultDate(timezone)
 
-  const { data, isLoading } = useQuery({
+  // Helpers to build labels and API date strings for KPI cards (no timezone suffix)
+  const buildApiDate = (value: string): string => {
+    const d = parseFlexibleDate(value)
+    if (!d) return ''
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
+    const year = d.getFullYear()
+    const month = pad(d.getMonth() + 1)
+    const day = pad(d.getDate())
+    const hours = pad(d.getHours())
+    const minutes = pad(d.getMinutes())
+    return `${year}-${month}-${day}T${hours}:${minutes}:00`
+  }
+
+  const todayLabel = selectedDates.today ? selectedDates.today : `${defaultDates.today} ${currentTimeWithoutSeconds}`
+
+  const yesterdayLabel = selectedDates.yesterday
+    ? selectedDates.yesterday
+    : `${defaultDates.yesterday} ${currentTimeWithoutSeconds}`
+
+  const lastweekLabel = selectedDates.lastweek.from
+    ? `${selectedDates.lastweek.from} - ${selectedDates.lastweek.to}`
+    : `${defaultDates.lastweek.from} ${currentTimeWithoutSeconds}`
+
+  const todayISO = buildApiDate(todayLabel)
+  const yesterdayISO = buildApiDate(yesterdayLabel)
+
+  const lastweekFromISO = buildApiDate(
+    selectedDates.lastweek.from || `${defaultDates.lastweek.from} ${currentTimeWithoutSeconds}`
+  )
+
+  const lastweekToISO = buildApiDate(
+    selectedDates.lastweek.to || `${defaultDates.lastweek.to} ${currentTimeWithoutSeconds}`
+  )
+
+  const { data, isLoading } = useQuery<FamilyOption[]>({
     queryKey: ['families'],
     queryFn: getFamilies,
     staleTime: 5000
   })
 
-  const { data: itemsData, isLoading: itemsLoading } = useQuery({
+  const { data: itemsData, isLoading: itemsLoading } = useQuery<Item[]>({
     queryKey: ['families', family, timezone],
-    queryFn: () => getItems(family, timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'),
+    queryFn: () => getItems(family as string, timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'),
+    enabled: Boolean(family),
     staleTime: 5000
   })
 
-  const { data: itemData, isLoading: itemLoading } = useQuery({
-    queryKey: ['families', parentItem.Asin, timezone, '2025-09-26T14:30:00', '2025-09-26T14:30:00'],
+  const { data: itemData, isLoading: itemLoading } = useQuery<ItemMetrics | null>({
+    queryKey: ['families', parentItem?.Asin ?? null, timezone, '2025-09-26T14:30:00', '2025-09-26T14:30:00'],
     queryFn: () =>
       getItemData(
-        family,
+        family as string,
         timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York',
         '2025-09-26T14:30:00',
         '2025-09-26T14:30:00'
       ),
+    enabled: Boolean(family && parentItem),
     staleTime: 5000
   })
 
   React.useEffect(() => {
-    if (!itemsData) return
+    if (!itemsData || itemsData.length === 0) return
 
     for (const item of itemsData) {
       if (item.Asin === item.ParentAsin) {
@@ -193,15 +248,11 @@ export default function Page(): JSX.Element {
             )}
             <Autocomplete
               disablePortal
-              options={!isLoading ? data : []} // pass full objects
-              getOptionLabel={option => option.groupName} // show groupName in dropdown
+              options={!isLoading && Array.isArray(data) ? (data as FamilyOption[]) : []}
+              getOptionLabel={(option: FamilyOption) => option.groupName}
               sx={{ width: 300 }}
-              onChange={(event, value) => {
-                if (value) {
-                  setFamily(value.asin)
-                } else {
-                  setFamily(null)
-                }
+              onChange={(event, value: FamilyOption | null) => {
+                setFamily(value ? value.asin : null)
               }}
               renderInput={params => <TextField {...params} label='Select Family' />}
             />
@@ -266,227 +317,47 @@ export default function Page(): JSX.Element {
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, lg: 5 }}>
-          <Card>
-            <CardHeader title='Variants & Performance' sx={{ pb: 2 }} />
-            <CardContent sx={{ pt: 0 }}>
-              <Box sx={{ borderRadius: 2, overflow: 'hidden', border: 1, borderColor: 'divider' }}>
-                <Box sx={{ maxHeight: 440, overflow: 'auto' }}>
-                  <Table stickyHeader size='small'>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Asin</TableCell>
-                        <TableCell>Parent Asin</TableCell>
-                        <TableCell>Variation</TableCell>
-                        <TableCell align='right'>targetPrice</TableCell>
-                        <TableCell align='right'>Total Orders</TableCell>
-                        <TableCell align='right'>Yesterday Orders</TableCell>
-                        <TableCell align='right'>Last7DaysOrders</TableCell>
-                        <TableCell align='right'>TodayAveragePrice</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {!itemsLoading &&
-                        itemsData &&
-                        itemsData.map((v, i) => (
-                          <TableRow hover key={i} onClick={() => setParentItem(v)}>
-                            <TableCell>{v.Asin}</TableCell>
-                            <TableCell>
-                              <Typography
-                                component='span'
-                                sx={{
-                                  fontFamily: 'ui-monospace, SFMono-Regular',
-                                  fontSize: 12,
-                                  color: 'text.secondary'
-                                }}
-                              >
-                                {v.ParentAsin}
-                              </Typography>
-                            </TableCell>
-                            <TableCell align='right'>{v.Variation}</TableCell>
-                            <TableCell align='right'>{formatUSD(v.TargetPrice)}</TableCell>
-                            <TableCell align='right'>{v.TodayOrders}</TableCell>
-                            <TableCell align='right'>{v.YesterdayOrders}</TableCell>
-                            <TableCell align='right'>{v.Last7DaysOrders}</TableCell>
-                            <TableCell align='right'>{v.LastWeekOrders}</TableCell>
-                            <TableCell align='right'>{formatUSD(v.TodayAveragePrice)}</TableCell>
-                            <TableCell align='center'>
-                              {v.deal ? (
-                                <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />
-                              ) : (
-                                <Typography color='text.disabled'>—</Typography>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <VariantsTable itemsData={itemsData} itemsLoading={itemsLoading} onSelect={item => setParentItem(item)} />
         </Grid>
 
         <Grid size={{ xs: 12, lg: 7 }}>
           {/* KPI Tiles */}
           <Grid container spacing={4}>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                    <Box sx={{ minWidth: 0, flex: 1 }}>
-                      <Button
-                        variant='text'
-                        onClick={() => handleDateClick('today')}
-                        sx={{
-                          p: 0,
-                          minHeight: 'auto',
-                          textAlign: 'left',
-                          justifyContent: 'flex-start',
-                          '&:hover': { bgcolor: 'transparent' }
-                        }}
-                      >
-                        <Typography variant='caption' color='text.secondary' noWrap>
-                          {selectedDates.today
-                            ? selectedDates.today
-                            : defaultDates.today + ' ' + currentTimeWithoutSeconds}{' '}
-                        </Typography>
-                      </Button>
-                      {itemLoading ? (
-                        <>
-                          <div className='animate-spin my-2 rounded-full h-4 w-4 border-b-2 border-primary'></div>
-                          <Typography variant='caption' color='text.secondary'>
-                            Units / Orders
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                            {itemData && itemData?.TotalUnits}/{itemData?.TotalOrders}
-                          </Typography>
-                          <Typography variant='caption' color='text.secondary'>
-                            Units / Orders
-                          </Typography>
-                        </>
-                      )}
-                    </Box>
-
-                    <IconButton
-                      aria-label={`Select date for ${'today'}`}
-                      onClick={() => handleDateClick('today')}
-                      size='small'
-                      sx={{ ml: 1, flexShrink: 0 }}
-                    >
-                      <i className='bx-calendar' />
-                    </IconButton>
-                  </Stack>
-                </CardContent>
-              </Card>
+              <KpiDateCard
+                period={'today'}
+                labelText={todayLabel}
+                fromISO={todayISO}
+                toISO={todayISO}
+                timezone={timezone as 'PST' | 'EST'}
+                family={family}
+                parentItemAsin={parentItem?.Asin || null}
+                onOpenDate={() => handleDateClick('today')}
+              />
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                    <Box sx={{ minWidth: 0, flex: 1 }}>
-                      <Button
-                        variant='text'
-                        onClick={() => handleDateClick('yesterday')}
-                        sx={{
-                          p: 0,
-                          minHeight: 'auto',
-                          textAlign: 'left',
-                          justifyContent: 'flex-start',
-                          '&:hover': { bgcolor: 'transparent' }
-                        }}
-                      >
-                        <Typography variant='caption' color='text.secondary' noWrap>
-                          {selectedDates.yesterday
-                            ? selectedDates.yesterday
-                            : defaultDates.yesterday + ' ' + currentTimeWithoutSeconds}{' '}
-                        </Typography>
-                      </Button>
-                      {itemLoading ? (
-                        <>
-                          <div className='animate-spin my-2 rounded-full h-4 w-4 border-b-2 border-primary'></div>
-                          <Typography variant='caption' color='text.secondary'>
-                            Units / Orders
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                            {itemData && itemData?.TotalUnits}/{itemData?.TotalOrders}
-                          </Typography>
-                          <Typography variant='caption' color='text.secondary'>
-                            Units / Orders
-                          </Typography>
-                        </>
-                      )}
-                    </Box>
-
-                    <IconButton
-                      aria-label={`Select date for ${'yesterday'}`}
-                      onClick={() => handleDateClick('yesterday')}
-                      size='small'
-                      sx={{ ml: 1, flexShrink: 0 }}
-                    >
-                      <i className='bx-calendar' />
-                    </IconButton>
-                  </Stack>
-                </CardContent>
-              </Card>
+              <KpiDateCard
+                period={'yesterday'}
+                labelText={yesterdayLabel}
+                fromISO={yesterdayISO}
+                toISO={yesterdayISO}
+                timezone={timezone as 'PST' | 'EST'}
+                family={family}
+                parentItemAsin={parentItem?.Asin || null}
+                onOpenDate={() => handleDateClick('yesterday')}
+              />
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Card>
-                <CardContent>
-                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                    <Box sx={{ minWidth: 0, flex: 1 }}>
-                      <Button
-                        variant='text'
-                        onClick={() => handleDateClick('lastweek')}
-                        sx={{
-                          p: 0,
-                          minHeight: 'auto',
-                          textAlign: 'left',
-                          justifyContent: 'flex-start',
-                          '&:hover': { bgcolor: 'transparent' }
-                        }}
-                      >
-                        <Typography variant='caption' color='text.secondary' noWrap>
-                          {selectedDates.lastweek.from
-                            ? selectedDates.lastweek.from + ' - ' + selectedDates.lastweek.to
-                            : defaultDates.lastweek.from + ' ' + currentTimeWithoutSeconds}{' '}
-                        </Typography>
-                      </Button>
-                      {itemLoading ? (
-                        <>
-                          <div className='animate-spin my-2 rounded-full h-4 w-4 border-b-2 border-primary'></div>
-                          <Typography variant='caption' color='text.secondary'>
-                            Units / Orders
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                            {itemData && itemData?.TotalUnits}/{itemData?.TotalOrders}
-                          </Typography>
-                          <Typography variant='caption' color='text.secondary'>
-                            Units / Orders
-                          </Typography>
-                        </>
-                      )}
-                    </Box>
-
-                    <IconButton
-                      aria-label={`Select date for ${'lastweek'}`}
-                      onClick={() => handleDateClick('lastweek')}
-                      size='small'
-                      sx={{ ml: 1, flexShrink: 0 }}
-                    >
-                      <i className='bx-calendar' />
-                    </IconButton>
-                  </Stack>
-                </CardContent>
-              </Card>
+              <KpiDateCard
+                period={'lastweek'}
+                labelText={lastweekLabel}
+                fromISO={lastweekFromISO}
+                toISO={lastweekToISO}
+                timezone={timezone as 'PST' | 'EST'}
+                family={family}
+                parentItemAsin={parentItem?.Asin || null}
+                onOpenDate={() => handleDateClick('lastweek')}
+              />
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Card>
@@ -572,91 +443,10 @@ export default function Page(): JSX.Element {
             ))}
           </Grid>
 
-          <Card sx={{ mt: 0 }}>
-            <CardHeader title='Target vs Actual' sx={{ pb: 2 }} />
-            <CardContent>
-              <Stack direction='row' justifyContent='space-between' sx={{ mb: 1 }}>
-                <Typography variant='caption' color='text.secondary'>
-                  Target: {target.toLocaleString()}
-                </Typography>
-                <Typography variant='caption' color='text.secondary'>
-                  Actual: {actual.toLocaleString()}
-                </Typography>
-              </Stack>
-
-              <Box sx={{ position: 'relative' }}>
-                <LinearProgress
-                  variant='determinate'
-                  value={100}
-                  sx={{ height: 14, borderRadius: 999, bgcolor: 'grey.200' }}
-                />
-                <LinearProgress
-                  variant='determinate'
-                  value={(target / maxScale) * 100}
-                  sx={{
-                    height: 14,
-                    borderRadius: 999,
-                    position: 'absolute',
-                    inset: 0,
-                    '& .MuiLinearProgress-bar': { bgcolor: 'secondary.light' }
-                  }}
-                />
-                <LinearProgress
-                  variant='determinate'
-                  value={(actual / maxScale) * 100}
-                  sx={{
-                    height: 14,
-                    borderRadius: 999,
-                    position: 'absolute',
-                    inset: 0,
-                    '& .MuiLinearProgress-bar': { bgcolor: 'primary.main' }
-                  }}
-                />
-              </Box>
-
-              <Stack direction='row' justifyContent='space-between' sx={{ mt: 0.5 }}>
-                <Typography variant='caption' color='text.secondary'>
-                  0
-                </Typography>
-                <Typography variant='caption' color='text.secondary'>
-                  2,000
-                </Typography>
-                <Typography variant='caption' color='text.secondary'>
-                  7,000
-                </Typography>
-                <Typography variant='caption' color='text.secondary'>
-                  9,000
-                </Typography>
-              </Stack>
-            </CardContent>
-          </Card>
+          <TargetActual target={target} actual={actual} maxScale={maxScale} />
 
           <Grid container spacing={4} sx={{ mt: 4 }}>
-            <Grid size={{ xs: 12, md: 8 }}>
-              <Card>
-                <CardContent>
-                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                    <Typography color='text.secondary'>PPC Spent</Typography>
-                    <i className={'bx-bullseye'} />
-                  </Stack>
-                  <Typography variant='h4' sx={{ mt: 2, fontWeight: 700 }}>
-                    $2,548
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Card sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                <CardContent>
-                  <Stack alignItems='center' spacing={1}>
-                    <i className={'bx-check-circle'} />
-                    <Typography variant='h6' sx={{ fontWeight: 700 }}>
-                      Deal Running
-                    </Typography>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
+            <PpcAndDeal ppcSpent={'$2,548'} dealTitle={'Deal Running'} />
           </Grid>
         </Grid>
       </Grid>

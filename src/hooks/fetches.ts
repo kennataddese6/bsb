@@ -13,7 +13,9 @@ export const getFamilies = async () => {
 
 export const getItems = async (asin: string, timezone: string) => {
   try {
-    const response = await axios.get(`https://bsb.reportzon.com/families/${asin}?timeZone=${timezone}`)
+    const response = await axios.get(`https://bsb.reportzon.com/families/${asin}`, {
+      params: { timeZone: timezone }
+    })
 
     return response.data
   } catch (error: any) {
@@ -23,9 +25,23 @@ export const getItems = async (asin: string, timezone: string) => {
 
 export const getItemData = async (asin: string, timezone: string, startDate: Date | string, endDate: Date | string) => {
   try {
-    const response = await axios.get(
-      `https://bsb.reportzon.com/families/${asin}/data?timeZone=${timezone}&startDate=${startDate}&endDate=${endDate}`
-    )
+    const formatApiDate = (d: Date | string): string => {
+      if (typeof d === 'string') return d
+      const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
+      const year = d.getFullYear()
+      const month = pad(d.getMonth() + 1)
+      const day = pad(d.getDate())
+      const hours = pad(d.getHours())
+      const minutes = pad(d.getMinutes())
+      return `${year}-${month}-${day}T${hours}:${minutes}:00`
+    }
+    const response = await axios.get(`https://bsb.reportzon.com/families/${asin}/data`, {
+      params: {
+        timeZone: timezone,
+        startDate: formatApiDate(startDate),
+        endDate: formatApiDate(endDate)
+      }
+    })
 
     return response.data
   } catch (error: any) {

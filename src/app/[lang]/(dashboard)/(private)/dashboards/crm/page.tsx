@@ -40,57 +40,9 @@ import { defaultDate } from '@/utils/defaultDate'
 import { variants } from '@/data/variantsData'
 import type { Period, SelectedDates } from '@/types/apps/variants'
 import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
-
-function parseFlexibleDate(s: string | undefined): Date {
-  if (!s) return new Date()
-  const parts = s.split('/').map(p => p.trim())
-
-  if (parts.length >= 3) {
-    const m = Number(parts[0])
-    const d = Number(parts[1])
-    let y = Number(parts[2])
-
-    if (parts[2].length === 2) {
-      y = y + (y < 70 ? 2000 : 1900)
-    }
-
-    const dt = new Date(y, m - 1, d)
-
-    if (!isNaN(dt.getTime())) return dt
-  }
-
-  const dt2 = new Date(s)
-
-  if (!isNaN(dt2.getTime())) return dt2
-
-  return new Date()
-}
-
-/** Format date to "M/D/YY" like your original strings (9/1/25)  hh and mm*/
-function formatToShortDate(d: Date | null): string {
-  if (!d) return ''
-
-  const mm = d.getMonth() + 1
-  const dd = d.getDate()
-  const yy = d.getFullYear()
-
-  const hours = d.getHours().toString().padStart(2, '0')
-  const minutes = d.getMinutes().toString().padStart(2, '0')
-
-  return `${mm}/${dd}/${yy} ${hours}:${minutes}`
-}
-
-function formatForDatetimeLocal(d: Date | null): string {
-  if (!d) return ''
-  const pad = (n: number) => n.toString().padStart(2, '0')
-  const yyyy = d.getFullYear()
-  const mm = pad(d.getMonth() + 1)
-  const dd = pad(d.getDate())
-  const hh = pad(d.getHours())
-  const min = pad(d.getMinutes())
-
-  return `${yyyy}-${mm}-${dd}T${hh}:${min}`
-}
+import { formatToShortDate } from '@/utils/formatToShortDate'
+import { formatForDatetimeLocal } from '@/utils/formatForDatetimeLocal'
+import { parseFlexibleDate } from '@/utils/parseFlexibleDate'
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
@@ -139,7 +91,6 @@ export default function Page(): JSX.Element {
 
   const defaultDates = defaultDate(timezone)
 
-  /* KPI tiles array typed with Period */
   const tiles: { label: string; value: string; period: Period }[] = [
     {
       label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${defaultDates.today === selectedDates.today ? currentTimeWithoutSeconds : ''}`,

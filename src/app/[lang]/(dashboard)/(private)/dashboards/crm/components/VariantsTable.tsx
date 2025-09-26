@@ -50,10 +50,10 @@ export function VariantsTable(props: VariantsTableProps): JSX.Element {
                   <TableCell>Asin</TableCell>
                   <TableCell>Parent Asin</TableCell>
                   <TableCell>Variation</TableCell>
-                  <TableCell align='right'>targetPrice</TableCell>
+                  <TableCell align='right'>Target Price</TableCell>
                   <TableCell align='right'>Total Orders</TableCell>
                   <TableCell align='right'>Yesterday Orders</TableCell>
-                  <TableCell align='right'>Last7DaysOrders</TableCell>
+                  <TableCell align='right'>Last 7 Day Orders</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

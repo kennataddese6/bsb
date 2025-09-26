@@ -75,7 +75,16 @@ export default function Page(): JSX.Element {
   })
 
   const setDefaultDates = () => {
-    setSelectedDates(defaultDate(timezone))
+    const defaults = defaultDate(timezone)
+    setSelectedDates({
+      today: `${defaults.today} ${currentTimeWithoutSeconds}`,
+      yesterday: `${defaults.yesterday} ${currentTimeWithoutSeconds}`,
+      lastweek: {
+        from: defaults.lastweek.from,
+        to: defaults.lastweek.to
+      },
+      custom: defaults.custom
+    })
   }
 
   /* Open dialog and seed the tempDate from selectedDates */

@@ -26,7 +26,6 @@ import {
 
 import { useQuery } from '@tanstack/react-query'
 
-import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
 import { defaultDate } from '@/utils/defaultDate'
 import type { Period, SelectedDates } from '@/types/apps/variants'
@@ -35,7 +34,7 @@ import type { Period, SelectedDates } from '@/types/apps/variants'
 import { formatToShortDate } from '@/utils/formatToShortDate'
 import { formatForDatetimeLocal } from '@/utils/formatForDatetimeLocal'
 import { parseFlexibleDate } from '@/utils/parseFlexibleDate'
-import { getFamilies, getItemData, getItems } from '@/hooks/fetches'
+import { getFamilies, getItems } from '@/hooks/fetches'
 import { VariantsTable } from './components/VariantsTable'
 import { TargetActual } from './components/TargetActual'
 import { PpcAndDeal } from './components/PpcAndDeal'
@@ -56,7 +55,6 @@ type Item = {
   TodayAveragePrice: number
   deal?: boolean
 }
-type ItemMetrics = { TotalUnits: number; TotalOrders: number }
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
@@ -140,6 +138,7 @@ export default function Page(): JSX.Element {
   // Helpers to build labels and API date strings for KPI cards (no timezone suffix)
   const buildApiDate = (value: string): string => {
     const d = parseFlexibleDate(value)
+
     if (!d) return ''
     const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
     const year = d.getFullYear()
@@ -147,17 +146,20 @@ export default function Page(): JSX.Element {
     const day = pad(d.getDate())
     const hours = pad(d.getHours())
     const minutes = pad(d.getMinutes())
+
     return `${year}-${month}-${day}T${hours}:${minutes}:00`
   }
 
   const buildApiDateMidnight = (value: string): string => {
     const d = parseFlexibleDate(value)
+
     if (!d) return ''
     d.setHours(0, 0, 0, 0)
     const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
     const year = d.getFullYear()
     const month = pad(d.getMonth() + 1)
     const day = pad(d.getDate())
+
     return `${year}-${month}-${day}T00:00:00`
   }
 
@@ -186,6 +188,7 @@ export default function Page(): JSX.Element {
   const todayStartISO = buildApiDateMidnight(
     selectedDates.today || `${defaultDates.today} ${currentTimeWithoutSeconds}`
   )
+
   const yesterdayStartISO = buildApiDateMidnight(
     selectedDates.yesterday || `${defaultDates.yesterday} ${currentTimeWithoutSeconds}`
   )
@@ -203,7 +206,7 @@ export default function Page(): JSX.Element {
     staleTime: 5000
   })
 
-  const { data: itemData, isLoading: itemLoading } = useQuery<ItemMetrics | null>({
+  /*   const { data: itemData, isLoading: itemLoading } = useQuery<ItemMetrics | null>({
     queryKey: ['families', parentItem?.Asin ?? null, timezone, '2025-09-26T14:30:00', '2025-09-26T14:30:00'],
     queryFn: () =>
       getItemData(
@@ -214,7 +217,7 @@ export default function Page(): JSX.Element {
       ),
     enabled: Boolean(family && parentItem),
     staleTime: 5000
-  })
+  }) */
 
   React.useEffect(() => {
     if (!itemsData || itemsData.length === 0) return

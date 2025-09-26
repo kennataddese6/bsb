@@ -33,8 +33,10 @@ export const getItemData = async (asin: string, timezone: string, startDate: Dat
       const day = pad(d.getDate())
       const hours = pad(d.getHours())
       const minutes = pad(d.getMinutes())
+
       return `${year}-${month}-${day}T${hours}:${minutes}:00`
     }
+
     const response = await axios.get(`https://bsb.reportzon.com/families/${asin}/data`, {
       params: {
         timeZone: timezone,

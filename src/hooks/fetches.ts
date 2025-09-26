@@ -7,16 +7,16 @@ export const getFamilies = async () => {
 
     return response.data
   } catch (error: any) {
-    throw new Error(error?.message || 'Failed to fetch employees')
+    throw new Error(error?.message || 'Failed to families ')
   }
 }
 
-export const getItems = async (asin: string) => {
+export const getItems = async (asin: string, timezone: string) => {
   try {
-    const response = await axios.get(`https://bsb.reportzon.com/families/${asin}`)
+    const response = await axios.get(`https://bsb.reportzon.com/families/${asin}?timeZone=${timezone}`)
 
     return response.data
   } catch (error: any) {
-    throw new Error(error?.message || 'Failed to fetch employees')
+    throw new Error(error?.message || 'Failed to items')
   }
 }

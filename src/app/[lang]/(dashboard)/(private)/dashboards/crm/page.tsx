@@ -140,8 +140,8 @@ export default function Page(): JSX.Element {
   })
 
   const { data: itemsData, isLoading: itemsLoading } = useQuery({
-    queryKey: ['families', family],
-    queryFn: () => getItems(family),
+    queryKey: ['families', family, timezone],
+    queryFn: () => getItems(family, timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'),
     staleTime: 5000
   })
 
@@ -258,16 +258,18 @@ export default function Page(): JSX.Element {
                         <TableCell>Asin</TableCell>
                         <TableCell>Parent Asin</TableCell>
                         <TableCell>Variation</TableCell>
-                        <TableCell align='right'>Group Name</TableCell>
-                        <TableCell align='right'>quantity</TableCell>
                         <TableCell align='right'>targetPrice</TableCell>
+                        <TableCell align='right'>Total Orders</TableCell>
+                        <TableCell align='right'>Yesterday Orders</TableCell>
+                        <TableCell align='right'>Last7DaysOrders</TableCell>
+                        <TableCell align='right'>TodayAveragePrice</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {!itemsLoading &&
                         itemsData.map((v, i) => (
                           <TableRow hover key={i}>
-                            <TableCell>{v.asin}</TableCell>
+                            <TableCell>{v.Asin}</TableCell>
                             <TableCell>
                               <Typography
                                 component='span'
@@ -277,13 +279,16 @@ export default function Page(): JSX.Element {
                                   color: 'text.secondary'
                                 }}
                               >
-                                {v.parentAsin}
+                                {v.ParentAsin}
                               </Typography>
                             </TableCell>
-                            <TableCell align='right'>{v.variation}</TableCell>
-                            <TableCell align='right'>{v.groupName}</TableCell>
-                            <TableCell align='right'>{v.quantity}</TableCell>
-                            <TableCell align='right'>{v.targetPrice}</TableCell>
+                            <TableCell align='right'>{v.Variation}</TableCell>
+                            <TableCell align='right'>{v.TargetPrice}</TableCell>
+                            <TableCell align='right'>{v.TodayOrders}</TableCell>
+                            <TableCell align='right'>{v.YesterdayOrders}</TableCell>
+                            <TableCell align='right'>{v.Last7DaysOrders}</TableCell>
+                            <TableCell align='right'>{v.LastWeekOrders}</TableCell>
+                            <TableCell align='right'>{v.TodayAveragePrice}</TableCell>
                             <TableCell align='center'>
                               {v.deal ? (
                                 <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />
@@ -352,7 +357,7 @@ export default function Page(): JSX.Element {
           <Grid container spacing={4} sx={{ mt: 4 }}>
             {[
               { label: 'Today’s Price', value: '$44.99', icon: <i className={'bx-dollar-circle'} /> },
-              { label: 'Average Price', value: '$48.65', icon: <i className={'bx-trending-up'} /> },
+              { label: 'Today’s Average Price', value: '$48.65', icon: <i className={'bx-trending-up'} /> },
               { label: 'Target Price', value: '$49.99', icon: <i className={'bx-target-lock'} /> }
             ].map((p, idx) => (
               <Grid key={idx} size={{ xs: 12, md: 4 }}>

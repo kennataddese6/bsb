@@ -67,7 +67,16 @@ export default function Page(): JSX.Element {
   const currentTime = useCurrentTime(timezone)
   const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
 
-  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>(defaultDate(timezone))
+  const [selectedDates, setSelectedDates] = React.useState<SelectedDates>({
+    today: '',
+    yesterday: '',
+    lastweek: { from: '', to: '' },
+    custom: ''
+  })
+
+  React.useEffect(() => {
+    console.log(selectedDates)
+  }, [selectedDates])
 
   const setDefaultDates = () => {
     setSelectedDates(defaultDate(timezone))
@@ -100,6 +109,8 @@ export default function Page(): JSX.Element {
 
       setDatePickerOpen(null)
       setTempDate(null)
+
+      return
     }
 
     const formatted = date ? formatToShortDate(date) : selectedDates[period]
@@ -110,29 +121,6 @@ export default function Page(): JSX.Element {
   }
 
   const defaultDates = defaultDate(timezone)
-
-  const tiles: { label: string; value: string; period: Period }[] = [
-    {
-      label: `${getRelativeDayLabel(selectedDates.today)}  ${selectedDates.today} ${defaultDates.today === selectedDates.today ? currentTimeWithoutSeconds : ''}`,
-      value: '15 / 13',
-      period: 'today'
-    },
-    {
-      label: `${getRelativeDayLabel(selectedDates.yesterday)}  ${selectedDates.yesterday}  ${defaultDates.yesterday === selectedDates.yesterday ? currentTimeWithoutSeconds : ''}`,
-      value: '13 / 13',
-      period: 'yesterday'
-    },
-    {
-      label: `${getRelativeDayLabel(selectedDates.lastweek.from)}  ${selectedDates.lastweek.from} - ${selectedDates.lastweek.to} `,
-      value: '28 / 25',
-      period: 'lastweek'
-    },
-    {
-      label: `Custom · ${selectedDates.custom} `,
-      value: '28 / 25',
-      period: 'custom'
-    }
-  ]
 
   const { data, isLoading } = useQuery({
     queryKey: ['families'],
@@ -333,48 +321,172 @@ export default function Page(): JSX.Element {
         <Grid size={{ xs: 12, lg: 7 }}>
           {/* KPI Tiles */}
           <Grid container spacing={4}>
-            {tiles.map((k, idx) => (
-              <Grid key={idx} size={{ xs: 6, md: 3 }}>
-                <Card>
-                  <CardContent>
-                    <Stack direction='row' justifyContent='space-between' alignItems='center'>
-                      <Box sx={{ minWidth: 0, flex: 1 }}>
-                        <Button
-                          variant='text'
-                          onClick={() => handleDateClick(k.period)}
-                          sx={{
-                            p: 0,
-                            minHeight: 'auto',
-                            textAlign: 'left',
-                            justifyContent: 'flex-start',
-                            '&:hover': { bgcolor: 'transparent' }
-                          }}
-                        >
-                          <Typography variant='caption' color='text.secondary' noWrap>
-                            {k.label}
-                          </Typography>
-                        </Button>
-                        <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                          {k.value}
-                        </Typography>
-                        <Typography variant='caption' color='text.secondary'>
-                          Units / Orders
-                        </Typography>
-                      </Box>
-
-                      <IconButton
-                        aria-label={`Select date for ${k.period}`}
-                        onClick={() => handleDateClick(k.period)}
-                        size='small'
-                        sx={{ ml: 1, flexShrink: 0 }}
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Button
+                        variant='text'
+                        onClick={() => handleDateClick('today')}
+                        sx={{
+                          p: 0,
+                          minHeight: 'auto',
+                          textAlign: 'left',
+                          justifyContent: 'flex-start',
+                          '&:hover': { bgcolor: 'transparent' }
+                        }}
                       >
-                        <i className='bx-calendar' />
-                      </IconButton>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                        <Typography variant='caption' color='text.secondary' noWrap>
+                          {selectedDates.today
+                            ? selectedDates.today
+                            : defaultDates.today + ' ' + currentTimeWithoutSeconds}{' '}
+                        </Typography>
+                      </Button>
+                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                        15/14
+                      </Typography>
+                      <Typography variant='caption' color='text.secondary'>
+                        Units / Orders
+                      </Typography>
+                    </Box>
+
+                    <IconButton
+                      aria-label={`Select date for ${'today'}`}
+                      onClick={() => handleDateClick('today')}
+                      size='small'
+                      sx={{ ml: 1, flexShrink: 0 }}
+                    >
+                      <i className='bx-calendar' />
+                    </IconButton>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Button
+                        variant='text'
+                        onClick={() => handleDateClick('yesterday')}
+                        sx={{
+                          p: 0,
+                          minHeight: 'auto',
+                          textAlign: 'left',
+                          justifyContent: 'flex-start',
+                          '&:hover': { bgcolor: 'transparent' }
+                        }}
+                      >
+                        <Typography variant='caption' color='text.secondary' noWrap>
+                          {selectedDates.yesterday
+                            ? selectedDates.yesterday
+                            : defaultDates.yesterday + ' ' + currentTimeWithoutSeconds}{' '}
+                        </Typography>
+                      </Button>
+                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                        15/14
+                      </Typography>
+                      <Typography variant='caption' color='text.secondary'>
+                        Units / Orders
+                      </Typography>
+                    </Box>
+
+                    <IconButton
+                      aria-label={`Select date for ${'yesterday'}`}
+                      onClick={() => handleDateClick('yesterday')}
+                      size='small'
+                      sx={{ ml: 1, flexShrink: 0 }}
+                    >
+                      <i className='bx-calendar' />
+                    </IconButton>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Button
+                        variant='text'
+                        onClick={() => handleDateClick('lastweek')}
+                        sx={{
+                          p: 0,
+                          minHeight: 'auto',
+                          textAlign: 'left',
+                          justifyContent: 'flex-start',
+                          '&:hover': { bgcolor: 'transparent' }
+                        }}
+                      >
+                        <Typography variant='caption' color='text.secondary' noWrap>
+                          {selectedDates.lastweek.from
+                            ? selectedDates.lastweek.from + ' - ' + selectedDates.lastweek.to
+                            : defaultDates.lastweek.from + ' ' + currentTimeWithoutSeconds}{' '}
+                        </Typography>
+                      </Button>
+                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                        15/14
+                      </Typography>
+                      <Typography variant='caption' color='text.secondary'>
+                        Units / Orders
+                      </Typography>
+                    </Box>
+
+                    <IconButton
+                      aria-label={`Select date for ${'lastweek'}`}
+                      onClick={() => handleDateClick('lastweek')}
+                      size='small'
+                      sx={{ ml: 1, flexShrink: 0 }}
+                    >
+                      <i className='bx-calendar' />
+                    </IconButton>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Card>
+                <CardContent>
+                  <Stack direction='row' justifyContent='space-between' alignItems='center'>
+                    <Box sx={{ minWidth: 0, flex: 1 }}>
+                      <Button
+                        variant='text'
+                        onClick={() => handleDateClick('custom')}
+                        sx={{
+                          p: 0,
+                          minHeight: 'auto',
+                          textAlign: 'left',
+                          justifyContent: 'flex-start',
+                          '&:hover': { bgcolor: 'transparent' }
+                        }}
+                      >
+                        <Typography variant='caption' color='text.secondary' noWrap>
+                          Today mm-dd-yyyy 10:18
+                        </Typography>
+                      </Button>
+                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                        15/14
+                      </Typography>
+                      <Typography variant='caption' color='text.secondary'>
+                        Units / Orders
+                      </Typography>
+                    </Box>
+
+                    <IconButton
+                      aria-label={`Select date for ${'custom'}`}
+                      onClick={() => handleDateClick('custom')}
+                      size='small'
+                      sx={{ ml: 1, flexShrink: 0 }}
+                    >
+                      <i className='bx-calendar' />
+                    </IconButton>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {/* Prices */}

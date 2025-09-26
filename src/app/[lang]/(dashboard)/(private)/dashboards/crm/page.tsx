@@ -44,7 +44,7 @@ import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
 import { formatToShortDate } from '@/utils/formatToShortDate'
 import { formatForDatetimeLocal } from '@/utils/formatForDatetimeLocal'
 import { parseFlexibleDate } from '@/utils/parseFlexibleDate'
-import { getFamilies, getItems } from '@/hooks/fetches'
+import { getFamilies, getItemData, getItems } from '@/hooks/fetches'
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
@@ -131,6 +131,18 @@ export default function Page(): JSX.Element {
   const { data: itemsData, isLoading: itemsLoading } = useQuery({
     queryKey: ['families', family, timezone],
     queryFn: () => getItems(family, timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'),
+    staleTime: 5000
+  })
+
+  const { data: itemData, isLoading: itemLoading } = useQuery({
+    queryKey: ['families', parentItem.Asin, timezone, '2025-09-26T14:30:00', '2025-09-26T14:30:00'],
+    queryFn: () =>
+      getItemData(
+        family,
+        timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York',
+        '2025-09-26T14:30:00',
+        '2025-09-26T14:30:00'
+      ),
     staleTime: 5000
   })
 
@@ -343,12 +355,23 @@ export default function Page(): JSX.Element {
                             : defaultDates.today + ' ' + currentTimeWithoutSeconds}{' '}
                         </Typography>
                       </Button>
-                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                        15/14
-                      </Typography>
-                      <Typography variant='caption' color='text.secondary'>
-                        Units / Orders
-                      </Typography>
+                      {itemLoading ? (
+                        <>
+                          <div className='animate-spin my-2 rounded-full h-4 w-4 border-b-2 border-primary'></div>
+                          <Typography variant='caption' color='text.secondary'>
+                            Units / Orders
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                            {itemData && itemData?.TotalUnits}/{itemData?.TotalOrders}
+                          </Typography>
+                          <Typography variant='caption' color='text.secondary'>
+                            Units / Orders
+                          </Typography>
+                        </>
+                      )}
                     </Box>
 
                     <IconButton
@@ -385,12 +408,23 @@ export default function Page(): JSX.Element {
                             : defaultDates.yesterday + ' ' + currentTimeWithoutSeconds}{' '}
                         </Typography>
                       </Button>
-                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                        15/14
-                      </Typography>
-                      <Typography variant='caption' color='text.secondary'>
-                        Units / Orders
-                      </Typography>
+                      {itemLoading ? (
+                        <>
+                          <div className='animate-spin my-2 rounded-full h-4 w-4 border-b-2 border-primary'></div>
+                          <Typography variant='caption' color='text.secondary'>
+                            Units / Orders
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                            {itemData && itemData?.TotalUnits}/{itemData?.TotalOrders}
+                          </Typography>
+                          <Typography variant='caption' color='text.secondary'>
+                            Units / Orders
+                          </Typography>
+                        </>
+                      )}
                     </Box>
 
                     <IconButton
@@ -427,12 +461,23 @@ export default function Page(): JSX.Element {
                             : defaultDates.lastweek.from + ' ' + currentTimeWithoutSeconds}{' '}
                         </Typography>
                       </Button>
-                      <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
-                        15/14
-                      </Typography>
-                      <Typography variant='caption' color='text.secondary'>
-                        Units / Orders
-                      </Typography>
+                      {itemLoading ? (
+                        <>
+                          <div className='animate-spin my-2 rounded-full h-4 w-4 border-b-2 border-primary'></div>
+                          <Typography variant='caption' color='text.secondary'>
+                            Units / Orders
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <Typography variant='h5' sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
+                            {itemData && itemData?.TotalUnits}/{itemData?.TotalOrders}
+                          </Typography>
+                          <Typography variant='caption' color='text.secondary'>
+                            Units / Orders
+                          </Typography>
+                        </>
+                      )}
                     </Box>
 
                     <IconButton

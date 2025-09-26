@@ -35,6 +35,7 @@ import {
 } from '@mui/material'
 
 import { formatUSD } from '@/utils/formatters/formatUSD'
+import { useCurrentTime } from '@/hooks/useCurrentTime'
 
 type Variant = {
   color: string
@@ -245,6 +246,15 @@ export default function Page(): JSX.Element {
 
   const [datePickerOpen, setDatePickerOpen] = React.useState<Period | null>(null)
 
+  // temporary date shown inside the inline picker before confirmation
+  const [tempDate, setTempDate] = React.useState<Date | null>(null)
+  const [timezone, setTimezone] = React.useState('PST')
+  const [period, setPeriod] = useState('today')
+  const [allFamilySelected, selectAllFamily] = useState(false)
+  const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
+
+  const currentTime = useCurrentTime(timezone)
+
   const today = new Date()
 
   const yesterday = new Date(today)
@@ -284,14 +294,6 @@ export default function Page(): JSX.Element {
       custom: lastWeek.toLocaleDateString()
     })
   }
-
-  // temporary date shown inside the inline picker before confirmation
-  const [tempDate, setTempDate] = React.useState<Date | null>(null)
-  const [timezone, setTimezone] = React.useState('PST')
-  const [currentTime, setCurrentTime] = useState('')
-  const [period, setPeriod] = useState('today')
-  const [allFamilySelected, selectAllFamily] = useState(false)
-  const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
 
   /* Open dialog and seed the tempDate from selectedDates */
   const handleDateClick = (period: Period) => {
@@ -363,7 +365,7 @@ export default function Page(): JSX.Element {
     }
   ]
 
-  useEffect(() => {
+  /*   useEffect(() => {
     const updateTime = () => {
       const tz = timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York'
       const now = new Date()
@@ -383,7 +385,7 @@ export default function Page(): JSX.Element {
     const interval = setInterval(updateTime, 1000)
 
     return () => clearInterval(interval)
-  }, [timezone])
+  }, [timezone]) */
 
   return (
     <Box

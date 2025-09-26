@@ -74,10 +74,6 @@ export default function Page(): JSX.Element {
     custom: ''
   })
 
-  React.useEffect(() => {
-    console.log(selectedDates)
-  }, [selectedDates])
-
   const setDefaultDates = () => {
     setSelectedDates(defaultDate(timezone))
   }

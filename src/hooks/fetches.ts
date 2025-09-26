@@ -10,3 +10,13 @@ export const getFamilies = async () => {
     throw new Error(error?.message || 'Failed to fetch employees')
   }
 }
+
+export const getItems = async (asin: string) => {
+  try {
+    const response = await axios.get(`https://bsb.reportzon.com/families/${asin}`)
+
+    return response.data
+  } catch (error: any) {
+    throw new Error(error?.message || 'Failed to fetch employees')
+  }
+}

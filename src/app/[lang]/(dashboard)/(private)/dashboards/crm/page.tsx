@@ -34,29 +34,20 @@ import {
   Switch
 } from '@mui/material'
 
-import { set } from 'react-hook-form'
-
 import { useQuery } from '@tanstack/react-query'
 
 import { formatUSD } from '@/utils/formatters/formatUSD'
 import { useCurrentTime } from '@/hooks/useCurrentTime'
 import { defaultDate } from '@/utils/defaultDate'
-import { variants } from '@/data/variantsData'
 import type { Period, SelectedDates } from '@/types/apps/variants'
 import { getRelativeDayLabel } from '@/utils/relativeDayLabel'
 import { formatToShortDate } from '@/utils/formatToShortDate'
 import { formatForDatetimeLocal } from '@/utils/formatForDatetimeLocal'
 import { parseFlexibleDate } from '@/utils/parseFlexibleDate'
-import { getFamilies } from '@/hooks/fetches'
+import { getFamilies, getItems } from '@/hooks/fetches'
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
-  const { data, isLoading } = useQuery({
-    queryKey: ['families'],
-    queryFn: getFamilies,
-    staleTime: 5000
-  })
-
   const target = 7000
   const actual = 5015
   const maxScale = 9000 // for the background bar
@@ -70,6 +61,7 @@ export default function Page(): JSX.Element {
   const [allFamilySelected, selectAllFamily] = useState(false)
   const [tempFromDate, setTempFromDate] = useState<Date | null>(null)
   const [tempToDate, setTempToDate] = useState<Date | null>(null)
+  const [family, setFamily] = useState<string>('B08BT5HW4P')
 
   const currentTime = useCurrentTime(timezone)
   const currentTimeWithoutSeconds = useCurrentTime(timezone, false)
@@ -141,6 +133,18 @@ export default function Page(): JSX.Element {
     }
   ]
 
+  const { data, isLoading } = useQuery({
+    queryKey: ['families'],
+    queryFn: getFamilies,
+    staleTime: 5000
+  })
+
+  const { data: itemsData, isLoading: itemsLoading } = useQuery({
+    queryKey: ['families', family],
+    queryFn: () => getItems(family),
+    staleTime: 5000
+  })
+
   return (
     <Box
       sx={{
@@ -170,10 +174,19 @@ export default function Page(): JSX.Element {
             </Box>
             <Autocomplete
               disablePortal
-              options={!isLoading && data.map(f => f.groupName)}
+              options={!isLoading ? data : []} // pass full objects
+              getOptionLabel={option => option.groupName} // show groupName in dropdown
               sx={{ width: 300 }}
+              onChange={(event, value) => {
+                if (value) {
+                  setFamily(value.asin)
+                } else {
+                  setFamily(null)
+                }
+              }}
               renderInput={params => <TextField {...params} label='Select Family' />}
             />
+
             <div className='flex items-center justify-between ml-12'>
               <label className='font-medium cursor-pointer' htmlFor='customizer-semi-dark'>
                 All Family
@@ -242,59 +255,44 @@ export default function Page(): JSX.Element {
                   <Table stickyHeader size='small'>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Color</TableCell>
-                        <TableCell>Size</TableCell>
-                        <TableCell>ASIN</TableCell>
-                        <TableCell align='right'>Today</TableCell>
-                        <TableCell align='right'>Ystd</TableCell>
-                        <TableCell align='right'>Last wk</TableCell>
-                        <TableCell align='right'>7 days</TableCell>
-                        <TableCell align='right'>Avg $</TableCell>
-                        <TableCell align='right'>Target $</TableCell>
-                        <TableCell align='center'>Deal</TableCell>
+                        <TableCell>Asin</TableCell>
+                        <TableCell>Parent Asin</TableCell>
+                        <TableCell>Variation</TableCell>
+                        <TableCell align='right'>Group Name</TableCell>
+                        <TableCell align='right'>quantity</TableCell>
+                        <TableCell align='right'>targetPrice</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {variants.map((v, i) => (
-                        <TableRow hover key={i}>
-                          <TableCell>
-                            <Stack direction='row' spacing={1} alignItems='center'>
-                              <Box
+                      {!itemsLoading &&
+                        itemsData.map((v, i) => (
+                          <TableRow hover key={i}>
+                            <TableCell>{v.asin}</TableCell>
+                            <TableCell>
+                              <Typography
+                                component='span'
                                 sx={{
-                                  width: 12,
-                                  height: 12,
-                                  borderRadius: '50%',
-                                  bgcolor: v.hex,
-                                  border: '1px solid rgba(0,0,0,.1)'
+                                  fontFamily: 'ui-monospace, SFMono-Regular',
+                                  fontSize: 12,
+                                  color: 'text.secondary'
                                 }}
-                              />
-                              <Typography>{v.color}</Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell>{v.size}</TableCell>
-                          <TableCell>
-                            <Typography
-                              component='span'
-                              sx={{ fontFamily: 'ui-monospace, SFMono-Regular', fontSize: 12, color: 'text.secondary' }}
-                            >
-                              {v.asin}
-                            </Typography>
-                          </TableCell>
-                          <TableCell align='right'>{v.today.toLocaleString()}</TableCell>
-                          <TableCell align='right'>{v.ystd.toLocaleString()}</TableCell>
-                          <TableCell align='right'>{v.lastwk.toLocaleString()}</TableCell>
-                          <TableCell align='right'>{v.w7.toLocaleString()}</TableCell>
-                          <TableCell align='right'>{formatUSD(v.avg)}</TableCell>
-                          <TableCell align='right'>{formatUSD(v.target)}</TableCell>
-                          <TableCell align='center'>
-                            {v.deal ? (
-                              <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />
-                            ) : (
-                              <Typography color='text.disabled'>—</Typography>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                              >
+                                {v.parentAsin}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align='right'>{v.variation}</TableCell>
+                            <TableCell align='right'>{v.groupName}</TableCell>
+                            <TableCell align='right'>{v.quantity}</TableCell>
+                            <TableCell align='right'>{v.targetPrice}</TableCell>
+                            <TableCell align='center'>
+                              {v.deal ? (
+                                <Chip icon={<i className={'bx-gift'} />} label='Deal' size='small' color='success' />
+                              ) : (
+                                <Typography color='text.disabled'>—</Typography>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </Box>

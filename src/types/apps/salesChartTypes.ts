@@ -34,3 +34,17 @@ export interface QuarterlyChartData extends BaseChartData {
     }>
   }>
 }
+
+export type Item = {
+  Asin: string
+  ParentAsin: string
+  GroupName: string
+  Variation: string
+  TargetPrice: number
+  TodayOrders: number
+  YesterdayOrders: number
+  Last7DaysOrders: number
+  LastWeekOrders: number
+  TodayAveragePrice: number
+  deal?: boolean
+}

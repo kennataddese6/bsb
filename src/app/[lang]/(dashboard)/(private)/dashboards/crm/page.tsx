@@ -39,22 +39,10 @@ import { VariantsTable } from './components/VariantsTable'
 import { TargetActual } from './components/TargetActual'
 import { PpcAndDeal } from './components/PpcAndDeal'
 import { KpiDateCard } from './components/KpiDateCard'
+import type { Item } from '@/types/apps/salesChartTypes'
 
 // Local types for stronger safety in this file
 type FamilyOption = { asin: string; groupName: string }
-type Item = {
-  Asin: string
-  ParentAsin: string
-  GroupName: string
-  Variation: string
-  TargetPrice: number
-  TodayOrders: number
-  YesterdayOrders: number
-  Last7DaysOrders: number
-  LastWeekOrders: number
-  TodayAveragePrice: number
-  deal?: boolean
-}
 
 /* ----------------------------- Page ------------------------------ */
 export default function Page(): JSX.Element {
@@ -205,19 +193,6 @@ export default function Page(): JSX.Element {
     enabled: Boolean(family),
     staleTime: 5000
   })
-
-  /*   const { data: itemData, isLoading: itemLoading } = useQuery<ItemMetrics | null>({
-    queryKey: ['families', parentItem?.Asin ?? null, timezone, '2025-09-26T14:30:00', '2025-09-26T14:30:00'],
-    queryFn: () =>
-      getItemData(
-        family as string,
-        timezone === 'PST' ? 'America/Los_Angeles' : 'America/New_York',
-        '2025-09-26T14:30:00',
-        '2025-09-26T14:30:00'
-      ),
-    enabled: Boolean(family && parentItem),
-    staleTime: 5000
-  }) */
 
   React.useEffect(() => {
     if (!itemsData || itemsData.length === 0) return
